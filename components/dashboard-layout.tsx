@@ -3,30 +3,59 @@
 import type React from 'react';
 
 import { useState } from 'react';
-import { UserButton } from '@clerk/nextjs';
+import { UserButton, useUser } from '@clerk/nextjs';
+import { useSubscription } from '@clerk/nextjs/experimental';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import {
-  BarChart3,
-  Plus,
-  FileText,
-  Home,
-  Menu,
-  Settings,
-  Users,
-  X,
-} from 'lucide-react';
+import { HousePlus, Plus, Home, Menu, Settings, X } from 'lucide-react';
+import { AiTwotoneLayout } from 'react-icons/ai';
+import { HiOutlineLightBulb } from 'react-icons/hi';
+import { AiTwotoneProfile } from 'react-icons/ai';
+import { BsHouses } from 'react-icons/bs';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { PiWallDuotone } from 'react-icons/pi';
+import { PiSquareHalfBottomDuotone } from 'react-icons/pi';
+import { PiPlugDuotone } from 'react-icons/pi';
+import { PiArmchairDuotone } from 'react-icons/pi';
+import { TbKeyframes } from 'react-icons/tb';
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Anotações', href: '/dashboard/subscriptions', icon: Users },
-  { name: 'Iluminação', href: '/dashboard/billing', icon: Plus },
-  { name: 'Interiores', href: '/dashboard/invoices', icon: FileText },
-  { name: 'Mobiliário', href: '/dashboard/analytics', icon: BarChart3 },
-  { name: 'Pontos técnicos', href: '/dashboard/analytics', icon: BarChart3 },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+  { name: 'Sketchup Inteligente', href: '/dashboard/inteli-sket', icon: Home },
+  { name: 'Anotação', href: '/dashboard/annotation', icon: BsHouses },
+  {
+    name: 'Mobiliário',
+    href: '/dashboard/furniture',
+    icon: PiArmchairDuotone,
+  },
+  { name: 'Esquadrias', href: '/dashboard/frames', icon: TbKeyframes },
+  { name: 'Elétrica', href: '/dashboard/electrical', icon: PiPlugDuotone },
+  {
+    name: 'Iluminação',
+    href: '/dashboard/lightnings',
+    icon: HiOutlineLightBulb,
+  },
+  {
+    name: 'Revestimentos',
+    href: '/dashboard/coatings',
+    icon: PiWallDuotone,
+  },
+  {
+    name: 'Rodapés',
+    href: '/dashboard/baseboards',
+    icon: PiSquareHalfBottomDuotone,
+  },
+  {
+    name: 'Relatórios',
+    href: '/dashboard/generate-report',
+    icon: AiTwotoneProfile,
+  },
+  {
+    name: 'Layout Inteligente',
+    href: '/dashboard/inteli-layout',
+    icon: AiTwotoneLayout,
+  },
+  { name: 'Settings', href: '/dashboard/user-settings', icon: Settings },
 ];
 
 interface DashboardLayoutProps {
@@ -36,7 +65,11 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const { user } = useUser();
+  const { data } = useSubscription();
   const pathname = usePathname();
+
+  console.log('Subscription data:', data);
 
   return (
     <div className='min-h-screen bg-background'>
@@ -59,10 +92,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Sidebar header */}
         <div className='flex h-16 items-center justify-between px-4 border-b border-sidebar-border'>
           {sidebarExpanded && (
-            <div className='flex items-center space-x-2'>
-              <Plus className='h-8 w-8 text-sidebar-primary' />
-              <h1 className='text-2xl font-bold font-sans'>
-                Projeta<span className='text-green-500'>+</span>
+            <div className='flex items-center space-x-2 w-full'>
+              <HousePlus className='h-6 w-6 mt-1 font-bold text-lime-600' />
+              <h1 className='text-xl font-bold font-sans flex mt-2'>
+                Projeta{' '}
+                <Plus className='h-4 w-4 mt-1 font-bold text-lime-600' />
               </h1>
             </div>
           )}
@@ -110,7 +144,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 title={!sidebarExpanded ? item.name : undefined}
               >
                 <item.icon
-                  className={cn('h-5 w-5', sidebarExpanded && 'mr-3')}
+                  className={cn('h-6 w-6', sidebarExpanded && 'mr-3')}
                 />
                 {sidebarExpanded && (
                   <span className='font-serif'>{item.name}</span>
@@ -139,10 +173,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {sidebarExpanded && (
               <div className='flex-1 min-w-0'>
                 <p className='text-sm font-medium text-sidebar-foreground font-serif truncate'>
-                  Dashboard User
+                  {user?.firstName} {user?.lastName}
                 </p>
                 <p className='text-xs text-sidebar-foreground/70 truncate'>
-                  Pro Plan
+                  {data?.subscriptionItems
+                    ?.map((item) => item.plan.name)
+                    .join(', ')}
                 </p>
               </div>
             )}

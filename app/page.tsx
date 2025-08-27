@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Plus, Shield, Zap, LucideHome } from 'lucide-react';
+import { Plus, Shield, Zap, LucideHome, HousePlus } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeToggleButton } from '@/components/ui/theme-toggle-button';
 
@@ -24,7 +24,7 @@ export default function HomePage() {
           <Card className='w-full max-w-md'>
             <CardHeader className='text-center'>
               <CardTitle className='font-sans'>
-                Welcome to Your Dashboard
+                Bem vindo, to Projeta Plus!
               </CardTitle>
               <CardDescription className='font-serif'>
                 Your SaaS billing dashboard is ready
@@ -53,10 +53,10 @@ function LandingPage() {
       {/* Header */}
       <header className='border-b bg-card'>
         <div className='container mx-auto px-4 py-4 flex items-center justify-between'>
-          <div className='flex items-center space-x-2'>
-            <LucideHome className='h-8 w-8 text-primary' />
-            <h1 className='text-2xl font-bold font-sans'>
-              Projeta<span className='text-green-400'>+</span>
+          <div className='flex items-center space-x-2 w-full'>
+            <HousePlus className='h-6 w-6 mt-1 font-bold text-lime-600' />
+            <h1 className='text-xl font-bold font-sans flex mt-2'>
+              Projeta <Plus className='h-4 w-4 mt-1 font-bold text-lime-600' />
             </h1>
           </div>
           <SignInButton mode='modal'>
