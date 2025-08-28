@@ -8,7 +8,6 @@ import React, { useEffect, useState } from 'react';
 declare global {
   interface Window {
     sketchup: {
-      send_action: (action: string, ...args: unknown[]) => void;
       showMessageBox: (message: string) => void;
       requestModelName: () => void;
       // Você pode adicionar outras funções aqui se o Ruby as injetar,
