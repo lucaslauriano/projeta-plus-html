@@ -1,7 +1,7 @@
 // Suponha que este código esteja em app/button1/page.tsx ou em qualquer outro Client Component
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Declarar a interface global para 'window.sketchup'
 // Isso ajuda o TypeScript a reconhecer 'window.sketchup'
@@ -17,8 +17,17 @@ declare global {
 }
 
 export default function Button1ContentPage() {
+  const [sketchup, setSketchup] = useState<Window['sketchup'] | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    setSketchup(window.sketchup);
+  }, []);
+
   const sendMessageToSketchUp = () => {
     console.log('window', window);
+    console.log('sketchup', sketchup);
     // Pegar alguma informação dinâmica, por exemplo, o nome do modelo ativo no SketchUp
     // (Para este exemplo, vamos simular, pois obter o nome do arquivo *diretamente* do JS
     // sem uma API do Ruby seria difícil. O Ruby precisa enviar isso primeiro para o JS).
@@ -26,9 +35,9 @@ export default function Button1ContentPage() {
     const message = `Olá SketchUp! Esta mensagem veio do Botão 1 na Vercel.`;
 
     // Se window.sketchup existe (estamos dentro de um HtmlDialog do SketchUp)
-    if (window.sketchup) {
+    if (sketchup) {
       // Chama a função 'showMessageBox' registrada no Ruby, passando a mensagem como argumento
-      window.sketchup.send_action('showMessageBox', message);
+      sketchup.send_action('showMessageBox', message);
       console.log('Mensagem enviada para o SketchUp:', message);
     } else {
       console.warn(
