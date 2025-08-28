@@ -10,6 +10,7 @@ declare global {
     sketchup: {
       send_action: (action: string, ...args: unknown[]) => void;
       showMessageBox: (message: string) => void;
+      requestModelName: () => void;
       // Você pode adicionar outras funções aqui se o Ruby as injetar,
       // como uma função para fechar o diálogo: close: () => void;
     };
@@ -51,8 +52,8 @@ export default function Button1ContentPage() {
   const showSketchUpModelInfo = () => {
     // Neste exemplo, vamos pedir para o SketchUp enviar o nome do modelo para o JS,
     // e o JS então exibirá. Isso requer um callback Ruby->JS e um JS->Ruby.
-    if (window.sketchup) {
-      window.sketchup.send_action('requestModelName');
+    if (sketchup) {
+      sketchup.requestModelName();
       console.log('Solicitando nome do modelo ao SketchUp...');
     } else {
       console.warn(
