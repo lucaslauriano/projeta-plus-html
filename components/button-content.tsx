@@ -9,6 +9,7 @@ declare global {
   interface Window {
     sketchup: {
       send_action: (action: string, ...args: unknown[]) => void;
+      showMessageBox: (message: string) => void;
       // Você pode adicionar outras funções aqui se o Ruby as injetar,
       // como uma função para fechar o diálogo: close: () => void;
     };
@@ -37,7 +38,7 @@ export default function Button1ContentPage() {
     // Se window.sketchup existe (estamos dentro de um HtmlDialog do SketchUp)
     if (sketchup) {
       // Chama a função 'showMessageBox' registrada no Ruby, passando a mensagem como argumento
-      sketchup.send_action('showMessageBox', message);
+      sketchup.showMessageBox(message);
       console.log('Mensagem enviada para o SketchUp:', message);
     } else {
       console.warn(
