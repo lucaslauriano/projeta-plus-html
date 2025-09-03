@@ -29,6 +29,7 @@ export default function RoomAnnotation() {
   // Efeito para registrar a função `handleRubyResponse` no objeto `window`
   useEffect(() => {
     window.handleRubyResponse = (response) => {
+      console.log('Resposta Ruby:', response);
       setIsLoading(false);
       if (response.success) {
         setStatusMessage(`Sucesso: ${response.message}`);
