@@ -131,7 +131,7 @@ function RoomAnnotationInner() {
 
   return (
     <div className='p-4'>
-      <div className='bg-white p-8 rounded-lg shadow-md w-full max-w-2xl mx-auto'>
+      <div className='w-full max-w-2xl mx-auto'>
         <h1 className='text-3xl font-bold mb-6 text-center text-gray-800'>
           Adicionar Nome do Ambiente
         </h1>

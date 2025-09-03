@@ -5,9 +5,12 @@ import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
 // Dynamically import the component to avoid SSR issues
-const AnnotationSectionContent = dynamic(() => Promise.resolve(AnnotationSectionInner), {
-  ssr: false,
-});
+const AnnotationSectionContent = dynamic(
+  () => Promise.resolve(AnnotationSectionInner),
+  {
+    ssr: false,
+  }
+);
 
 export default function AnnotationSection() {
   return <AnnotationSectionContent />;
@@ -100,7 +103,7 @@ function AnnotationSectionInner() {
 
   return (
     <div className='p-4'>
-      <div className='bg-white p-8 rounded-lg shadow-md w-full max-w-md mx-auto'>
+      <div className='w-full max-w-md mx-auto'>
         <h1 className='text-3xl font-bold mb-6 text-center text-gray-800'>
           Criar Anotações de Corte
         </h1>
