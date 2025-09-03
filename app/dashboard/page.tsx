@@ -1,4 +1,5 @@
-import { DashboardLayout } from '@/components/dashboard-layout';
+'use client';
+
 import {
   Card,
   CardContent,
