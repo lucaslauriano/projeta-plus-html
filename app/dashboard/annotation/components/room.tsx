@@ -41,25 +41,20 @@ function RoomAnnotationInner() {
   ];
 
   useEffect(() => {
-    // Check if we're in SketchUp environment
-    if (typeof window !== 'undefined' && window.sketchup) {
-      setSketchup(window.sketchup);
-    } else {
-      console.warn('SketchUp API not available - running in browser mode');
-    }
+    setSketchup(window.sketchup);
   }, []);
 
-  // Load saved values from SketchUp
   const loadSketchUpValues = useCallback(() => {
-    if (sketchup && typeof sketchup.send_action === 'function') {
+    if (sketchup) {
       sketchup.send_action('loadRoomAnnotationDefaults');
     } else {
       console.warn('SketchUp send_action not available');
     }
   }, [sketchup]);
 
-  // Efeito para registrar a função `handleRubyResponse` no objeto `window`
   useEffect(() => {
+    console.log('############### handleRubyResponse:');
+
     window.handleRubyResponse = (response) => {
       console.log('###############:', response);
       setIsLoading(false);
@@ -72,7 +67,6 @@ function RoomAnnotationInner() {
       }
     };
 
-    // Register function to receive default values from Ruby
     window.handleRoomDefaults = (defaults) => {
       console.log('Loading defaults from SketchUp:', defaults);
       if (defaults.scale) setScale(defaults.scale);
@@ -84,7 +78,8 @@ function RoomAnnotationInner() {
       if (defaults.level) setNivel(defaults.level);
     };
 
-    // Load values when component mounts
+    console.log('############### handleRoomDefaults:');
+
     loadSketchUpValues();
 
     return () => {
