@@ -20,19 +20,17 @@ function RoomAnnotationInner() {
     undefined
   );
 
-  const [scale, setScale] = useState('25');
-  const [font, setFont] = useState('Century Gothic');
-  const [alturaPiso, setAlturaPiso] = useState('0,00');
-  const [mostrarPd, setMostrarPd] = useState('Sim');
-  const [pd, setPd] = useState('0,00');
-  const [mostrarNivel, setMostrarNivel] = useState('Sim');
-  const [nivel, setNivel] = useState('0,00');
+  const [scale, setScale] = useState('');
+  const [font, setFont] = useState('');
+  const [alturaPiso, setAlturaPiso] = useState('');
+  const [mostrarPd, setMostrarPd] = useState('');
+  const [pd, setPd] = useState('');
+  const [mostrarNivel, setMostrarNivel] = useState('');
+  const [nivel, setNivel] = useState('');
 
-  // Estado para feedback da operação
   const [statusMessage, setStatusMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fontes disponíveis (do seu módulo Ruby, mas replicadas aqui para a UI)
   const fontesDisponiveis = [
     'Arial',
     'Arial Narrow',
