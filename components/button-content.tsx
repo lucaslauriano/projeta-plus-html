@@ -3,19 +3,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-// Declarar a interface global para 'window.sketchup'
-// Isso ajuda o TypeScript a reconhecer 'window.sketchup'
-declare global {
-  interface Window {
-    sketchup: {
-      showMessageBox: (message: string) => void;
-      requestModelName: () => void;
-      // Você pode adicionar outras funções aqui se o Ruby as injetar,
-      // como uma função para fechar o diálogo: close: () => void;
-    };
-    receiveModelNameFromRuby?: (modelName: string) => void;
-  }
-}
+// Global types are now defined in types/global.d.ts
 
 export default function Button1ContentPage() {
   const [sketchup, setSketchup] = useState<Window['sketchup'] | undefined>(
