@@ -1,9 +1,11 @@
 declare global {
   interface Window {
     sketchup: {
-      send_action: (action: string, ...args: unknown[]) => void;
       showMessageBox: (message: string) => void;
       requestModelName: () => void;
+      loadRoomAnnotationDefaults: () => void;
+      loadSectionAnnotationDefaults: () => void;
+      executeExtensionFunction: (payload: string) => void;
     };
     handleRubyResponse: (response: {
       success: boolean;

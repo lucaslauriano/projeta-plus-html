@@ -41,12 +41,16 @@ function RoomAnnotationInner() {
   ];
 
   useEffect(() => {
-    setSketchup(window.sketchup);
+    if (typeof window !== 'undefined' && window.sketchup) {
+      setSketchup(window.sketchup);
+    } else {
+      console.warn('SketchUp API not available - running in browser mode');
+    }
   }, []);
 
   const loadSketchUpValues = useCallback(() => {
     if (sketchup) {
-      sketchup.send_action('loadRoomAnnotationDefaults');
+      sketchup.loadRoomAnnotationDefaults();
     } else {
       console.warn('SketchUp send_action not available');
     }
@@ -118,10 +122,7 @@ function RoomAnnotationInner() {
     };
     try {
       if (typeof window !== 'undefined' && sketchup) {
-        sketchup.send_action(
-          'executeExtensionFunction',
-          JSON.stringify(payload)
-        );
+        sketchup.executeExtensionFunction(JSON.stringify(payload));
       } else {
         console.warn('SketchUp API not available - simulating call');
         setStatusMessage('Simulação: SketchUp API não disponível');
@@ -177,6 +178,7 @@ function RoomAnnotationInner() {
               onChange={(e) => setFont(e.target.value)}
               disabled={isLoading}
             >
+              <option value=''>Selecione uma fonte</option>
               {fontesDisponiveis.map((f) => (
                 <option key={f} value={f}>
                   {f}
@@ -215,6 +217,7 @@ function RoomAnnotationInner() {
               onChange={(e) => setMostrarPd(e.target.value)}
               disabled={isLoading}
             >
+              <option value=''>Selecione uma opção</option>
               <option value='Sim'>Sim</option>
               <option value='Não'>Não</option>
             </select>
@@ -250,6 +253,7 @@ function RoomAnnotationInner() {
               onChange={(e) => setMostrarNivel(e.target.value)}
               disabled={isLoading}
             >
+              <option value=''>Selecione uma opção</option>
               <option value='Sim'>Sim</option>
               <option value='Não'>Não</option>
             </select>

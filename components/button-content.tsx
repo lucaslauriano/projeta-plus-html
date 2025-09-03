@@ -16,8 +16,6 @@ export default function Button1ContentPage() {
   }, []);
 
   const sendMessageToSketchUp = () => {
-    console.log('window', window);
-    console.log('sketchup', sketchup);
     // Pegar alguma informação dinâmica, por exemplo, o nome do modelo ativo no SketchUp
     // (Para este exemplo, vamos simular, pois obter o nome do arquivo *diretamente* do JS
     // sem uma API do Ruby seria difícil. O Ruby precisa enviar isso primeiro para o JS).

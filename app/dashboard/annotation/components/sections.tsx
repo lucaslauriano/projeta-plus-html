@@ -1,7 +1,7 @@
 // my-sketchup-login-app/app/dashboard/anotacaocorte/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 
 // Dynamically import the component to avoid SSR issues
@@ -17,22 +17,35 @@ export default function AnnotationSection() {
 }
 
 function AnnotationSectionInner() {
+  const [sketchup, setSketchup] = useState<Window['sketchup'] | undefined>(
+    undefined
+  );
+
   // States para os inputs do formulário
-  const [alturaAnotacoesCm, setAlturaAnotacoesCm] = useState('145');
-  const [escala, setEscala] = useState('25');
+  const [alturaAnotacoesCm, setAlturaAnotacoesCm] = useState('');
+  const [escala, setEscala] = useState('');
 
   // Estado para feedback da operação
   const [statusMessage, setStatusMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load saved values from SketchUp
-  const loadSketchUpValues = () => {
-    if (window.sketchup) {
-      window.sketchup.send_action('loadSectionAnnotationDefaults');
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.sketchup) {
+      setSketchup(window.sketchup);
+    } else {
+      console.warn('SketchUp API not available - running in browser mode');
     }
-  };
+  }, []);
 
-  //  todo
+  // Load saved values from SketchUp
+  const loadSketchUpValues = useCallback(() => {
+    if (sketchup) {
+      sketchup.loadSectionAnnotationDefaults();
+    } else {
+      console.warn('SketchUp API not available');
+    }
+  }, [sketchup]);
+
   useEffect(() => {
     window.handleRubyResponse = (response) => {
       setIsLoading(false);
@@ -68,7 +81,7 @@ function AnnotationSectionInner() {
         delete window.handleSectionDefaults;
       }
     };
-  }, []);
+  }, [sketchup, loadSketchUpValues]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,18 +99,20 @@ function AnnotationSectionInner() {
       args: args,
     };
 
-    if (typeof window !== 'undefined' && window.sketchup) {
-      window.sketchup.send_action(
-        'executeExtensionFunction',
-        JSON.stringify(payload)
-      );
-    } else {
-      console.warn(
-        'Simulando chamada Ruby: Não está no ambiente SketchUp.',
-        payload
-      );
+    try {
+      if (typeof window !== 'undefined' && sketchup) {
+        sketchup.executeExtensionFunction(JSON.stringify(payload));
+      } else {
+        console.warn('SketchUp API not available - simulating call');
+        setStatusMessage('Simulação: SketchUp API não disponível');
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error('Error calling SketchUp API:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      setStatusMessage(`Erro: ${errorMessage}`);
       setIsLoading(false);
-      setStatusMessage('Simulação: Verifique o console para a chamada Ruby.');
     }
   };
 
