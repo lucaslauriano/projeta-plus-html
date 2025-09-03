@@ -12,8 +12,8 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: 'SaaS Billing Dashboard',
-  description: 'Modern SaaS billing with Clerk + Stripe integration',
+  title: 'Projeta Plus Dashboard',
+  description: 'SketchUp integration dashboard for Projeta Plus',
   generator: 'v0.app',
 };
 
@@ -24,50 +24,44 @@ export default function RootLayout({
 }>) {
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-  if (!publishableKey) {
-    return (
-      <html lang='en' className={`${manrope.variable} antialiased`}>
-        <body>
-          <div className='min-h-screen flex items-center justify-center bg-background'>
-            <div className='text-center space-y-4 p-8'>
-              <h1 className='text-2xl font-bold text-destructive'>
-                Configuration Error
-              </h1>
-              <p className='text-muted-foreground max-w-md'>
-                Missing Clerk configuration. Please add your{' '}
-                <code>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> environment
-                variable.
-              </p>
-              <p className='text-sm text-muted-foreground'>
-                Get your keys at{' '}
-                <a
-                  href='https://dashboard.clerk.com'
-                  className='text-primary hover:underline'
-                >
-                  dashboard.clerk.com
-                </a>
-              </p>
-            </div>
-          </div>
-        </body>
-      </html>
-    );
-  }
-
   return (
-    <ClerkProvider publishableKey={publishableKey}>
-      <html lang='en' className={`${manrope.variable} antialiased`}>
-        <body>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang='en' className={`${manrope.variable} antialiased`}>
+      <body>
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+          enableSystem
+          disableTransitionOnChange
+        >
+          {publishableKey ? (
+            <ClerkProvider publishableKey={publishableKey}>
+              {children}
+            </ClerkProvider>
+          ) : (
+            <div className='min-h-screen flex items-center justify-center bg-background'>
+              <div className='text-center space-y-4 p-8'>
+                <h1 className='text-2xl font-bold text-destructive'>
+                  Configuration Error
+                </h1>
+                <p className='text-muted-foreground max-w-md'>
+                  Missing Clerk configuration. Please add your{' '}
+                  <code>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> environment
+                  variable.
+                </p>
+                <p className='text-sm text-muted-foreground'>
+                  Get your keys at{' '}
+                  <a
+                    href='https://dashboard.clerk.com'
+                    className='text-primary hover:underline'
+                  >
+                    dashboard.clerk.com
+                  </a>
+                </p>
+              </div>
+            </div>
+          )}
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

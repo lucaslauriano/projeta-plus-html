@@ -1,9 +1,21 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-// Certifique-se de que types.d.ts está configurado para o TypeScript
+import dynamic from 'next/dynamic';
+
+// Dynamically import the component to avoid SSR issues
+const RoomAnnotationContent = dynamic(
+  () => Promise.resolve(RoomAnnotationInner),
+  {
+    ssr: false,
+  }
+);
 
 export default function RoomAnnotation() {
+  return <RoomAnnotationContent />;
+}
+
+function RoomAnnotationInner() {
   const [sketchup, setSketchup] = useState<Window['sketchup'] | undefined>(
     undefined
   );
@@ -36,8 +48,8 @@ export default function RoomAnnotation() {
 
   // Load saved values from SketchUp
   const loadSketchUpValues = () => {
-    if (window.sketchup) {
-      window.sketchup.send_action('loadRoomAnnotationDefaults');
+    if (sketchup) {
+      sketchup.send_action('loadRoomAnnotationDefaults');
     }
   };
 
@@ -105,11 +117,8 @@ export default function RoomAnnotation() {
       args: args,
     };
 
-    if (typeof window !== 'undefined' && window.sketchup) {
-      window.sketchup.send_action(
-        'executeExtensionFunction',
-        JSON.stringify(payload)
-      );
+    if (typeof window !== 'undefined' && sketchup) {
+      sketchup.send_action('executeExtensionFunction', JSON.stringify(payload));
     } else {
       console.warn(
         'Simulando chamada Ruby: Não está no ambiente SketchUp.',

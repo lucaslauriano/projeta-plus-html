@@ -1,13 +1,19 @@
 // my-sketchup-login-app/app/dashboard/anotacaocorte/page.tsx
-'use client'; // Este componente deve ser um Client Component
+'use client';
 
 import React, { useState, useEffect } from 'react';
-// Certifique-se de que types.d.ts está configurado para o TypeScript
+import dynamic from 'next/dynamic';
+
+// Dynamically import the component to avoid SSR issues
+const AnnotationSectionContent = dynamic(() => Promise.resolve(AnnotationSectionInner), {
+  ssr: false,
+});
 
 export default function AnnotationSection() {
-  // ... (Cole todo o conteúdo do seu app/anotacaocorte/page.tsx anterior aqui)
-  // ... (O código é o mesmo da última resposta, mas agora vive em /dashboard/anotacaocorte)
+  return <AnnotationSectionContent />;
+}
 
+function AnnotationSectionInner() {
   // States para os inputs do formulário
   const [alturaAnotacoesCm, setAlturaAnotacoesCm] = useState('145');
   const [escala, setEscala] = useState('25');
