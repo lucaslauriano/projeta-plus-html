@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 
 // Dynamically import the component to avoid SSR issues
@@ -43,15 +43,22 @@ function RoomAnnotationInner() {
   ];
 
   useEffect(() => {
-    setSketchup(window.sketchup);
+    // Check if we're in SketchUp environment
+    if (typeof window !== 'undefined' && window.sketchup) {
+      setSketchup(window.sketchup);
+    } else {
+      console.warn('SketchUp API not available - running in browser mode');
+    }
   }, []);
 
   // Load saved values from SketchUp
-  const loadSketchUpValues = () => {
-    if (sketchup) {
+  const loadSketchUpValues = useCallback(() => {
+    if (sketchup && typeof sketchup.send_action === 'function') {
       sketchup.send_action('loadRoomAnnotationDefaults');
+    } else {
+      console.warn('SketchUp send_action not available');
     }
-  };
+  }, [sketchup]);
 
   // Efeito para registrar a função `handleRubyResponse` no objeto `window`
   useEffect(() => {
@@ -94,7 +101,7 @@ function RoomAnnotationInner() {
         delete window.handleRoomDefaults;
       }
     };
-  }, []);
+  }, [sketchup, loadSketchUpValues]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,28 +124,27 @@ function RoomAnnotationInner() {
       args: args,
     };
     try {
-      if (typeof window !== 'undefined' && sketchup) {
+      if (
+        typeof window !== 'undefined' &&
+        sketchup &&
+        typeof sketchup.send_action === 'function'
+      ) {
         sketchup.send_action(
           'executeExtensionFunction',
           JSON.stringify(payload)
         );
+      } else {
+        console.warn('SketchUp API not available - simulating call');
+        setStatusMessage('Simulação: SketchUp API não disponível');
+        setIsLoading(false);
       }
     } catch (error) {
-      console.error('Error:', error);
-    } finally {
+      console.error('Error calling SketchUp API:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      setStatusMessage(`Erro: ${errorMessage}`);
       setIsLoading(false);
     }
-
-    // if (typeof window !== 'undefined' && sketchup) {
-    //   sketchup.send_action('executeExtensionFunction', JSON.stringify(payload));
-    // } else {
-    //   console.warn(
-    //     'Simulando chamada Ruby: Não está no ambiente SketchUp.',
-    //     payload
-    //   );
-    //   setIsLoading(false);
-    //   setStatusMessage('Simulação: Verifique o console para a chamada Ruby.');
-    // }
   };
 
   return (
@@ -279,7 +285,7 @@ function RoomAnnotationInner() {
           <div className='col-span-1 md:col-span-2 flex items-center justify-between mt-4'>
             <button
               type='submit'
-              className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50'
+              className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 cursor-pointer'
               disabled={isLoading}
             >
               {isLoading ? 'Executando...' : 'Adicionar Nome do Ambiente'}
