@@ -20,10 +20,6 @@ function RoomAnnotationInner() {
     undefined
   );
 
-  useEffect(() => {
-    setSketchup(window.sketchup);
-  }, []);
-
   const [scale, setScale] = useState('25');
   const [font, setFont] = useState('Century Gothic');
   const [alturaPiso, setAlturaPiso] = useState('0,00');
@@ -45,6 +41,10 @@ function RoomAnnotationInner() {
     'Times New Roman',
     'Verdana',
   ];
+
+  useEffect(() => {
+    setSketchup(window.sketchup);
+  }, []);
 
   // Load saved values from SketchUp
   const loadSketchUpValues = () => {
@@ -116,17 +116,29 @@ function RoomAnnotationInner() {
       function_name: 'add_text_to_selected_instance',
       args: args,
     };
-
-    if (typeof window !== 'undefined' && sketchup) {
-      sketchup.send_action('executeExtensionFunction', JSON.stringify(payload));
-    } else {
-      console.warn(
-        'Simulando chamada Ruby: Não está no ambiente SketchUp.',
-        payload
-      );
+    try {
+      if (typeof window !== 'undefined' && sketchup) {
+        sketchup.send_action(
+          'executeExtensionFunction',
+          JSON.stringify(payload)
+        );
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
       setIsLoading(false);
-      setStatusMessage('Simulação: Verifique o console para a chamada Ruby.');
     }
+
+    // if (typeof window !== 'undefined' && sketchup) {
+    //   sketchup.send_action('executeExtensionFunction', JSON.stringify(payload));
+    // } else {
+    //   console.warn(
+    //     'Simulando chamada Ruby: Não está no ambiente SketchUp.',
+    //     payload
+    //   );
+    //   setIsLoading(false);
+    //   setStatusMessage('Simulação: Verifique o console para a chamada Ruby.');
+    // }
   };
 
   return (
