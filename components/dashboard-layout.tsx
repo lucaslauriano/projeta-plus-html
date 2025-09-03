@@ -94,7 +94,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           {sidebarExpanded && (
             <Link
               href='/dashboard'
-              className='flex items-center space-x-2 w-full'
+              className='flex items-center space-x-2 w-full cursor-pointer'
             >
               <HousePlus className='h-6 w-6 mt-1 font-bold text-lime-600' />
               <h1 className='text-xl font-bold font-sans flex mt-2'>
