@@ -124,11 +124,7 @@ function RoomAnnotationInner() {
       args: args,
     };
     try {
-      if (
-        typeof window !== 'undefined' &&
-        sketchup &&
-        typeof sketchup.send_action === 'function'
-      ) {
+      if (typeof window !== 'undefined' && sketchup) {
         sketchup.send_action(
           'executeExtensionFunction',
           JSON.stringify(payload)
