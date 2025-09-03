@@ -7,7 +7,7 @@ import { UserButton, useUser } from '@clerk/nextjs';
 import { useSubscription } from '@clerk/nextjs/experimental';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { HousePlus, Plus, Home, Menu, Settings, X } from 'lucide-react';
+import { HousePlus, Plus, Home, Menu, Settings } from 'lucide-react';
 import { AiTwotoneLayout } from 'react-icons/ai';
 import { HiOutlineLightBulb } from 'react-icons/hi';
 import { AiTwotoneProfile } from 'react-icons/ai';
@@ -19,6 +19,7 @@ import { PiSquareHalfBottomDuotone } from 'react-icons/pi';
 import { PiPlugDuotone } from 'react-icons/pi';
 import { PiArmchairDuotone } from 'react-icons/pi';
 import { TbKeyframes } from 'react-icons/tb';
+import { ThemeToggleButton } from '@/components/ui/theme-toggle-button';
 
 const navigation = [
   { name: 'Sketchup Inteligente', href: '/dashboard/inteli-sket', icon: Home },
@@ -63,7 +64,6 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const { user } = useUser();
   const { data } = useSubscription();
@@ -73,24 +73,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className='min-h-screen bg-background'>
-      {/* Mobile sidebar overlay */}
-      {sidebarOpen && (
-        <div
-          className='fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden'
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
       {/* Sidebar */}
       <div
         className={cn(
           'fixed inset-y-0 left-0 z-50 flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out',
-          sidebarExpanded ? 'w-64' : 'w-16',
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          sidebarExpanded ? 'w-64' : 'w-16'
         )}
       >
         {/* Sidebar header */}
-        <div className='flex h-16 items-center justify-between px-4 border-b border-sidebar-border'>
+        <div className='flex h-16 items-center justify-between px-4 border-b border-sidebar-border '>
           {sidebarExpanded && (
             <Link
               href='/dashboard'
@@ -107,29 +98,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <Plus className='h-8 w-8 text-sidebar-primary mx-auto' />
           )}
 
-          {/* Desktop toggle */}
+          {/* Toggle */}
           <Button
             variant='ghost'
             size='sm'
-            className='hidden lg:flex text-sidebar-foreground hover:bg-sidebar-accent'
+            className='text-sidebar-foreground hover:bg-sidebar-accent'
             onClick={() => setSidebarExpanded(!sidebarExpanded)}
+            onMouseEnter={() => setSidebarExpanded(true)}
           >
             <Menu className='h-4 w-4' />
-          </Button>
-
-          {/* Mobile close */}
-          <Button
-            variant='ghost'
-            size='sm'
-            className='lg:hidden text-sidebar-foreground hover:bg-sidebar-accent'
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X className='h-4 w-4' />
           </Button>
         </div>
 
         {/* Navigation */}
-        <nav className='flex-1 space-y-1 p-2'>
+        <nav className='flex-1 space-y-1 p-2 '>
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -192,26 +174,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Main content */}
       <div
         className={cn(
-          'lg:pl-64 transition-all duration-300',
-          !sidebarExpanded && 'lg:pl-16'
+          'transition-all duration-300',
+          sidebarExpanded ? 'pl-0' : 'pl-16'
         )}
       >
         {/* Top bar */}
         <div className='sticky top-0 z-30 flex h-16 items-center gap-x-4 border-b bg-background px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8'>
-          <Button
-            variant='ghost'
-            size='sm'
-            className='lg:hidden'
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu className='h-5 w-5' />
-            <span className='sr-only'>Open sidebar</span>
-          </Button>
-
           <div className='flex flex-1 gap-x-4 self-stretch lg:gap-x-6'>
             <div className='flex flex-1'></div>
-            <div className='flex items-center gap-x-4 lg:gap-x-6'>
-              {/* Additional header content can go here */}
+            <div className='flex items-center justify-end gap-x-4 lg:gap-x-6'>
+              <ThemeToggleButton />
             </div>
           </div>
         </div>

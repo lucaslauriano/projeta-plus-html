@@ -16,6 +16,7 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react';
+import Button1ContentPage from '@/components/button-content';
 
 export default function DashboardPage() {
   return (
@@ -35,6 +36,7 @@ export default function DashboardPage() {
 
       {/* Stats Cards */}
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
+        <Button1ContentPage />
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium font-serif'>
@@ -49,7 +51,6 @@ export default function DashboardPage() {
             </p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='text-sm font-medium font-serif'>

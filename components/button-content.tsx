@@ -1,6 +1,7 @@
 // Suponha que este código esteja em app/button1/page.tsx ou em qualquer outro Client Component
 'use client';
 
+import { Card, CardHeader } from '@/components/ui/card';
 import React, { useEffect, useState } from 'react';
 
 // Global types are now defined in types/global.d.ts
@@ -67,33 +68,22 @@ export default function Button1ContentPage() {
   }, []); // Executa apenas uma vez na montagem
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-blue-100 p-4'>
-      <div className='bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center'>
-        <h1 className='text-4xl font-extrabold text-blue-700 mb-4'>
-          Conteúdo do Botão 1
-        </h1>
-        <p className='text-gray-700'>
-          Esta é a funcionalidade específica do Botão 1.
-        </p>
+    <Card className='p-5 w-full'>
+      <CardHeader>Teste de conexão com o SketchUp</CardHeader>
 
-        <button
-          onClick={sendMessageToSketchUp}
-          className='mt-6 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded'
-        >
-          Enviar Mensagem para SketchUp
-        </button>
+      <button
+        onClick={sendMessageToSketchUp}
+        className='mt-6 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded'
+      >
+        Enviar Mensagem para SketchUp
+      </button>
 
-        <button
-          onClick={showSketchUpModelInfo}
-          className='mt-4 bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded'
-        >
-          Pedir Nome do Modelo ao SketchUp
-        </button>
-
-        <p className='mt-4 text-sm text-gray-500'>
-          Este diálogo é independente dos outros.
-        </p>
-      </div>
-    </div>
+      <button
+        onClick={showSketchUpModelInfo}
+        className='mt-4 bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded'
+      >
+        Pedir Nome do Modelo ao SketchUp
+      </button>
+    </Card>
   );
 }
