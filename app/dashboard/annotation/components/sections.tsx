@@ -16,6 +16,13 @@ export default function AnnotationSection() {
   const [statusMessage, setStatusMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Load saved values from SketchUp
+  const loadSketchUpValues = () => {
+    if (window.sketchup) {
+      window.sketchup.send_action('loadSectionAnnotationDefaults');
+    }
+  };
+
   //  todo
   useEffect(() => {
     window.handleRubyResponse = (response) => {
@@ -29,11 +36,27 @@ export default function AnnotationSection() {
       }
     };
 
+    // Register function to receive default values from Ruby
+    window.handleSectionDefaults = (defaults) => {
+      console.log('Loading section defaults from SketchUp:', defaults);
+      if (defaults.line_height_cm)
+        setAlturaAnotacoesCm(defaults.line_height_cm);
+      if (defaults.scale_factor) setEscala(defaults.scale_factor);
+    };
+
+    // Load values when component mounts
+    loadSketchUpValues();
+
     return () => {
       if (window.handleRubyResponse) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
         delete window.handleRubyResponse;
+      }
+      if (window.handleSectionDefaults) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        delete window.handleSectionDefaults;
       }
     };
   }, []);

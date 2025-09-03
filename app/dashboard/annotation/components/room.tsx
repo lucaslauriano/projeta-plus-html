@@ -4,6 +4,14 @@ import React, { useState, useEffect } from 'react';
 // Certifique-se de que types.d.ts está configurado para o TypeScript
 
 export default function RoomAnnotation() {
+  const [sketchup, setSketchup] = useState<Window['sketchup'] | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    setSketchup(window.sketchup);
+  }, []);
+
   const [scale, setScale] = useState('25');
   const [font, setFont] = useState('Century Gothic');
   const [alturaPiso, setAlturaPiso] = useState('0,00');
@@ -26,10 +34,17 @@ export default function RoomAnnotation() {
     'Verdana',
   ];
 
+  // Load saved values from SketchUp
+  const loadSketchUpValues = () => {
+    if (window.sketchup) {
+      window.sketchup.send_action('loadRoomAnnotationDefaults');
+    }
+  };
+
   // Efeito para registrar a função `handleRubyResponse` no objeto `window`
   useEffect(() => {
     window.handleRubyResponse = (response) => {
-      console.log('Resposta Ruby:', response);
+      console.log('###############:', response);
       setIsLoading(false);
       if (response.success) {
         setStatusMessage(`Sucesso: ${response.message}`);
@@ -40,11 +55,31 @@ export default function RoomAnnotation() {
       }
     };
 
+    // Register function to receive default values from Ruby
+    window.handleRoomDefaults = (defaults) => {
+      console.log('Loading defaults from SketchUp:', defaults);
+      if (defaults.scale) setScale(defaults.scale);
+      if (defaults.font) setFont(defaults.font);
+      if (defaults.floor_height) setAlturaPiso(defaults.floor_height);
+      if (defaults.show_pd) setMostrarPd(defaults.show_pd);
+      if (defaults.pd) setPd(defaults.pd);
+      if (defaults.show_level) setMostrarNivel(defaults.show_level);
+      if (defaults.level) setNivel(defaults.level);
+    };
+
+    // Load values when component mounts
+    loadSketchUpValues();
+
     return () => {
       if (window.handleRubyResponse) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
         delete window.handleRubyResponse;
+      }
+      if (window.handleRoomDefaults) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        delete window.handleRoomDefaults;
       }
     };
   }, []);
