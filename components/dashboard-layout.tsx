@@ -92,13 +92,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Sidebar header */}
         <div className='flex h-16 items-center justify-between px-4 border-b border-sidebar-border'>
           {sidebarExpanded && (
-            <div className='flex items-center space-x-2 w-full'>
+            <Link
+              href='/dashboard'
+              className='flex items-center space-x-2 w-full'
+            >
               <HousePlus className='h-6 w-6 mt-1 font-bold text-lime-600' />
               <h1 className='text-xl font-bold font-sans flex mt-2'>
                 Projeta{' '}
                 <Plus className='h-4 w-4 mt-1 font-bold text-lime-600' />
               </h1>
-            </div>
+            </Link>
           )}
           {!sidebarExpanded && (
             <Plus className='h-8 w-8 text-sidebar-primary mx-auto' />
