@@ -53,7 +53,7 @@ export default function Button1ContentPage() {
     // Neste exemplo, vamos pedir para o SketchUp enviar o nome do modelo para o JS,
     // e o JS então exibirá. Isso requer um callback Ruby->JS e um JS->Ruby.
     if (sketchup) {
-      sketchup.loadGlobalSettings();
+      sketchup.requestAllSettings();
       console.log('Solicitando nome do modelo ao SketchUp...');
     } else {
       console.warn(
@@ -81,7 +81,7 @@ export default function Button1ContentPage() {
   // Add here reaquest all settings from Ruby
   useEffect(() => {
     if (sketchup) {
-      sketchup.loadGlobalSettings();
+      sketchup.requestAllSettings();
       console.log('Loaded global settings from Ruby');
     } else {
       console.warn(
