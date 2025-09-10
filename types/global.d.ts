@@ -30,6 +30,7 @@ declare global {
       scale_factor?: string;
     }) => void;
     receiveModelNameFromRuby?: (modelName: string) => void;
+    receiveAllSettingsFromRuby?: (settings: GlobalSettings) => void;
   }
 }
 

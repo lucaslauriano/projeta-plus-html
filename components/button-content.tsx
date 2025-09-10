@@ -2,6 +2,7 @@
 'use client';
 
 import { Card, CardHeader } from '@/components/ui/card';
+import { GlobalSettings } from '@/types/global';
 import React, { useEffect, useState } from 'react';
 
 // Global types are now defined in types/global.d.ts
@@ -78,18 +79,21 @@ export default function Button1ContentPage() {
     };
   }, []);
 
-  // Add here reaquest all settings from Ruby
+  // Este useEffect ouvirá por mensagens que o Ruby envia para o JS
   useEffect(() => {
-    if (sketchup) {
-      sketchup.requestAllSettings();
-      console.log('Loaded global settings from Ruby');
-    } else {
-      console.warn(
-        'Não está rodando no ambiente SketchUp. window.sketchup não disponível.'
-      );
-      alert('Simulando carregamento de configurações globais do SketchUp.');
-    }
-  }, [sketchup]);
+    // Definimos uma função global que o Ruby pode chamar via execute_script
+    window.receiveAllSettingsFromRuby = (settings: GlobalSettings) => {
+      alert(`Configurações do SketchUp: ${settings}`);
+      console.log('Configurações do SketchUp recebidas do Ruby:', settings);
+    };
+
+    // Cleanup quando o componente é desmontado
+    return () => {
+      if (window.receiveAllSettingsFromRuby) {
+        delete window.receiveAllSettingsFromRuby;
+      }
+    };
+  }, []);
 
   return (
     <Card className='p-5 w-full'>
