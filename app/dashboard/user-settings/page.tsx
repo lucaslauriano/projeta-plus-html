@@ -106,7 +106,7 @@ export default function GlobalSettingsPage() {
         setSettings((prev) => (prev ? { ...prev, [key]: value } : null));
       }
     },
-    []
+    [sketchup]
   );
 
   const handleSelectFolder = useCallback(
@@ -130,7 +130,7 @@ export default function GlobalSettingsPage() {
         );
       }
     },
-    []
+    [sketchup]
   );
 
   if (isLoading || !settings) {
