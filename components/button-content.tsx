@@ -49,6 +49,19 @@ export default function Button1ContentPage() {
     }
   };
 
+  const loadGlobalSettings = () => {
+    // Neste exemplo, vamos pedir para o SketchUp enviar o nome do modelo para o JS,
+    // e o JS então exibirá. Isso requer um callback Ruby->JS e um JS->Ruby.
+    if (sketchup) {
+      sketchup.requestAllSettings();
+      console.log('Solicitando nome do modelo ao SketchUp...');
+    } else {
+      console.warn(
+        'Não está rodando no ambiente SketchUp. window.sketchup não disponível.'
+      );
+      alert('Simulando solicitação de nome do modelo ao SketchUp.');
+    }
+  };
   // Este useEffect ouvirá por mensagens que o Ruby envia para o JS
   useEffect(() => {
     // Definimos uma função global que o Ruby pode chamar via execute_script
@@ -63,7 +76,20 @@ export default function Button1ContentPage() {
         delete window.receiveModelNameFromRuby;
       }
     };
-  }, []); // Executa apenas uma vez na montagem
+  }, []);
+
+  // Add here reaquest all settings from Ruby
+  useEffect(() => {
+    if (sketchup) {
+      sketchup.loadGlobalSettings();
+      console.log('Loaded global settings from Ruby');
+    } else {
+      console.warn(
+        'Não está rodando no ambiente SketchUp. window.sketchup não disponível.'
+      );
+      alert('Simulando carregamento de configurações globais do SketchUp.');
+    }
+  }, [sketchup]);
 
   return (
     <Card className='p-5 w-full'>
@@ -80,7 +106,13 @@ export default function Button1ContentPage() {
         onClick={showSketchUpModelInfo}
         className='mt-4 bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded'
       >
-        Pedir Nome do Modelo ao SketchUp
+        Modelo ao SketchUp
+      </button>
+      <button
+        onClick={loadGlobalSettings}
+        className='mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+      >
+        Carregar Configurações Globais do SketchUp
       </button>
     </Card>
   );

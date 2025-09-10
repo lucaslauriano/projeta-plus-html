@@ -1,4 +1,5 @@
 import { DashboardLayout } from '@/components/dashboard-layout';
+import { ToastContainer } from 'react-toastify';
 
 export default function DashboardLayoutPage({
   children,
@@ -7,8 +8,8 @@ export default function DashboardLayoutPage({
 }>) {
   return (
     <DashboardLayout>
-      <h1>Dashboard</h1>
       {children}
+      <ToastContainer />
     </DashboardLayout>
   );
 }

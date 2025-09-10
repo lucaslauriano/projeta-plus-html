@@ -64,12 +64,10 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const { user } = useUser();
   const { data } = useSubscription();
   const pathname = usePathname();
-
-  console.log('Subscription data:', data);
 
   return (
     <div className='min-h-screen bg-background'>

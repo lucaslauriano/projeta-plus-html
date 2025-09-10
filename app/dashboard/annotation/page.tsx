@@ -3,37 +3,62 @@
 import React, { useState } from 'react';
 import RoomAnnotation from '@/app/dashboard/annotation/components/room';
 import AnnotationSection from '@/app/dashboard/annotation/components/sections';
+import PageHeader from '@/components/page-header';
+import { ChevronDownIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const tabs = [
+  { name: 'Nome do Ambiente', href: '#', current: false },
+  { name: 'Anotações de Corte', href: '#', current: true },
+];
 
 export default function AnnotationDashboardPage() {
-  const [activeTab, setActiveTab] = useState<'room' | 'section'>('room');
+  const [activeTab, setActiveTab] = useState<'room' | 'section'>('section');
 
   return (
-    <div className='flex flex-col w-full gap-4 justify-center items-center'>
-      <h1 className='text-3xl font-bold mb-4'>Annotation</h1>
-      <div className='max-w-4xl w-full bg-white shadow-md rounded-lg'>
-        <div className='flex border-b border-gray-200'>
-          <button
-            className={`flex-1 py-2 px-4 text-center ${
-              activeTab === 'room'
-                ? 'border-b-2 border-blue-500 text-blue-500'
-                : 'text-gray-500 hover:text-blue-500'
-            }`}
-            onClick={() => setActiveTab('room')}
-          >
-            Room
-          </button>
-          <button
-            className={`flex-1 py-2 px-4 text-center ${
-              activeTab === 'section'
-                ? 'border-b-2 border-blue-500 text-blue-500'
-                : 'text-gray-500 hover:text-blue-500'
-            }`}
-            onClick={() => setActiveTab('section')}
-          >
-            Section
-          </button>
+    <div className='flex flex-col w-full gap-4 justify-start items-start'>
+      <PageHeader
+        title='Annotation'
+        breadcrumbs={[
+          {
+            name: 'Dashboard',
+            href: '/dashboard',
+          },
+          {
+            name: 'Annotation',
+            href: '/dashboard/annotation',
+          },
+        ]}
+      />
+
+      <div className='w-full'>
+        <div className='border-b border-gray-200 dark:border-gray-700 flex justify-center items-center'>
+          <nav aria-label='Content tabs' className='-mb-px flex space-x-8'>
+            <button
+              onClick={() => setActiveTab('room')}
+              className={cn(
+                activeTab === 'room'
+                  ? 'border-lime-500 text-lime-600 dark:border-lime-400 dark:text-lime-400'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-300',
+                'border-b-2 px-1 py-4 text-sm font-medium transition-colors whitespace-nowrap'
+              )}
+            >
+              Nome do Ambiente
+            </button>
+            <button
+              onClick={() => setActiveTab('section')}
+              className={cn(
+                activeTab === 'section'
+                  ? 'border-lime-600 text-lime-600 dark:border--400 dark:text-lime-400'
+                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-300',
+                'border-b-2 px-1 py-4 text-sm font-medium transition-colors whitespace-nowrap'
+              )}
+            >
+              Anotações de Corte
+            </button>
+          </nav>
         </div>
-        <div className=''>
+        <div className='mt-6'>
           {activeTab === 'room' && <RoomAnnotation />}
           {activeTab === 'section' && <AnnotationSection />}
         </div>

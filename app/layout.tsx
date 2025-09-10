@@ -25,8 +25,8 @@ export default function RootLayout({
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
   return (
-    <html lang='en' className={`${manrope.variable} antialiased`}>
-      <body>
+    <html lang='en' className={`${manrope.variable} antialiased h-full`}>
+      <body className='h-full'>
         <ThemeProvider
           attribute='class'
           defaultTheme='system'

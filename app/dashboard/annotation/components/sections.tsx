@@ -40,7 +40,14 @@ function AnnotationSectionInner() {
   // Load saved values from SketchUp
   const loadSketchUpValues = useCallback(() => {
     if (sketchup) {
-      sketchup.loadSectionAnnotationDefaults();
+      // Try the direct method call first, fallback to action callback
+      if (typeof sketchup.loadSectionAnnotationDefaults === 'function') {
+        sketchup.loadSectionAnnotationDefaults();
+      } else {
+        // Fallback: trigger the action callback directly
+        console.log('Direct method not available, using action callback');
+        window.location.href = 'skp:loadSectionAnnotationDefaults@';
+      }
     } else {
       console.warn('SketchUp API not available');
     }
@@ -101,10 +108,19 @@ function AnnotationSectionInner() {
 
     try {
       if (typeof window !== 'undefined' && sketchup) {
-        sketchup.executeExtensionFunction(JSON.stringify(payload));
+        if (typeof sketchup.executeExtensionFunction === 'function') {
+          sketchup.executeExtensionFunction(JSON.stringify(payload));
+        } else {
+          console.log(
+            'Direct method not available, using action callback URL scheme'
+          );
+          window.location.href = `skp:executeExtensionFunction@${encodeURIComponent(
+            JSON.stringify(payload)
+          )}`;
+        }
       } else {
         console.warn('SketchUp API not available - simulating call');
-        setStatusMessage('Simulação: SketchUp API não disponível');
+        setStatusMessage('SketchUp API não disponível');
         setIsLoading(false);
       }
     } catch (error) {
@@ -119,9 +135,6 @@ function AnnotationSectionInner() {
   return (
     <div className='p-4'>
       <div className='w-full max-w-md mx-auto'>
-        <h1 className='text-3xl font-bold mb-6 text-center text-gray-800'>
-          Criar Anotações de Corte
-        </h1>
         <form onSubmit={handleSubmit}>
           <div className='mb-4'>
             <label
@@ -160,7 +173,7 @@ function AnnotationSectionInner() {
           <div className='flex items-center justify-between'>
             <button
               type='submit'
-              className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50'
+              className='bg-lime-600 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50'
               disabled={isLoading}
             >
               {isLoading ? 'Executando...' : 'Gerar Anotações'}

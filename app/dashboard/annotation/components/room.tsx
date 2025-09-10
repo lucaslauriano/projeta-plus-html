@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import { toast } from 'react-toastify';
 
-// Dynamically import the component to avoid SSR issues
 const RoomAnnotationContent = dynamic(
   () => Promise.resolve(RoomAnnotationInner),
   {
@@ -50,24 +50,24 @@ function RoomAnnotationInner() {
 
   const loadSketchUpValues = useCallback(() => {
     if (sketchup) {
-      sketchup.loadRoomAnnotationDefaults();
+      if (typeof sketchup.loadRoomAnnotationDefaults === 'function') {
+        sketchup.loadRoomAnnotationDefaults();
+      } else {
+        console.log('Direct method not available, using action callback');
+        window.location.href = 'skp:loadRoomAnnotationDefaults@';
+      }
     } else {
-      console.warn('SketchUp send_action not available');
+      console.warn('SketchUp API not available');
     }
   }, [sketchup]);
 
   useEffect(() => {
-    console.log('############### handleRubyResponse:');
-
     window.handleRubyResponse = (response) => {
-      console.log('###############:', response);
       setIsLoading(false);
       if (response.success) {
         setStatusMessage(`Sucesso: ${response.message}`);
-        console.log('Resposta Ruby Sucesso:', response.message);
       } else {
         setStatusMessage(`Erro: ${response.message}`);
-        console.error('Resposta Ruby Erro:', response.message);
       }
     };
 
@@ -81,8 +81,6 @@ function RoomAnnotationInner() {
       if (defaults.show_level) setMostrarNivel(defaults.show_level);
       if (defaults.level) setNivel(defaults.level);
     };
-
-    console.log('############### handleRoomDefaults:');
 
     loadSketchUpValues();
 
@@ -122,10 +120,20 @@ function RoomAnnotationInner() {
     };
     try {
       if (typeof window !== 'undefined' && sketchup) {
-        sketchup.executeExtensionFunction(JSON.stringify(payload));
+        if (typeof sketchup.executeExtensionFunction === 'function') {
+          sketchup.executeExtensionFunction(JSON.stringify(payload));
+        } else {
+          console.log(
+            'Direct method not available, using action callback URL scheme'
+          );
+          window.location.href = `skp:executeExtensionFunction@${encodeURIComponent(
+            JSON.stringify(payload)
+          )}`;
+        }
       } else {
         console.warn('SketchUp API not available - simulating call');
-        setStatusMessage('Simulação: SketchUp API não disponível');
+        //  setStatusMessage('Simulação: SketchUp API não disponível');
+        toast.error('Simulação: SketchUp API não disponível');
         setIsLoading(false);
       }
     } catch (error) {
@@ -140,9 +148,6 @@ function RoomAnnotationInner() {
   return (
     <div className='p-4'>
       <div className='w-full max-w-2xl mx-auto'>
-        <h1 className='text-3xl font-bold mb-6 text-center text-gray-800'>
-          Adicionar Nome do Ambiente
-        </h1>
         <form
           onSubmit={handleSubmit}
           className='grid grid-cols-1 md:grid-cols-2 gap-4'
@@ -278,7 +283,7 @@ function RoomAnnotationInner() {
           <div className='col-span-1 md:col-span-2 flex items-center justify-between mt-4'>
             <button
               type='submit'
-              className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 cursor-pointer'
+              className='bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 cursor-pointer'
               disabled={isLoading}
             >
               {isLoading ? 'Executando...' : 'Adicionar Nome do Ambiente'}
