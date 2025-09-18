@@ -4,6 +4,21 @@ import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { toast } from 'react-toastify';
 
+interface RoomDefaults {
+  floor_height?: string;
+  show_ceilling_height?: string;
+  ceilling_height?: string;
+  show_level?: string;
+  level?: string;
+}
+
+interface GlobalSettings {
+  font?: string;
+  scale_numerator?: number;
+  scale_denominator?: number;
+  floor_level?: number;
+}
+
 const RoomAnnotationContent = dynamic(
   () => Promise.resolve(RoomAnnotationInner),
   {
@@ -20,25 +35,22 @@ function RoomAnnotationInner() {
     undefined
   );
 
+  // Global settings from backend
   const [scale, setScale] = useState('');
   const [font, setFont] = useState('');
-  const [alturaPiso, setAlturaPiso] = useState('');
-  const [mostrarPd, setMostrarPd] = useState('');
-  const [pd, setPd] = useState('');
-  const [mostrarNivel, setMostrarNivel] = useState('');
-  const [nivel, setNivel] = useState('');
+
+  // Room annotation specific fields
+  const [environmentName, setEnvironmentName] = useState('');
+  const [floorHeight, setFloorHeight] = useState('');
+  const [showCeillingHeight, setShowCeillingHeight] = useState('');
+  const [ceillingHeight, setCeillingHeight] = useState('');
+  const [showLevel, setShowLevel] = useState('');
+  const [level, setLevel] = useState('');
 
   const [statusMessage, setStatusMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const fontesDisponiveis = [
-    'Arial',
-    'Arial Narrow',
-    'Century Gothic',
-    'Helvetica',
-    'Times New Roman',
-    'Verdana',
-  ];
+  // Available fonts are now managed by global settings from backend
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.sketchup) {
@@ -71,18 +83,42 @@ function RoomAnnotationInner() {
       }
     };
 
-    window.handleRoomDefaults = (defaults) => {
+    window.handleRoomDefaults = (defaults: RoomDefaults) => {
       console.log('Loading defaults from SketchUp:', defaults);
-      if (defaults.scale) setScale(defaults.scale);
-      if (defaults.font) setFont(defaults.font);
-      if (defaults.floor_height) setAlturaPiso(defaults.floor_height);
-      if (defaults.show_pd) setMostrarPd(defaults.show_pd);
-      if (defaults.pd) setPd(defaults.pd);
-      if (defaults.show_level) setMostrarNivel(defaults.show_level);
-      if (defaults.level) setNivel(defaults.level);
+      if (defaults.floor_height) setFloorHeight(defaults.floor_height);
+      if (defaults.show_ceilling_height)
+        setShowCeillingHeight(defaults.show_ceilling_height);
+      if (defaults.ceilling_height) setCeillingHeight(defaults.ceilling_height);
+      if (defaults.show_level) setShowLevel(defaults.show_level);
+      if (defaults.level) setLevel(defaults.level);
     };
 
+    window.handleGlobalSettings = (settings: GlobalSettings) => {
+      console.log('Loading global settings from SketchUp:', settings);
+      if (settings.font) setFont(settings.font);
+      // Calculate scale from numerator/denominator
+      if (settings.scale_numerator && settings.scale_denominator) {
+        const scaleValue =
+          settings.scale_denominator / settings.scale_numerator;
+        setScale(scaleValue.toString());
+      }
+      // Use floor level from global settings as default if not set
+      if (settings.floor_level && !floorHeight) {
+        setFloorHeight(settings.floor_level.toString().replace('.', ','));
+      }
+    };
+
+    // Load both room defaults and global settings
     loadSketchUpValues();
+
+    // Load global settings for scale and font
+    if (sketchup) {
+      if (typeof sketchup.loadGlobalSettings === 'function') {
+        sketchup.loadGlobalSettings();
+      } else {
+        window.location.href = 'skp:loadGlobalSettings@';
+      }
+    }
 
     return () => {
       if (window.handleRubyResponse) {
@@ -95,8 +131,13 @@ function RoomAnnotationInner() {
         // @ts-expect-error
         delete window.handleRoomDefaults;
       }
+      if (window.handleGlobalSettings) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        delete window.handleGlobalSettings;
+      }
     };
-  }, [sketchup, loadSketchUpValues]);
+  }, [sketchup, loadSketchUpValues, floorHeight]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,18 +145,19 @@ function RoomAnnotationInner() {
     setIsLoading(true);
 
     const args = {
-      scale_str: scale,
+      enviroment_name: environmentName,
+      scale: parseFloat(scale) || 25.0,
       font: font,
-      altura_piso_str: alturaPiso,
-      mostrar_pd: mostrarPd,
-      pd_str: pd,
-      mostrar_nivel: mostrarNivel,
-      nivel_str: nivel,
+      floor_height: floorHeight,
+      show_ceilling_height: showCeillingHeight,
+      ceilling_height: ceillingHeight,
+      show_level: showLevel,
+      level: level,
     };
 
     const payload = {
-      module_name: 'RoomAnnotation',
-      function_name: 'add_text_to_selected_instance',
+      module_name: 'ProjetaPlus::Modules::ProRoomAnnotation',
+      function_name: 'start_interactive_annotation',
       args: args,
     };
     try {
@@ -154,72 +196,52 @@ function RoomAnnotationInner() {
         >
           <div>
             <label
-              htmlFor='scale'
+              htmlFor='environmentName'
               className='block text-gray-700 text-sm font-bold mb-2'
             >
-              Escala do Texto:
+              Nome do Ambiente:
             </label>
             <input
-              type='number'
-              id='scale'
+              type='text'
+              id='environmentName'
               className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={scale}
-              onChange={(e) => setScale(e.target.value)}
+              value={environmentName}
+              onChange={(e) => setEnvironmentName(e.target.value)}
               required
               disabled={isLoading}
+              placeholder='Ex: Sala de Estar'
             />
           </div>
           <div>
             <label
-              htmlFor='font'
-              className='block text-gray-700 text-sm font-bold mb-2'
-            >
-              Fonte:
-            </label>
-            <select
-              id='font'
-              className='shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={font}
-              onChange={(e) => setFont(e.target.value)}
-              disabled={isLoading}
-            >
-              <option value=''>Selecione uma fonte</option>
-              {fontesDisponiveis.map((f) => (
-                <option key={f} value={f}>
-                  {f}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label
-              htmlFor='alturaPiso'
+              htmlFor='floorHeight'
               className='block text-gray-700 text-sm font-bold mb-2'
             >
               Altura Piso (Z) (m):
             </label>
             <input
               type='text'
-              id='alturaPiso'
+              id='floorHeight'
               className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={alturaPiso}
-              onChange={(e) => setAlturaPiso(e.target.value)}
+              value={floorHeight}
+              onChange={(e) => setFloorHeight(e.target.value)}
               required
               disabled={isLoading}
+              placeholder='0,00'
             />
           </div>
           <div>
             <label
-              htmlFor='mostrarPd'
+              htmlFor='showCeillingHeight'
               className='block text-gray-700 text-sm font-bold mb-2'
             >
-              Mostrar PD?:
+              Mostrar Pé Direito?:
             </label>
             <select
-              id='mostrarPd'
+              id='showCeillingHeight'
               className='shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={mostrarPd}
-              onChange={(e) => setMostrarPd(e.target.value)}
+              value={showCeillingHeight}
+              onChange={(e) => setShowCeillingHeight(e.target.value)}
               disabled={isLoading}
             >
               <option value=''>Selecione uma opção</option>
@@ -229,33 +251,34 @@ function RoomAnnotationInner() {
           </div>
           <div>
             <label
-              htmlFor='pd'
+              htmlFor='ceillingHeight'
               className='block text-gray-700 text-sm font-bold mb-2'
             >
-              PD (m):
+              Pé Direito (m):
             </label>
             <input
               type='text'
-              id='pd'
+              id='ceillingHeight'
               className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={pd}
-              onChange={(e) => setPd(e.target.value)}
+              value={ceillingHeight}
+              onChange={(e) => setCeillingHeight(e.target.value)}
               required
               disabled={isLoading}
+              placeholder='2,50'
             />
           </div>
           <div>
             <label
-              htmlFor='mostrarNivel'
+              htmlFor='showLevel'
               className='block text-gray-700 text-sm font-bold mb-2'
             >
               Mostrar Nível?:
             </label>
             <select
-              id='mostrarNivel'
+              id='showLevel'
               className='shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={mostrarNivel}
-              onChange={(e) => setMostrarNivel(e.target.value)}
+              value={showLevel}
+              onChange={(e) => setShowLevel(e.target.value)}
               disabled={isLoading}
             >
               <option value=''>Selecione uma opção</option>
@@ -265,19 +288,20 @@ function RoomAnnotationInner() {
           </div>
           <div>
             <label
-              htmlFor='nivel'
+              htmlFor='level'
               className='block text-gray-700 text-sm font-bold mb-2'
             >
               Nível Piso:
             </label>
             <input
               type='text'
-              id='nivel'
+              id='level'
               className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={nivel}
-              onChange={(e) => setNivel(e.target.value)}
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
               required
               disabled={isLoading}
+              placeholder='0,00'
             />
           </div>
           <div className='col-span-1 md:col-span-2 flex items-center justify-between mt-4'>
@@ -286,7 +310,7 @@ function RoomAnnotationInner() {
               className='bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 cursor-pointer'
               disabled={isLoading}
             >
-              {isLoading ? 'Executando...' : 'Adicionar Nome do Ambiente'}
+              {isLoading ? 'Executando...' : 'Iniciar Anotação de Ambiente'}
             </button>
             {statusMessage && (
               <p
