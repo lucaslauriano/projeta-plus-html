@@ -30,8 +30,17 @@ export default function RoomAnnotation() {
   return <RoomAnnotationContent />;
 }
 
+interface SketchUpBridge {
+  loadRoomAnnotationDefaults?: () => void;
+  loadGlobalSettings?: () => void;
+  executeExtensionFunction?: (payload: string) => void;
+  // Add other SketchUp API methods as needed
+}
+
+// Extend the Window interface to include sketchup and handler functions
+
 function RoomAnnotationInner() {
-  const [sketchup, setSketchup] = useState<Window['sketchup'] | undefined>(
+  const [sketchup, setSketchup] = useState<SketchUpBridge | undefined>(
     undefined
   );
 
@@ -54,7 +63,7 @@ function RoomAnnotationInner() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.sketchup) {
-      setSketchup(window.sketchup);
+      setSketchup(window.sketchup as SketchUpBridge);
     } else {
       console.warn('SketchUp API not available - running in browser mode');
     }
@@ -162,8 +171,8 @@ function RoomAnnotationInner() {
     };
     try {
       if (typeof window !== 'undefined' && sketchup) {
-        if (typeof sketchup.executeExtensionFunction === 'function') {
-          sketchup.executeExtensionFunction(JSON.stringify(payload));
+        if (typeof sketchup?.executeExtensionFunction === 'function') {
+          sketchup?.executeExtensionFunction(JSON.stringify(payload));
         } else {
           console.log(
             'Direct method not available, using action callback URL scheme'
@@ -224,7 +233,10 @@ function RoomAnnotationInner() {
               id='floorHeight'
               className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
               value={floorHeight}
-              onChange={(e) => setFloorHeight(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9,]/g, '');
+                setFloorHeight(value);
+              }}
               required
               disabled={isLoading}
               placeholder='0,00'
