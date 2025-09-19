@@ -3,6 +3,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { toast } from 'react-toastify';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 
 interface RoomDefaults {
   floor_height?: string;
@@ -45,7 +54,6 @@ function RoomAnnotationInner() {
   const [showLevel, setShowLevel] = useState('');
   const [level, setLevel] = useState('');
 
-  const [statusMessage, setStatusMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   // Available fonts are now managed by global settings from backend
@@ -75,9 +83,9 @@ function RoomAnnotationInner() {
     window.handleRubyResponse = (response) => {
       setIsLoading(false);
       if (response.success) {
-        setStatusMessage(`Sucesso: ${response.message}`);
+        toast.success(`Sucesso: ${response.message}`);
       } else {
-        setStatusMessage(`Erro: ${response.message}`);
+        toast.error(`Erro: ${response.message}`);
       }
     };
 
@@ -139,7 +147,6 @@ function RoomAnnotationInner() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage('');
     setIsLoading(true);
 
     const args = {
@@ -172,7 +179,6 @@ function RoomAnnotationInner() {
         }
       } else {
         console.warn('SketchUp API not available - simulating call');
-        //  setStatusMessage('Simulação: SketchUp API não disponível');
         toast.error('Simulação: SketchUp API não disponível');
         setIsLoading(false);
       }
@@ -180,7 +186,7 @@ function RoomAnnotationInner() {
       console.error('Error calling SketchUp API:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      setStatusMessage(`Erro: ${errorMessage}`);
+      toast.error(`Erro: ${errorMessage}`);
       setIsLoading(false);
     }
   };
@@ -192,138 +198,81 @@ function RoomAnnotationInner() {
           onSubmit={handleSubmit}
           className='grid grid-cols-1 md:grid-cols-2 gap-4'
         >
-          <div>
-            <label
-              htmlFor='environmentName'
-              className='block text-gray-700 text-sm font-bold mb-2'
-            >
-              Nome do Ambiente:
-            </label>
-            <input
-              type='text'
-              id='environmentName'
-              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={environmentName}
-              onChange={(e) => setEnvironmentName(e.target.value)}
-              required
-              disabled={isLoading}
-              placeholder='Ex: Sala de Estar'
-            />
-          </div>
-          <div>
-            <label
-              htmlFor='floorHeight'
-              className='block text-gray-700 text-sm font-bold mb-2'
-            >
-              Altura Piso (Z) (m):
-            </label>
-            <input
-              type='text'
-              id='floorHeight'
-              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={floorHeight}
-              onChange={(e) => {
-                const value = e.target.value.replace(/[^0-9,]/g, '');
-                setFloorHeight(value);
-              }}
-              required
-              disabled={isLoading}
-              placeholder='0,00'
-            />
-          </div>
-          <div>
-            <label
-              htmlFor='showCeillingHeight'
-              className='block text-gray-700 text-sm font-bold mb-2'
-            >
-              Mostrar Pé Direito?:
-            </label>
-            <select
-              id='showCeillingHeight'
-              className='shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={showCeillingHeight}
-              onChange={(e) => setShowCeillingHeight(e.target.value)}
-              disabled={isLoading}
-            >
-              <option value=''>Selecione uma opção</option>
-              <option value='Sim'>Sim</option>
-              <option value='Não'>Não</option>
-            </select>
-          </div>
-          <div>
-            <label
-              htmlFor='ceillingHeight'
-              className='block text-gray-700 text-sm font-bold mb-2'
-            >
-              Pé Direito (m):
-            </label>
-            <input
-              type='text'
-              id='ceillingHeight'
-              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={ceillingHeight}
-              onChange={(e) => setCeillingHeight(e.target.value)}
-              required
-              disabled={isLoading}
-              placeholder='2,50'
-            />
-          </div>
-          <div>
-            <label
-              htmlFor='showLevel'
-              className='block text-gray-700 text-sm font-bold mb-2'
-            >
-              Mostrar Nível?:
-            </label>
-            <select
-              id='showLevel'
-              className='shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={showLevel}
-              onChange={(e) => setShowLevel(e.target.value)}
-              disabled={isLoading}
-            >
-              <option value=''>Selecione uma opção</option>
-              <option value='Sim'>Sim</option>
-              <option value='Não'>Não</option>
-            </select>
-          </div>
-          <div>
-            <label
-              htmlFor='level'
-              className='block text-gray-700 text-sm font-bold mb-2'
-            >
-              Nível Piso:
-            </label>
-            <input
-              type='text'
-              id='level'
-              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              value={level}
-              onChange={(e) => setLevel(e.target.value)}
-              required
-              disabled={isLoading}
-              placeholder='0,00'
-            />
-          </div>
+          <Input
+            id='environmentName'
+            type='text'
+            label='Nome do Ambiente:'
+            value={environmentName}
+            onChange={(e) => setEnvironmentName(e.target.value)}
+            required
+            disabled={isLoading}
+            placeholder='Ex: Sala de Estar'
+          />
+          <Input
+            type='text'
+            id='floorHeight'
+            value={floorHeight}
+            onChange={(e) => {
+              const value = e.target.value.replace(/[^0-9,]/g, '');
+              setFloorHeight(value);
+            }}
+            required
+            disabled={isLoading}
+            placeholder='0,00'
+            label='Altura Piso (Z) (m):'
+          />
+          <Select
+            label='Mostrar Pé Direito?'
+            disabled={isLoading}
+            value={showCeillingHeight}
+            onValueChange={setShowCeillingHeight}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder='Selecione uma opção' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='Sim'>Sim</SelectItem>
+              <SelectItem value='Não'>Não</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input
+            type='text'
+            id='ceillingHeight'
+            value={ceillingHeight}
+            onChange={(e) => setCeillingHeight(e.target.value)}
+            required
+            disabled={isLoading}
+            placeholder='2,50'
+            label='Pé Direito (m):'
+          />
+          <Select
+            label='Mostrar Nível?'
+            disabled={isLoading}
+            value={showLevel}
+            onValueChange={setShowLevel}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder='Selecione uma opção' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='Sim'>Sim</SelectItem>
+              <SelectItem value='Não'>Não</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input
+            type='text'
+            id='level'
+            value={level}
+            onChange={(e) => setLevel(e.target.value)}
+            required
+            disabled={isLoading}
+            placeholder='0,00'
+            label='Nível Piso:'
+          />
           <div className='col-span-1 md:col-span-2 flex items-center justify-between mt-4'>
-            <button
-              type='submit'
-              className='bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 cursor-pointer'
-              disabled={isLoading}
-            >
-              {isLoading ? 'Executando...' : 'Iniciar Anotação de Ambiente'}
-            </button>
-            {statusMessage && (
-              <p
-                className={`text-sm ${
-                  statusMessage.startsWith('Sucesso')
-                    ? 'text-green-500'
-                    : 'text-red-500'
-                }`}
-              >
-                {statusMessage}
-              </p>
-            )}
+            <Button type='submit' disabled={isLoading}>
+              {isLoading ? 'Executando...' : 'Criar Anotação de Ambiente'}
+            </Button>
           </div>
         </form>
       </div>
