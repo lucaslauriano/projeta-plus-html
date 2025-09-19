@@ -1,6 +1,17 @@
 import { useCallback, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
+interface RoomAnnotationArgs {
+  enviroment_name?: string;
+  floor_height?: string | number;
+  show_ceilling_height?: string;
+  ceilling_height?: string | number;
+  show_level?: string;
+  level?: string | number;
+  scale?: number;
+  font?: string;
+}
+
 export function useRoomAnnotation() {
   useEffect(() => {
     window.handleRoomAnnotationResult = (result) => {

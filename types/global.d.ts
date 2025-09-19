@@ -1,14 +1,19 @@
+interface RoomAnnotationResult {
+  success: boolean;
+  message: string;
+}
 declare global {
   interface Window {
     sketchup: {
-      showMessageBox: (message: string) => void;
-      requestModelName: () => void;
       requestAllSettings: () => void;
       loadRoomAnnotationDefaults: () => void;
       loadSectionAnnotationDefaults: () => void;
       executeExtensionFunction: (payload: string) => void;
       loadGlobalSettings: () => void;
       changeLanguage: (langCode: string) => void;
+      startRoomAnnotation: (args: RoomAnnotationArgs) => void;
+      showMessageBox: (message: string) => void;
+      requestModelName: () => void;
     };
     changeLanguage: (langCode: string) => void;
     loadGlobalSettings: () => void;
@@ -31,6 +36,7 @@ declare global {
     }) => void;
     receiveModelNameFromRuby?: (modelName: string) => void;
     receiveAllSettingsFromRuby?: (settings: GlobalSettings) => void;
+    handleRoomAnnotationResult?: (result: RoomAnnotationResult) => void;
   }
 }
 

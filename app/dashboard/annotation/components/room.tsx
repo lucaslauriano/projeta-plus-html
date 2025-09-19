@@ -30,25 +30,14 @@ export default function RoomAnnotation() {
   return <RoomAnnotationContent />;
 }
 
-interface SketchUpBridge {
-  loadRoomAnnotationDefaults?: () => void;
-  loadGlobalSettings?: () => void;
-  executeExtensionFunction?: (payload: string) => void;
-  // Add other SketchUp API methods as needed
-}
-
-// Extend the Window interface to include sketchup and handler functions
-
 function RoomAnnotationInner() {
-  const [sketchup, setSketchup] = useState<SketchUpBridge | undefined>(
+  const [sketchup, setSketchup] = useState<Window['sketchup'] | undefined>(
     undefined
   );
 
-  // Global settings from backend
   const [scale, setScale] = useState('');
   const [font, setFont] = useState('');
 
-  // Room annotation specific fields
   const [environmentName, setEnvironmentName] = useState('');
   const [floorHeight, setFloorHeight] = useState('');
   const [showCeillingHeight, setShowCeillingHeight] = useState('');
@@ -63,7 +52,7 @@ function RoomAnnotationInner() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.sketchup) {
-      setSketchup(window.sketchup as SketchUpBridge);
+      setSketchup(window.sketchup as Window['sketchup']);
     } else {
       console.warn('SketchUp API not available - running in browser mode');
     }
