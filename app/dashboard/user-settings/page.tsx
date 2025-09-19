@@ -88,7 +88,7 @@ export default function GlobalSettingsPage() {
       setIsLoading(true);
 
       const payload = {
-        module_name: 'ProjetaPlus::Settings',
+        module_name: 'ProjetaPlus::Modules::ProSettings',
         function_name: 'update_setting',
         args: { key, value },
       };
@@ -115,7 +115,7 @@ export default function GlobalSettingsPage() {
       setIsLoading(true);
 
       const payload = {
-        module_name: 'ProjetaPlus::Settings',
+        module_name: 'ProjetaPlus::Modules::ProSettings',
         function_name: 'select_folder_path',
         args: { setting_key: settingKey, dialog_title: dialogTitle },
       };
