@@ -2,6 +2,18 @@ interface RoomAnnotationResult {
   success: boolean;
   message: string;
 }
+
+export interface RoomDefaults {
+  scale?: string;
+  font?: string;
+  floor_height?: string;
+  show_ceilling_height?: boolean;
+  ceilling_height?: string;
+  show_level?: boolean;
+  is_auto_level?: boolean;
+  level?: string;
+}
+
 declare global {
   interface Window {
     sketchup: {
@@ -21,15 +33,7 @@ declare global {
     handleGlobalSettings: (settings: GlobalSettings) => void;
     languageChanged: (langCode: string) => void;
     handleRubyResponse: (response: RubyResponse) => void;
-    handleRoomDefaults: (defaults: {
-      scale?: string;
-      font?: string;
-      floor_height?: string;
-      show_pd?: string;
-      pd?: string;
-      show_level?: string;
-      level?: string;
-    }) => void;
+    handleRoomDefaults: (defaults: RoomDefaults) => void;
     handleSectionDefaults: (defaults: {
       line_height_cm?: string;
       scale_factor?: string;
@@ -49,14 +53,6 @@ export interface RubyResponse {
   path?: string;
   setting_key?: string;
   updated_value?: unknown;
-}
-
-export interface RoomDefaults {
-  floor_height: string;
-  show_pd: string;
-  pd: string;
-  show_level: string;
-  level: string;
 }
 
 export interface SectionDefaults {

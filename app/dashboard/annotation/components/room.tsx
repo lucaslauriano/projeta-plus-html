@@ -4,28 +4,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { toast } from 'react-toastify';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-
-interface RoomDefaults {
-  floor_height?: string;
-  show_ceilling_height?: string;
-  ceilling_height?: string;
-  show_level?: string;
-  level?: string;
-}
+import type { RoomDefaults } from '@/types/global';
 
 interface GlobalSettings {
   font?: string;
   scale_numerator?: number;
   scale_denominator?: number;
   floor_level?: number;
+  is_auto_level?: boolean;
 }
 
 const RoomAnnotationContent = dynamic(
@@ -49,11 +37,11 @@ function RoomAnnotationInner() {
 
   const [environmentName, setEnvironmentName] = useState('');
   const [floorHeight, setFloorHeight] = useState('');
-  const [showCeillingHeight, setShowCeillingHeight] = useState('');
+  const [showCeillingHeight, setShowCeillingHeight] = useState(false);
   const [ceillingHeight, setCeillingHeight] = useState('');
-  const [showLevel, setShowLevel] = useState('');
+  const [isAutoLevel, setIsAutoLevel] = useState(true);
   const [level, setLevel] = useState('');
-
+  const [showLevel, setShowLevel] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   // Available fonts are now managed by global settings from backend
@@ -90,12 +78,13 @@ function RoomAnnotationInner() {
     };
 
     window.handleRoomDefaults = (defaults: RoomDefaults) => {
-      console.log('Loading defaults from SketchUp:', defaults);
       if (defaults.floor_height) setFloorHeight(defaults.floor_height);
-      if (defaults.show_ceilling_height)
+      if (defaults.show_ceilling_height !== undefined)
         setShowCeillingHeight(defaults.show_ceilling_height);
       if (defaults.ceilling_height) setCeillingHeight(defaults.ceilling_height);
-      if (defaults.show_level) setShowLevel(defaults.show_level);
+      if (defaults.show_level !== undefined) setShowLevel(defaults.show_level);
+      if (defaults.is_auto_level !== undefined)
+        setIsAutoLevel(defaults.is_auto_level);
       if (defaults.level) setLevel(defaults.level);
     };
 
@@ -157,7 +146,8 @@ function RoomAnnotationInner() {
       show_ceilling_height: showCeillingHeight,
       ceilling_height: ceillingHeight,
       show_level: showLevel,
-      level: level,
+      is_auto_level: isAutoLevel,
+      level_value: level,
     };
 
     const payload = {
@@ -192,7 +182,7 @@ function RoomAnnotationInner() {
   };
 
   return (
-    <div className='p-4'>
+    <div className=''>
       <div className='w-full max-w-2xl mx-auto'>
         <form
           onSubmit={handleSubmit}
@@ -208,67 +198,75 @@ function RoomAnnotationInner() {
             disabled={isLoading}
             placeholder='Ex: Sala de Estar'
           />
-          <Input
-            type='text'
-            id='floorHeight'
-            value={floorHeight}
-            onChange={(e) => {
-              const value = e.target.value.replace(/[^0-9,]/g, '');
-              setFloorHeight(value);
-            }}
-            required
-            disabled={isLoading}
-            placeholder='0,00'
-            label='Altura Piso (Z) (m):'
-          />
-          <Select
-            label='Mostrar Pé Direito?'
-            disabled={isLoading}
-            value={showCeillingHeight}
-            onValueChange={setShowCeillingHeight}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder='Selecione uma opção' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='Sim'>Sim</SelectItem>
-              <SelectItem value='Não'>Não</SelectItem>
-            </SelectContent>
-          </Select>
-          <Input
-            type='text'
-            id='ceillingHeight'
-            value={ceillingHeight}
-            onChange={(e) => setCeillingHeight(e.target.value)}
-            required
-            disabled={isLoading}
-            placeholder='2,50'
-            label='Pé Direito (m):'
-          />
-          <Select
-            label='Mostrar Nível?'
-            disabled={isLoading}
-            value={showLevel}
-            onValueChange={setShowLevel}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder='Selecione uma opção' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='Sim'>Sim</SelectItem>
-              <SelectItem value='Não'>Não</SelectItem>
-            </SelectContent>
-          </Select>
-          <Input
-            type='text'
-            id='level'
-            value={level}
-            onChange={(e) => setLevel(e.target.value)}
-            required
-            disabled={isLoading}
-            placeholder='0,00'
-            label='Nível Piso:'
-          />
+
+          <div className='flex items-center space-x-4 '>
+            <div className='w-2/4'>
+              <Input
+                type='text'
+                id='ceillingHeight'
+                value={ceillingHeight}
+                onChange={(e) => setCeillingHeight(e.target.value)}
+                required
+                disabled={isLoading}
+                placeholder='2,50'
+                label='Pé Direito (m):'
+              />
+            </div>
+            <div className='w-2/4 flex items-center justify-start '>
+              <Checkbox
+                id='showCeillingHeight'
+                label='Mostrar Pé Direito?'
+                disabled={isLoading}
+                checked={showCeillingHeight}
+                onCheckedChange={(checked) =>
+                  setShowCeillingHeight(
+                    checked === 'indeterminate' ? false : checked
+                  )
+                }
+              />
+            </div>
+          </div>
+          <div className='flex items-center space-x-4 '>
+            <div className='w-2/4'>
+              <Input
+                type='text'
+                id='level'
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+                required
+                disabled={isLoading || isAutoLevel}
+                placeholder='0,00'
+                label='Nível Piso:'
+              />
+            </div>
+            <div className='w-2/4 pt-6 flex items-center justify-start '>
+              <Checkbox
+                id='showLevel'
+                label='Mostrar Nível'
+                disabled={isLoading}
+                checked={showLevel}
+                onCheckedChange={(checked) =>
+                  setShowLevel(checked === 'indeterminate' ? false : checked)
+                }
+              />
+            </div>
+          </div>
+
+          <div className='flex items-center space-x-4 '>
+            <div className='w-2/4'></div>
+            <div className='w-2/4 flex items-center justify-start '>
+              <Checkbox
+                id='isAutoLevel'
+                label='Nível Automático'
+                disabled={isLoading || !showLevel}
+                checked={isAutoLevel}
+                onCheckedChange={(checked) =>
+                  setIsAutoLevel(checked === 'indeterminate' ? true : checked)
+                }
+              />
+            </div>
+          </div>
+
           <div className='col-span-1 md:col-span-2 flex items-center justify-between mt-4'>
             <Button type='submit' disabled={isLoading}>
               {isLoading ? 'Executando...' : 'Criar Anotação de Ambiente'}

@@ -71,8 +71,8 @@ function LandingPage() {
         <section className='py-20 px-4'>
           <div className='container mx-auto text-center max-w-4xl'>
             <h2 className='text-5xl font-bold font-sans mb-6 text-foreground'>
-              Instant, Zero-Integration
-              <span className='text-primary'> SaaS Billing</span>
+              Projeta
+              <span className='text-primary'> Plus</span>
             </h2>
             <p className='text-xl font-serif text-muted-foreground mb-8 leading-relaxed'>
               Launch your SaaS with professional billing in minutes. Clerk

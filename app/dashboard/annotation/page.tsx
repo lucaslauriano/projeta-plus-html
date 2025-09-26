@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import RoomAnnotation from '@/app/dashboard/annotation/components/room';
 import AnnotationSection from '@/app/dashboard/annotation/components/sections';
 import PageHeader from '@/components/page-header';
-import { ChevronDownIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+//todo: create menu with dynamic tabs
 const tabs = [
   { name: 'Nome do Ambiente', href: '#', current: false },
   { name: 'Anotações de Corte', href: '#', current: true },
@@ -32,8 +32,8 @@ export default function AnnotationDashboardPage() {
       />
 
       <div className='w-full'>
-        <div className='border-b border-gray-200 dark:border-gray-700 flex justify-center items-center'>
-          <nav aria-label='Content tabs' className='-mb-px flex space-x-8'>
+        <div className='border-b border-gray-200 dark:border-gray-700 flex justify-center items-center '>
+          <nav aria-label='Content tabs' className='-mb-px flex space-x-8 '>
             <button
               onClick={() => setActiveTab('room')}
               className={cn(
