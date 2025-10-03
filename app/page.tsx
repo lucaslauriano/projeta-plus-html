@@ -54,9 +54,9 @@ function LandingPage() {
       <header className='border-b bg-card'>
         <div className='container mx-auto px-4 py-4 flex items-center justify-between'>
           <div className='flex items-center space-x-2 w-full'>
-            <HousePlus className='h-6 w-6 mt-1 font-bold text-lime-600' />
+            <HousePlus className='h-6 w-6 mt-1 font-bold text-primary' />
             <h1 className='text-xl font-bold font-sans flex mt-2'>
-              Projeta <Plus className='h-4 w-4 mt-1 font-bold text-lime-600' />
+              Projeta <Plus className='h-4 w-4 mt-1 font-bold text-primary' />
             </h1>
           </div>
           <SignInButton mode='modal'>

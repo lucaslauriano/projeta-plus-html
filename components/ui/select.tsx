@@ -20,7 +20,7 @@ function Select({ label, helperText, error, ...props }: SelectProps) {
         <label
           className={cn(
             'block text-sm font-medium mb-1',
-            error ? 'text-red-500' : 'text-foreground dark:text-foreground'
+            error ? 'text-destructive' : 'text-foreground'
           )}
         >
           {label}
@@ -31,7 +31,7 @@ function Select({ label, helperText, error, ...props }: SelectProps) {
         <p
           className={cn(
             'mt-1 text-sm',
-            error ? 'text-red-500' : 'text-muted-foreground'
+            error ? 'text-destructive' : 'text-muted-foreground'
           )}
         >
           {helperText}
@@ -68,14 +68,14 @@ function SelectTrigger({
       data-size={size}
       className={cn(
         'flex h-9 w-full rounded-md bg-background dark:bg-background/10 px-3 py-1 text-sm transition-colors',
-        'shadow border border-gray-300 dark:border-gray-600',
+        'shadow border border-border',
         'flex items-center justify-between gap-2',
         'file:border-0 file:bg-transparent file:text-sm file:font-medium',
         'placeholder:text-muted-foreground/70',
         'focus-visible:outline-none focus-visible:ring-1',
         'disabled:cursor-not-allowed disabled:opacity-50',
-        'data-[error=true]:border-red-500 data-[error=true]:focus-visible:ring-red-500',
-        'focus-visible:ring-lime-500 focus-visible:border-lime-500',
+        'data-[error=true]:border-destructive data-[error=true]:focus-visible:ring-destructive',
+        'focus-visible:ring-primary focus-visible:border-primary',
         'data-[size=default]:h-9 data-[size=sm]:h-8',
         '*:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2',
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",

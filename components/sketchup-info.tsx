@@ -50,7 +50,7 @@ export function SketchUpInfo() {
       {selectionInfo && (
         <div>
           <h2 className='text-lg font-semibold'>Selection Info</h2>
-          <pre className='bg-gray-100 p-2 rounded'>
+          <pre className='bg-muted p-2 rounded'>
             {typeof selectionInfo === 'object' ||
             typeof selectionInfo === 'string'
               ? JSON.stringify(selectionInfo, null, 2)

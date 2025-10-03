@@ -101,20 +101,20 @@ export default function Button1ContentPage() {
 
       <button
         onClick={sendMessageToSketchUp}
-        className='mt-6 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded'
+        className='mt-6 bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2 px-4 rounded'
       >
         Enviar Mensagem para SketchUp
       </button>
 
       <button
         onClick={showSketchUpModelInfo}
-        className='mt-4 bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded'
+        className='mt-4 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-bold py-2 px-4 rounded'
       >
         Modelo ao SketchUp
       </button>
       <button
         onClick={loadGlobalSettings}
-        className='mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+        className='mt-4 bg-accent hover:bg-accent/80 text-accent-foreground font-bold py-2 px-4 rounded'
       >
         Carregar Configurações Globais do SketchUp
       </button>

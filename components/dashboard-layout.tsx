@@ -85,10 +85,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               href='/dashboard'
               className='flex items-center space-x-2 w-full cursor-pointer'
             >
-              <HousePlus className='h-6 w-6 mt-1 font-bold text-lime-600' />
+              <HousePlus className='h-6 w-6 mt-1 font-bold text-primary' />
               <h1 className='text-xl font-bold font-sans flex mt-2'>
-                Projeta{' '}
-                <Plus className='h-4 w-4 mt-1 font-bold text-lime-600' />
+                Projeta <Plus className='h-4 w-4 mt-1 font-bold text-primary' />
               </h1>
             </Link>
           )}
