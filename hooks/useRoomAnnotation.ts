@@ -1,46 +1,47 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { useSketchup } from '@/contexts/SketchupContext';
 
 interface RoomAnnotationArgs {
-  enviroment_name?: string;
-  floor_height?: string | number;
-  show_ceilling_height?: string;
-  ceilling_height?: string | number;
-  show_level?: string;
-  level?: string | number;
-  scale?: number;
-  font?: string;
+  enviroment_name: string;
+  show_ceilling_height: boolean;
+  ceilling_height: string;
+  show_level: boolean;
+  is_auto_level: boolean;
+  level_value: string;
 }
 
 export function useRoomAnnotation() {
+  const { callSketchupMethod, isLoading, isAvailable } = useSketchup();
+
   useEffect(() => {
-    window.handleRoomAnnotationResult = (result) => {
-      if (result.success) {
-        toast.success(result.message);
+    window.handleRoomAnnotationResult = (response) => {
+      if (response.success) {
+        toast.success(response.message);
+        console.log('Room annotation success:', response.message);
       } else {
-        toast.error(result.message);
+        toast.error(response.message);
+        console.error('Room annotation error:', response.message);
       }
     };
 
     return () => {
-      delete window.handleRoomAnnotationResult;
+      if (window.handleRoomAnnotationResult) {
+        delete window.handleRoomAnnotationResult;
+      }
     };
   }, []);
 
-  const startAnnotation = useCallback((args: RoomAnnotationArgs) => {
-    if (!window.sketchup?.startRoomAnnotation) {
-      toast.error('Not running in SketchUp environment');
-      return;
-    }
+  const startRoomAnnotation = async (args: RoomAnnotationArgs) => {
+    await callSketchupMethod(
+      'startRoomAnnotation',
+      args as unknown as Record<string, unknown>
+    );
+  };
 
-    try {
-      window.sketchup.startRoomAnnotation(args);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      toast.error('Error starting room annotation: ' + errorMessage);
-    }
-  }, []);
-
-  return { startAnnotation };
+  return {
+    startRoomAnnotation,
+    isLoading,
+    isAvailable,
+  };
 }

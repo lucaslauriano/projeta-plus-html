@@ -3,18 +3,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function RoomAnnotationTool() {
-  const { startAnnotation } = useRoomAnnotation();
+  const { startRoomAnnotation } = useRoomAnnotation();
 
   const handleStartAnnotation = () => {
-    startAnnotation({
+    startRoomAnnotation({
       enviroment_name: 'Room',
-      floor_height: '2,80',
-      show_ceilling_height: 'sim',
+      show_ceilling_height: true,
       ceilling_height: '2,80',
-      show_level: 'sim',
-      level: '0,00',
-      scale: 100,
-      font: 'Arial',
+      show_level: true,
+      is_auto_level: true,
+      level_value: '0,00',
     });
   };
 

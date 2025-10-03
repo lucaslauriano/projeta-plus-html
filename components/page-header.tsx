@@ -9,7 +9,7 @@ const PageHeader = ({
 }) => {
   return (
     <div className='w-full lg:flex lg:items-center lg:justify-between pb-10'>
-      <div className='min-w-0 flex-1 border-b border-gray-200 dark:border-gray-700 pb-5'>
+      <div className='min-w-0 flex-1 border-b border-border pb-5'>
         <nav aria-label='Breadcrumb' className='flex'>
           <ol role='list' className='flex items-center space-x-4'>
             {breadcrumbs.map((breadcrumb, index) => (
@@ -18,12 +18,12 @@ const PageHeader = ({
                   {index > 0 && (
                     <ChevronRightIcon
                       aria-hidden='true'
-                      className='size-5 shrink-0 text-gray-400 dark:text-gray-500'
+                      className='size-5 shrink-0 text-muted-foreground'
                     />
                   )}
                   <a
                     href={breadcrumb.href}
-                    className='text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors'
+                    className='text-sm font-medium text-muted-foreground hover:text-foreground transition-colors'
                   >
                     {breadcrumb.name}
                   </a>
@@ -32,7 +32,7 @@ const PageHeader = ({
             ))}
           </ol>
         </nav>
-        <h2 className='mt-2 text-base font-bold dark:text-white text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight'>
+        <h2 className='mt-2 text-base font-bold text-foreground sm:truncate sm:text-3xl sm:tracking-tight'>
           {title}
         </h2>
       </div>
