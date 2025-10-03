@@ -19,28 +19,34 @@ declare global {
     sketchup: {
       requestAllSettings: () => void;
       loadRoomAnnotationDefaults: () => void;
-      loadSectionAnnotationDefaults: () => void;
+      startSectionAnnotation: (args: string) => void;
       executeExtensionFunction: (payload: string) => void;
       loadGlobalSettings: () => void;
       changeLanguage: (langCode: string) => void;
+      updateSetting: (payload: string) => void;
+      selectFolderPath: (payload: string) => void;
       startRoomAnnotation: (args: RoomAnnotationArgs) => void;
       showMessageBox: (message: string) => void;
       requestModelName: () => void;
     };
     changeLanguage: (langCode: string) => void;
     loadGlobalSettings: () => void;
-    handleSectionDefaults: (defaults: SectionDefaults) => void;
     handleGlobalSettings: (settings: GlobalSettings) => void;
     languageChanged: (langCode: string) => void;
     handleRubyResponse: (response: RubyResponse) => void;
+    handleSettingUpdate?: (response: RubyResponse) => void;
+    handleFolderSelection?: (response: RubyResponse) => void;
     handleRoomDefaults: (defaults: RoomDefaults) => void;
-    handleSectionDefaults: (defaults: {
-      line_height_cm?: string;
-      scale_factor?: string;
-    }) => void;
     receiveModelNameFromRuby?: (modelName: string) => void;
     receiveAllSettingsFromRuby?: (settings: GlobalSettings) => void;
     handleRoomAnnotationResult?: (result: RoomAnnotationResult) => void;
+    handleSectionAnnotationResult?: (result: RoomAnnotationResult) => void;
+    handleViewIndicationResult?: (result: RoomAnnotationResult) => void;
+    handleLightingDefaults?: (defaults: LightingDefaults) => void;
+    handleLightingAnnotationResult?: (result: RoomAnnotationResult) => void;
+    handleCircuitConnectionResult?: (result: RoomAnnotationResult) => void;
+    handleCeilingDefaults?: (defaults: CeilingDefaults) => void;
+    handleCeilingAnnotationResult?: (result: RoomAnnotationResult) => void;
   }
 }
 
@@ -58,6 +64,18 @@ export interface RubyResponse {
 export interface SectionDefaults {
   line_height_cm: string;
   scale_factor: string;
+}
+
+export interface LightingDefaults {
+  circuit_text: string;
+  circuit_scale: number;
+  circuit_height_cm: number;
+  circuit_font: string;
+  circuit_text_color: string;
+}
+
+export interface CeilingDefaults {
+  floor_level: string;
 }
 
 export interface LanguageOption {

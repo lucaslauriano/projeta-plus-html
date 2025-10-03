@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Manrope } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
 import { ThemeProvider } from '@/components/theme-provider';
+import { SketchupProvider } from '@/contexts/SketchupContext';
 import './globals.css';
 
 const manrope = Manrope({
@@ -33,33 +34,35 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {publishableKey ? (
-            <ClerkProvider publishableKey={publishableKey}>
-              {children}
-            </ClerkProvider>
-          ) : (
-            <div className='min-h-screen flex items-center justify-center bg-background'>
-              <div className='text-center space-y-4 p-8'>
-                <h1 className='text-2xl font-bold text-destructive'>
-                  Configuration Error
-                </h1>
-                <p className='text-muted-foreground max-w-md'>
-                  Missing Clerk configuration. Please add your{' '}
-                  <code>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> environment
-                  variable.
-                </p>
-                <p className='text-sm text-muted-foreground'>
-                  Get your keys at{' '}
-                  <a
-                    href='https://dashboard.clerk.com'
-                    className='text-primary hover:underline'
-                  >
-                    dashboard.clerk.com
-                  </a>
-                </p>
+          <SketchupProvider>
+            {publishableKey ? (
+              <ClerkProvider publishableKey={publishableKey}>
+                {children}
+              </ClerkProvider>
+            ) : (
+              <div className='min-h-screen flex items-center justify-center bg-background'>
+                <div className='text-center space-y-4 p-8'>
+                  <h1 className='text-2xl font-bold text-destructive'>
+                    Configuration Error
+                  </h1>
+                  <p className='text-muted-foreground max-w-md'>
+                    Missing Clerk configuration. Please add your{' '}
+                    <code>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> environment
+                    variable.
+                  </p>
+                  <p className='text-sm text-muted-foreground'>
+                    Get your keys at{' '}
+                    <a
+                      href='https://dashboard.clerk.com'
+                      className='text-primary hover:underline'
+                    >
+                      dashboard.clerk.com
+                    </a>
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </SketchupProvider>
         </ThemeProvider>
       </body>
     </html>
