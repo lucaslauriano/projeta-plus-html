@@ -24,6 +24,7 @@ function AnnotationCeilingInner() {
 
   const { startLightingAnnotation, isLoading: isLightingLoading } =
     useLightingAnnotation();
+
   const { startCircuitConnection, isLoading: isCircuitLoading } =
     useCircuitConnection();
 
