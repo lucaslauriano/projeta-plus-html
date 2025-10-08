@@ -1,11 +1,11 @@
 import { auth } from '@clerk/nextjs/server';
 
 export default async function BronzeContentPage() {
-  const { has, userId } = await auth();
+  //const { has, userId } = await auth();
 
-  const hasBronzePlan = has({ plan: 'pro_user' });
+  //const hasBronzePlan = has({ plan: 'pro_user' });
 
-  if (!hasBronzePlan)
+  if (!true)
     return (
       <div className='p-6'>
         {' '}
@@ -15,7 +15,7 @@ export default async function BronzeContentPage() {
 
   return (
     <div className='p-6'>
-      <h1>Welcome! {userId}</h1>
+      <h1>Welcome!</h1>
     </div>
   );
 }
