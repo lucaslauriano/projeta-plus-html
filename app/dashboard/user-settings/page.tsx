@@ -102,33 +102,25 @@ export default function GlobalSettingsPage() {
             </div>
 
             {/* Scale (Numerator and Denominator) */}
-            <div className='grid grid-cols-2 gap-2'>
-              <div>
-                <label
-                  htmlFor='scale_numerator'
-                  className='block text-foreground text-sm font-bold mb-2'
-                >
-                  Scale (1):
-                </label>
+            <div className=' w-full gap-y-4'>
+              <label
+                htmlFor='scale_numerator'
+                className='block text-foreground text-sm font-bold mb-2'
+              >
+                Escala:
+              </label>
+              <div className='flex gap-2 w-full '>
                 <Input
                   type='number'
                   id='scale_numerator'
+                  disabled
                   value={settings?.scale_numerator?.toString() || ''}
                   onChange={(e) => {
                     const val = parseFloat(e.target.value);
                     updateLocalSetting('scale_numerator', isNaN(val) ? 0 : val);
                   }}
-                  disabled={isLoading}
                   min='1'
                 />
-              </div>
-              <div>
-                <label
-                  htmlFor='scale_denominator'
-                  className='block text-foreground text-sm font-bold mb-2'
-                >
-                  Scale (N):
-                </label>
                 <Input
                   type='number'
                   id='scale_denominator'
@@ -144,7 +136,7 @@ export default function GlobalSettingsPage() {
                   min='1'
                 />
               </div>
-              <p className='col-span-2 text-xs text-muted-foreground'>
+              <p className='col-span-2 text-xs pt-2 text-gray-500'>
                 Display: 1:{settings?.scale_denominator}
               </p>
             </div>
