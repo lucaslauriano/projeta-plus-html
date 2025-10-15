@@ -141,22 +141,6 @@ export default function GlobalSettingsPage() {
               </p>
             </div>
 
-            {/* Floor Level */}
-            {/* <div>
-              <Input
-                type='number'
-                step='0.01'
-                id='floor_level'
-                label='Floor Level (m):'
-                value={settings?.floor_level?.toString() || ''}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  updateLocalSetting('floor_level', isNaN(val) ? 0 : val);
-                }}
-                disabled={isLoading}
-              />
-            </div> */}
-
             {/* Cut Height */}
             <div>
               <Input
