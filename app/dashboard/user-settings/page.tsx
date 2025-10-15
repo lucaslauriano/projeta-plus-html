@@ -142,7 +142,7 @@ export default function GlobalSettingsPage() {
             </div>
 
             {/* Floor Level */}
-            <div>
+            {/* <div>
               <Input
                 type='number'
                 step='0.01'
@@ -155,7 +155,7 @@ export default function GlobalSettingsPage() {
                 }}
                 disabled={isLoading}
               />
-            </div>
+            </div> */}
 
             {/* Cut Height */}
             <div>
