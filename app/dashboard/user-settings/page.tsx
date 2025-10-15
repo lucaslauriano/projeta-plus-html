@@ -101,56 +101,6 @@ export default function GlobalSettingsPage() {
               </select>
             </div>
 
-            {/* Measurement Unit */}
-            <div>
-              <label
-                htmlFor='measurement_unit'
-                className='block text-foreground text-sm font-bold mb-2'
-              >
-                Measurement Unit:
-              </label>
-              <select
-                id='measurement_unit'
-                className='shadow border border-border rounded w-full py-2 px-3 text-foreground leading-tight focus:outline-none focus:ring-2 focus:ring-primary'
-                value={settings?.measurement_unit}
-                onChange={(e) => {
-                  updateLocalSetting('measurement_unit', e.target.value);
-                }}
-                disabled={isLoading}
-              >
-                {settings?.frontend_options.measurement_units.map((unit) => (
-                  <option key={unit} value={unit}>
-                    {unit}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Area Unit */}
-            <div>
-              <label
-                htmlFor='area_unit'
-                className='block text-foreground text-sm font-bold mb-2'
-              >
-                Area Unit:
-              </label>
-              <select
-                id='area_unit'
-                className='shadow border border-border rounded w-full py-2 px-3 text-foreground leading-tight focus:outline-none focus:ring-2 focus:ring-primary'
-                value={settings?.area_unit}
-                onChange={(e) => {
-                  updateLocalSetting('area_unit', e.target.value);
-                }}
-                disabled={isLoading}
-              >
-                {settings?.frontend_options.area_units.map((unit) => (
-                  <option key={unit} value={unit}>
-                    {unit}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* Scale (Numerator and Denominator) */}
             <div className='grid grid-cols-2 gap-2'>
               <div>
