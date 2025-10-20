@@ -8,7 +8,7 @@ const PageHeader = ({
   breadcrumbs: { name: string; href: string }[];
 }) => {
   return (
-    <div className='w-full lg:flex lg:items-center lg:justify-between pb-10'>
+    <div className='w-full lg:flex lg:items-center lg:justify-between pb-7'>
       <div className='min-w-0 flex-1 border-b border-border pb-5'>
         <nav aria-label='Breadcrumb' className='flex'>
           <ol role='list' className='flex items-center space-x-4'>
