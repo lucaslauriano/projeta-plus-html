@@ -157,22 +157,6 @@ export default function GlobalSettingsPage() {
               />
             </div>
 
-            {/* Headroom Height */}
-            <div>
-              <Input
-                type='number'
-                step='0.01'
-                id='headroom_height'
-                label='Headroom Height (m):'
-                value={settings?.headroom_height?.toString() || ''}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  updateLocalSetting('headroom_height', isNaN(val) ? 0 : val);
-                }}
-                disabled={isLoading}
-              />
-            </div>
-
             {/* Styles Folder */}
             <div>
               <label
