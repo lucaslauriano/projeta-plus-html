@@ -7,17 +7,17 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { PrintAttributes } from '@/app/dashboard/annotation/components/print-attributes';
 import { useComponentUpdater } from '@/hooks/useComponentUpdater';
 
-type SelectionType =
+type AttributeType =
   | 'scale'
   | 'environment'
   | 'usage'
   | 'usagePrefix'
-  | 'new'
-  | 'existing'
-  | 'modify'
-  | 'remove';
+  | 'situation';
+type SituationType = '1' | '2' | '3' | '4';
 
-const situacaoOptions = ['new', 'existing', 'modify', 'remove'] as const;
+type SelectionType = AttributeType | SituationType;
+
+const situacaoOptions = ['1', '2', '3', '4'] as const;
 
 export function ElectricalChangeAtributes() {
   const { updateComponentAttributes, defaults, isLoading } =
@@ -27,18 +27,18 @@ export function ElectricalChangeAtributes() {
     defaults.last_attribute as SelectionType
   );
   const [inputValue, setInputValue] = useState(defaults.last_value);
-  const [selectedSituation, setSelectedSituation] = useState<SelectionType>(
-    defaults.last_situation as SelectionType
+  const [selectedSituation, setSelectedSituation] = useState<SituationType>(
+    defaults.last_situation_type as SituationType
   );
-  const [lastFieldOption, setLastFieldOption] = useState<SelectionType>(
-    defaults.last_attribute as SelectionType
+  const [lastFieldOption, setLastFieldOption] = useState<AttributeType>(
+    defaults.last_attribute as AttributeType
   );
 
   useEffect(() => {
     setSelectedOption(defaults.last_attribute as SelectionType);
     setInputValue(defaults.last_value);
-    setSelectedSituation(defaults.last_situation as SelectionType);
-    setLastFieldOption(defaults.last_attribute as SelectionType);
+    setSelectedSituation(defaults.last_situation_type as SituationType);
+    setLastFieldOption(defaults.last_attribute as AttributeType);
   }, [defaults]);
 
   const fieldConfig: Record<
@@ -71,14 +71,12 @@ export function ElectricalChangeAtributes() {
     }
 
     // Determine which attribute_type to send
-    const attributeType = isInputFieldSelected
-      ? selectedOption
-      : lastFieldOption;
+    const attributeType = isInputFieldSelected ? selectedOption : 'situation'; // Always 'situation' for situation types
 
     await updateComponentAttributes({
       attribute_type: attributeType,
       new_value: isInputFieldSelected ? inputValue : '',
-      situation: selectedSituation,
+      situation_type: selectedSituation, // Send the numeric value (1,2,3,4)
     });
   };
 
@@ -107,10 +105,10 @@ export function ElectricalChangeAtributes() {
                     !(situacaoOptions as readonly string[]).includes(newValue)
                   ) {
                     // Field option selected - track it
-                    setLastFieldOption(newValue);
+                    setLastFieldOption(newValue as AttributeType);
                   } else {
                     // Situation option selected - update situation
-                    setSelectedSituation(newValue);
+                    setSelectedSituation(newValue as SituationType);
                   }
                 }}
                 disabled={isLoading}
@@ -165,22 +163,10 @@ export function ElectricalChangeAtributes() {
                     Situação:
                   </p>
                   <div className='flex flex-wrap gap-4'>
-                    <RadioGroupItem value='new' id='new' label='Novo' />
-                    <RadioGroupItem
-                      value='existing'
-                      id='existing'
-                      label='Existente'
-                    />
-                    <RadioGroupItem
-                      value='modify'
-                      id='modify'
-                      label='Modificar'
-                    />
-                    <RadioGroupItem
-                      value='remove'
-                      id='remove'
-                      label='Remover'
-                    />
+                    <RadioGroupItem value='1' id='new' label='Novo' />
+                    <RadioGroupItem value='2' id='existing' label='Existente' />
+                    <RadioGroupItem value='3' id='modify' label='Modificar' />
+                    <RadioGroupItem value='4' id='remove' label='Remover' />
                   </div>
                 </div>
               </RadioGroup>

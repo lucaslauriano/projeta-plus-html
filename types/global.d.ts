@@ -94,7 +94,7 @@ export interface HeightDefaults {
 export interface ComponentUpdaterDefaults {
   last_attribute: string;
   last_value: string;
-  last_situation: string;
+  last_situation_type: string;
 }
 
 export interface LanguageOption {

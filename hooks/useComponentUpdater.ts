@@ -5,13 +5,13 @@ import { useSketchup } from '@/contexts/SketchupContext';
 export type ComponentUpdaterDefaults = {
   last_attribute: string;
   last_value: string;
-  last_situation: string;
+  last_situation_type: string;
 };
 
 export type ComponentUpdaterArgs = {
   attribute_type: string;
   new_value: string;
-  situation: string;
+  situation_type: string;
 };
 
 export function useComponentUpdater() {
@@ -19,7 +19,7 @@ export function useComponentUpdater() {
   const [defaults, setDefaults] = useState<ComponentUpdaterDefaults>({
     last_attribute: 'scale',
     last_value: '',
-    last_situation: 'new',
+    last_situation_type: '1',
   });
 
   const loadDefaults = useCallback(async () => {
