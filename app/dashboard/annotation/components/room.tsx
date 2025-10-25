@@ -1,4 +1,3 @@
-// Exemplo de como usar o useRoomAnnotation hook
 'use client';
 
 import React, { useState } from 'react';
@@ -10,12 +9,12 @@ import { useRoomAnnotation } from '@/hooks/useRoomAnnotation';
 export function RoomAnnotation() {
   const { startRoomAnnotation, isLoading } = useRoomAnnotation();
 
-  const [environmentName, setEnvironmentName] = useState('');
-  const [showCeillingHeight, setShowCeillingHeight] = useState(false);
-  const [ceillingHeight, setCeillingHeight] = useState('');
   const [level, setLevel] = useState('');
   const [showLevel, setShowLevel] = useState(true);
   const [isAutoLevel, setIsAutoLevel] = useState(true);
+  const [ceillingHeight, setCeillingHeight] = useState('');
+  const [environmentName, setEnvironmentName] = useState('');
+  const [showCeillingHeight, setShowCeillingHeight] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +32,7 @@ export function RoomAnnotation() {
   };
 
   return (
-    <div className=''>
+    <div className='border border-border rounded-md p-4'>
       <div className='w-full mx-auto'>
         <form
           onSubmit={handleSubmit}
@@ -119,9 +118,14 @@ export function RoomAnnotation() {
             </div>
           </div>
 
-          <div className='col-span-1 md:col-span-2 flex items-center justify-between mt-4'>
-            <Button type='submit' disabled={isLoading} size='lg'>
-              {isLoading ? 'Executando...' : 'Criar Anotação de Ambiente'}
+          <div className='flex items-center justify-center mt-4 w-full'>
+            <Button
+              type='submit'
+              size='lg'
+              disabled={isLoading}
+              className='min-w-[150px]'
+            >
+              {isLoading ? 'Executando...' : 'Anotação de Ambiente'}
             </Button>
           </div>
         </form>

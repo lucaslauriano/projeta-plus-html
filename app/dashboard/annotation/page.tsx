@@ -9,47 +9,48 @@ import { AiOutlineScan, AiOutlineTag } from 'react-icons/ai';
 import AnnotationLightingCeiling from '@/app/dashboard/annotation/components/ceilling';
 import {
   Accordion,
-  AccordionContent,
   AccordionItem,
+  AccordionContent,
   AccordionTrigger,
-} from '@/components/ui/accordion_';
+} from '@/components/ui/accordion';
+import { ElectricalChangeAtributes } from '@/app/dashboard/annotation/components/change-atributes';
 
 const accordionItems = [
   {
+    icon: AiOutlineTag,
     value: 'room',
     label: 'Ambiente',
-    icon: AiOutlineTag,
     content: <RoomAnnotation />,
   },
   {
+    icon: AiOutlineScan,
     value: 'section',
     label: 'Cortes e Vistas',
-    icon: AiOutlineScan,
     content: <AnnotationSection />,
   },
   {
+    icon: LampCeiling,
     value: 'ceiling',
     label: 'Iluminação e Forro',
-    icon: LampCeiling,
     content: <AnnotationLightingCeiling />,
   },
   {
+    icon: Zap,
     value: 'electrical',
     label: 'Eletrica',
-    icon: Zap,
-    content: <div>Electrical content coming soon...</div>,
+    content: <ElectricalChangeAtributes />,
   },
   {
+    icon: Frame,
     value: 'frames',
     label: 'Esquadrias',
-    icon: Frame,
     content: <div>Frames content coming soon...</div>,
   },
 ];
 
 export default function AnnotationDashboardPage() {
   return (
-    <div className='flex flex-col w-full  justify-start items-start'>
+    <div className='flex flex-col w-full justify-start items-start'>
       <PageHeader
         title='Annotation'
         breadcrumbs={[
@@ -70,9 +71,11 @@ export default function AnnotationDashboardPage() {
             const IconComponent = item.icon;
             return (
               <AccordionItem key={item.value} value={item.value}>
-                <AccordionTrigger className='flex items-start gap-2'>
-                  <IconComponent className='w-5 h-5' />
-                  {item.label}
+                <AccordionTrigger className='flex gap-2'>
+                  <div className='flex items-start justify-start gap-2'>
+                    <IconComponent className='w-5 h-5' />
+                    {item.label}
+                  </div>
                 </AccordionTrigger>
                 <AccordionContent>{item.content}</AccordionContent>
               </AccordionItem>

@@ -1,129 +1,66 @@
+'use client';
+
 import * as React from 'react';
-import classNames from 'classnames';
-import * as Accordion from '@radix-ui/react-accordion';
+import * as AccordionPrimitive from '@radix-ui/react-accordion';
+import { ChevronDownIcon } from 'lucide-react';
 
-const AccordionDemo = () => (
-  <Accordion.Root
-    className='w-[300px] rounded-md bg-mauve6 shadow-[0_2px_10px] shadow-black/5'
-    type='single'
-    defaultValue='item-1'
-    collapsible
-  >
-    <AccordionItem value='item-1'>
-      <AccordionTrigger>Is it accessible?</AccordionTrigger>
-      <AccordionContent>
-        Yes. It adheres to the WAI-ARIA design pattern.
-      </AccordionContent>
-    </AccordionItem>
+import { cn } from '@/lib/utils';
 
-    <AccordionItem value='item-2'>
-      <AccordionTrigger>Is it unstyled?</AccordionTrigger>
-      <AccordionContent>
-        Yes. It&apos;s unstyled by default, giving you freedom over the look and
-        feel.
-      </AccordionContent>
-    </AccordionItem>
+function Accordion({
+  ...props
+}: React.ComponentProps<typeof AccordionPrimitive.Root>) {
+  return <AccordionPrimitive.Root data-slot='accordion' {...props} />;
+}
 
-    <AccordionItem value='item-3'>
-      <AccordionTrigger>Can it be animated?</AccordionTrigger>
-      <AccordionContent>
-        Yes! You can animate the Accordion with CSS or JavaScript.
-      </AccordionContent>
-    </AccordionItem>
-  </Accordion.Root>
-);
-
-type AccordionItemProps = React.ComponentPropsWithoutRef<
-  typeof Accordion.Item
-> & {
-  children?: React.ReactNode;
-  className?: string;
-};
-
-const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
-  ({ children, className, ...props }, forwardedRef) => (
-    <Accordion.Item
-      className={classNames(
-        'mt-px overflow-hidden first:mt-0 first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 focus-within:shadow-[0_0_0_2px] focus-within:shadow-mauve12',
-        className
-      )}
+function AccordionItem({
+  className,
+  ...props
+}: React.ComponentProps<typeof AccordionPrimitive.Item>) {
+  return (
+    <AccordionPrimitive.Item
+      data-slot='accordion-item'
+      className={cn('border-b last:border-b-0', className)}
       {...props}
-      ref={forwardedRef}
-    >
-      {children}
-    </Accordion.Item>
-  )
-);
+    />
+  );
+}
 
-AccordionItem.displayName = 'AccordionItem';
-
-type AccordionTriggerProps = React.ComponentPropsWithoutRef<
-  typeof Accordion.Trigger
-> & {
-  children?: React.ReactNode;
-  className?: string;
-};
-
-const AccordionTrigger = React.forwardRef<
-  HTMLButtonElement,
-  AccordionTriggerProps
->(({ children, className, ...props }, forwardedRef) => (
-  <Accordion.Header className='flex'>
-    <Accordion.Trigger
-      className={classNames(
-        'group flex h-[45px] flex-1 cursor-default items-center justify-between bg-mauve1 px-5 text-[15px] leading-none text-violet11 shadow-[0_1px_0] shadow-mauve6 outline-none hover:bg-mauve2',
-        className
-      )}
-      {...props}
-      ref={forwardedRef}
-    >
-      {children}
-      <svg
-        className='text-violet10 transition-transform duration-300 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:rotate-180'
-        width='15'
-        height='15'
-        viewBox='0 0 15 15'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-        aria-hidden
+function AccordionTrigger({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof AccordionPrimitive.Trigger>) {
+  return (
+    <AccordionPrimitive.Header className='flex'>
+      <AccordionPrimitive.Trigger
+        data-slot='accordion-trigger'
+        className={cn(
+          'focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180',
+          className
+        )}
+        {...props}
       >
-        <path
-          d='M3.13523 6.15803C3.3241 5.95657 3.64052 5.94637 3.84197 6.13523L7.5 9.56464L11.158 6.13523C11.3595 5.94637 11.6759 5.95657 11.8648 6.15803C12.0536 6.35949 12.0434 6.67591 11.842 6.86477L7.84197 10.6148C7.64964 10.7951 7.35036 10.7951 7.15803 10.6148L3.15803 6.86477C2.95657 6.67591 2.94637 6.35949 3.13523 6.15803Z'
-          fill='currentColor'
-          fillRule='evenodd'
-          clipRule='evenodd'
-        />
-      </svg>
-    </Accordion.Trigger>
-  </Accordion.Header>
-));
+        {children}
+        <ChevronDownIcon className='text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200' />
+      </AccordionPrimitive.Trigger>
+    </AccordionPrimitive.Header>
+  );
+}
 
-AccordionTrigger.displayName = 'AccordionTrigger';
+function AccordionContent({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof AccordionPrimitive.Content>) {
+  return (
+    <AccordionPrimitive.Content
+      data-slot='accordion-content'
+      className='data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm'
+      {...props}
+    >
+      <div className={cn('pt-0 pb-4', className)}>{children}</div>
+    </AccordionPrimitive.Content>
+  );
+}
 
-type AccordionContentProps = React.ComponentPropsWithoutRef<
-  typeof Accordion.Content
-> & {
-  children?: React.ReactNode;
-  className?: string;
-};
-
-const AccordionContent = React.forwardRef<
-  HTMLDivElement,
-  AccordionContentProps
->(({ children, className, ...props }, forwardedRef) => (
-  <Accordion.Content
-    className={classNames(
-      'overflow-hidden bg-mauve2 text-[15px] text-mauve11 data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown',
-      className
-    )}
-    {...props}
-    ref={forwardedRef}
-  >
-    <div className='px-5 py-[15px]'>{children}</div>
-  </Accordion.Content>
-));
-
-AccordionContent.displayName = 'AccordionContent';
-
-export { AccordionDemo, AccordionItem, AccordionTrigger, AccordionContent };
-export default AccordionDemo;
+export { Accordion, AccordionItem, AccordionTrigger, AccordionContent };

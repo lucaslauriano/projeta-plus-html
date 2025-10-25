@@ -47,6 +47,12 @@ declare global {
     handleCircuitConnectionResult?: (result: RoomAnnotationResult) => void;
     handleCeilingDefaults?: (defaults: CeilingDefaults) => void;
     handleCeilingAnnotationResult?: (result: RoomAnnotationResult) => void;
+    handleHeightDefaults?: (defaults: HeightDefaults) => void;
+    handleHeightAnnotationResult?: (result: RoomAnnotationResult) => void;
+    handleComponentUpdaterDefaults?: (
+      defaults: ComponentUpdaterDefaults
+    ) => void;
+    handleComponentUpdaterResult?: (result: RoomAnnotationResult) => void;
   }
 }
 
@@ -76,6 +82,19 @@ export interface LightingDefaults {
 
 export interface CeilingDefaults {
   floor_level: string;
+}
+
+export interface HeightDefaults {
+  scale: number;
+  height_z_cm: string;
+  font: string;
+  show_usage: boolean;
+}
+
+export interface ComponentUpdaterDefaults {
+  last_attribute: string;
+  last_value: string;
+  last_situation: string;
 }
 
 export interface LanguageOption {

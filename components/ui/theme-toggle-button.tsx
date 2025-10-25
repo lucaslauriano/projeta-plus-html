@@ -10,7 +10,12 @@ export function ThemeToggleButton() {
   };
 
   return (
-    <Button variant='outline' onClick={toggleTheme} className='hover:bg-accent'>
+    <Button
+      variant='ghost'
+      size='sm'
+      onClick={toggleTheme}
+      className='hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+    >
       {theme === 'dark' ? (
         <Sun className='h-5 w-5' />
       ) : (

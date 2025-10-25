@@ -56,7 +56,7 @@ export default function GlobalSettingsPage() {
                 htmlFor='language'
                 className='block text-foreground text-sm font-bold mb-2'
               >
-                Language:
+                Idioma:
               </label>
               <select
                 id='language'
@@ -82,7 +82,7 @@ export default function GlobalSettingsPage() {
                 htmlFor='font'
                 className='block text-foreground text-sm font-bold mb-2'
               >
-                Font:
+                Fontes:
               </label>
               <select
                 id='font'

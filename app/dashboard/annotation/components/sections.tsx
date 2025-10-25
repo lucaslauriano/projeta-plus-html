@@ -34,12 +34,20 @@ function AnnotationSectionInner() {
   };
 
   return (
-    <div className=''>
+    <div className='border border-border rounded-md p-4'>
       <div className='w-full mx-auto'>
         <div className='flex flex-col items-center space-y-4'>
           <div className='flex flex-col items-center space-y-4'>
-            <form onSubmit={handleSectionSubmit}>
-              <Button type='submit' disabled={sectionLoading} size='lg'>
+            <form
+              onSubmit={handleSectionSubmit}
+              className='w-full flex items-center justify-center'
+            >
+              <Button
+                type='submit'
+                disabled={sectionLoading}
+                size='lg'
+                className='w-[150px]'
+              >
                 {sectionLoading
                   ? 'Ativando Ferramenta...'
                   : 'Anotação de Corte'}
@@ -47,8 +55,16 @@ function AnnotationSectionInner() {
             </form>
           </div>
           <div className='flex flex-col items-center space-y-4'>
-            <form onSubmit={handleViewSubmit}>
-              <Button type='submit' disabled={viewLoading} size='lg'>
+            <form
+              onSubmit={handleViewSubmit}
+              className='w-full flex items-center justify-center'
+            >
+              <Button
+                type='submit'
+                disabled={viewLoading}
+                size='lg'
+                className='w-[150px]'
+              >
                 {viewLoading ? 'Ativando Ferramenta...' : 'Anotação de Vista'}
               </Button>
             </form>
