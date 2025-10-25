@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { useCeilingAnnotation } from '@/hooks/useCeilingAnnotation';
 import { useLightingAnnotation } from '@/hooks/useLightingAnnotation';
 import { useCircuitConnection } from '@/hooks/useCircuitConnection';
+import { Input } from '@/components/ui/input';
 
 const AnnotationLightingCeilingContent = dynamic(
   () => Promise.resolve(AnnotationCeilingInner),
@@ -19,11 +20,15 @@ export default function AnnotationLightingCeiling() {
 }
 
 function AnnotationCeilingInner() {
+  const [circuitText, setCircuitText] = useState('C1');
   const { startCeilingAnnotation, isLoading: isCeilingLoading } =
     useCeilingAnnotation();
 
-  const { startLightingAnnotation, isLoading: isLightingLoading } =
-    useLightingAnnotation();
+  const {
+    startLightingAnnotation,
+    isLoading: isLightingLoading,
+    defaults,
+  } = useLightingAnnotation();
 
   const { startCircuitConnection, isLoading: isCircuitLoading } =
     useCircuitConnection();
@@ -35,7 +40,13 @@ function AnnotationCeilingInner() {
 
   const handleLightingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    startLightingAnnotation();
+    startLightingAnnotation({
+      circuit_text: circuitText,
+      circuit_scale: defaults.circuit_scale,
+      circuit_height_cm: defaults.circuit_height_cm,
+      circuit_font: defaults.circuit_font,
+      circuit_text_color: defaults.circuit_text_color,
+    });
   };
 
   const handleCircuitConnectionSubmit = (e: React.FormEvent) => {
@@ -44,16 +55,22 @@ function AnnotationCeilingInner() {
   };
 
   return (
-    <div className='space-y-8'>
+    <div className='border border-border rounded-md p-4 space-y-8'>
       {/* Forro Section */}
       <div className='w-full mx-auto'>
         <h2 className='text-lg font-semibold mb-4 text-center'>Forro</h2>
-        <form onSubmit={handleCeilingSubmit}>
-          <div className='flex flex-col items-center space-y-4'>
-            <Button type='submit' disabled={isCeilingLoading} size='lg'>
-              {isCeilingLoading ? 'Ativando Ferramenta...' : 'Área + PD'}
-            </Button>
-          </div>
+        <form
+          onSubmit={handleCeilingSubmit}
+          className='w-full flex items-center justify-center'
+        >
+          <Button
+            type='submit'
+            size='lg'
+            disabled={isCeilingLoading}
+            className='w-[150px]'
+          >
+            {isCeilingLoading ? 'Ativando Ferramenta...' : 'Área + PD'}
+          </Button>
         </form>
       </div>
 
@@ -61,23 +78,38 @@ function AnnotationCeilingInner() {
       <div className='w-full mx-auto'>
         <h2 className='text-lg font-semibold mb-4 text-center'>Iluminação</h2>
         <div className='flex flex-col items-center space-y-4'>
-          <form onSubmit={handleLightingSubmit} className='w-full'>
+          <form
+            onSubmit={handleLightingSubmit}
+            className='w-full flex flex-col gap-y-4 items-center justify-center'
+          >
+            <Input
+              type='text'
+              placeholder='Ex: A ou C1'
+              className='w-full'
+              label='Circuito'
+              value={circuitText}
+              onChange={(e) => setCircuitText(e.target.value)}
+              required
+            />
             <Button
+              size='lg'
               type='submit'
               disabled={isLightingLoading}
-              size='lg'
-              className='w-full'
+              className='w-[150px]'
             >
               {isLightingLoading ? 'Ativando Ferramenta...' : 'Circuitos'}
             </Button>
           </form>
 
-          <form onSubmit={handleCircuitConnectionSubmit} className='w-full'>
+          <form
+            onSubmit={handleCircuitConnectionSubmit}
+            className='w-full flex items-center justify-center'
+          >
             <Button
+              size='lg'
               type='submit'
               disabled={isCircuitLoading}
-              size='lg'
-              className='w-full'
+              className='w-[150px]'
             >
               {isCircuitLoading ? 'Ativando Ferramenta...' : 'Ligar Circuitos'}
             </Button>

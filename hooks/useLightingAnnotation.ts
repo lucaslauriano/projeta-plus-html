@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { useSketchup } from '@/contexts/SketchupContext';
+import { LightingDefaults } from '@/types/global';
 
 export function useLightingAnnotation() {
   const { callSketchupMethod, isLoading, isAvailable } = useSketchup();
@@ -11,6 +12,10 @@ export function useLightingAnnotation() {
     circuit_font: 'Arial',
     circuit_text_color: '#000000',
   });
+
+  const loadDefaults = useCallback(async () => {
+    await callSketchupMethod('loadLightingAnnotationDefaults', {});
+  }, [callSketchupMethod]);
 
   useEffect(() => {
     // Load defaults when hook is initialized
@@ -42,22 +47,21 @@ export function useLightingAnnotation() {
         delete window.handleLightingAnnotationResult;
       }
     };
-  }, []);
+  }, [loadDefaults]);
 
-  const loadDefaults = async () => {
-    await callSketchupMethod('loadLightingAnnotationDefaults', {});
-  };
-
-  const startLightingAnnotation = async (args = {}) => {
+  const startLightingAnnotation = async (args: Partial<LightingDefaults>) => {
     const params = {
-      circuit_text: defaults.circuit_text,
-      circuit_scale: defaults.circuit_scale,
-      circuit_height_cm: defaults.circuit_height_cm,
-      circuit_font: defaults.circuit_font,
-      circuit_text_color: defaults.circuit_text_color,
-      ...args,
+      circuit_text: args.circuit_text || defaults.circuit_text,
+      circuit_scale: args.circuit_scale ?? defaults.circuit_scale,
+      circuit_height_cm: args.circuit_height_cm ?? defaults.circuit_height_cm,
+      circuit_font: args.circuit_font || defaults.circuit_font,
+      circuit_text_color:
+        args.circuit_text_color || defaults.circuit_text_color,
     };
-    await callSketchupMethod('startLightingAnnotation', params);
+    await callSketchupMethod(
+      'startLightingAnnotation',
+      params as unknown as Record<string, unknown>
+    );
   };
 
   return {
