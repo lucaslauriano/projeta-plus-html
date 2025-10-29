@@ -1,5 +1,6 @@
 import type React from 'react';
 import type { Metadata } from 'next';
+import { ClerkProvider } from '@clerk/nextjs';
 import { Manrope } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { SketchupProvider } from '@/contexts/SketchupContext';
@@ -22,24 +23,24 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  //const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-
   return (
-    <html
-      lang='en'
-      className={`${manrope.variable} antialiased h-full`}
-      suppressHydrationWarning
-    >
-      <body className='h-full'>
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange
-        >
-          <SketchupProvider>{children}</SketchupProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html
+        lang='en'
+        className={`${manrope.variable} antialiased h-full`}
+        suppressHydrationWarning
+      >
+        <body className='h-full'>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SketchupProvider>{children}</SketchupProvider>
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

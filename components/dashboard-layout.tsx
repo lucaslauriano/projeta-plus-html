@@ -3,8 +3,8 @@
 import type React from 'react';
 
 import { useState } from 'react';
-// import { UserButton, useUser } from '@clerk/nextjs';
-// import { useSubscription } from '@clerk/nextjs/experimental';
+import { UserButton, useUser } from '@clerk/nextjs';
+import { useSubscription } from '@clerk/nextjs/experimental';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { HousePlus, Plus, Home, Menu, Settings } from 'lucide-react';
@@ -65,8 +65,8 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  // const { user } = useUser();
-  // const { data } = useSubscription();
+  const { user } = useUser();
+  const { data } = useSubscription();
   const pathname = usePathname();
 
   return (
@@ -144,15 +144,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               sidebarExpanded ? 'space-x-3' : 'justify-center'
             )}
           >
-            {/* <UserButton
+            <UserButton
               afterSignOutUrl='/'
               appearance={{
                 elements: {
                   avatarBox: 'h-8 w-8',
                 },
               }}
-            /> */}
-            {/* {sidebarExpanded && (
+            />
+            {sidebarExpanded && (
               <div className='flex-1 min-w-0'>
                 <p className='text-sm font-medium text-sidebar-foreground font-serif truncate'>
                   {user?.firstName} {user?.lastName}
@@ -163,7 +163,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     .join(', ')}
                 </p>
               </div>
-            )} */}
+            )}
           </div>
         </div>
       </div>
