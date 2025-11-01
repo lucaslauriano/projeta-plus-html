@@ -3,18 +3,12 @@ import { toast } from 'react-toastify';
 import { useSketchup } from '@/contexts/SketchupContext';
 
 export type HeightDefaults = {
-  scale: number;
-  height_z_cm: string;
-  font: string;
   show_usage: boolean;
 };
 
 export function useHeightAnnotation() {
   const { callSketchupMethod, isLoading, isAvailable } = useSketchup();
   const [defaults, setDefaults] = useState<HeightDefaults>({
-    scale: 25,
-    height_z_cm: '145',
-    font: 'Century Gothic',
     show_usage: false,
   });
 
@@ -23,10 +17,8 @@ export function useHeightAnnotation() {
   }, [callSketchupMethod]);
 
   useEffect(() => {
-    // Load defaults when hook is initialized
     loadDefaults();
 
-    // Register result handler
     window.handleHeightDefaults = (response: HeightDefaults) => {
       if (response) {
         setDefaults(response);
@@ -59,9 +51,6 @@ export function useHeightAnnotation() {
 
   const startHeightAnnotation = async (args: Partial<HeightDefaults>) => {
     const params = {
-      scale: args.scale ?? defaults.scale,
-      height_z_cm: args.height_z_cm || defaults.height_z_cm,
-      font: args.font || defaults.font,
       show_usage: args.show_usage ?? defaults.show_usage,
     };
     await callSketchupMethod(
