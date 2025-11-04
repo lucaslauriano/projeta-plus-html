@@ -58,6 +58,7 @@ function Input({
               : 'focus-visible:ring-primary focus-visible:border-primary',
             className
           )}
+          autoComplete='on'
           {...props}
         />
       </div>
