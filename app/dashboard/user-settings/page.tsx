@@ -75,8 +75,6 @@ export default function GlobalSettingsPage() {
               </select>
             </div>
 
-            {/* Rest of the settings remain the same */}
-            {/* Font */}
             <div>
               <label
                 htmlFor='font'
@@ -101,7 +99,6 @@ export default function GlobalSettingsPage() {
               </select>
             </div>
 
-            {/* Scale (Numerator and Denominator) */}
             <div className=' w-full gap-y-4'>
               <label
                 htmlFor='scale_numerator'
@@ -122,7 +119,7 @@ export default function GlobalSettingsPage() {
                   min='1'
                 />
                 <Input
-                  type='number'
+                  type='text'
                   id='scale_denominator'
                   value={settings?.scale_denominator?.toString() || ''}
                   onChange={(e) => {
