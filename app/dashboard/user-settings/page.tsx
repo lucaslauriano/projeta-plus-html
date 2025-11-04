@@ -119,7 +119,7 @@ export default function GlobalSettingsPage() {
                   min='1'
                 />
                 <Input
-                  type='text'
+                  type='number'
                   id='scale_denominator'
                   value={settings?.scale_denominator?.toString() || ''}
                   onChange={(e) => {
@@ -141,10 +141,10 @@ export default function GlobalSettingsPage() {
             {/* Cut Height */}
             <div>
               <Input
-                type='number'
+                type='text'
                 step='0.01'
                 id='cut_height'
-                label='Cut Height (m):'
+                label='Altura de corte (m):'
                 value={settings?.cut_height?.toString() || ''}
                 onChange={(e) => {
                   const val = parseFloat(e.target.value);
