@@ -1,6 +1,6 @@
 'use client';
 
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
+import { SignedOut, SignInButton, useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,41 +9,63 @@ import {
   CardContent,
   CardDescription,
 } from '@/components/ui/card';
-import { Plus, Shield, Zap, HousePlus } from 'lucide-react';
-import Link from 'next/link';
+import { Plus, FileText, Package, FileOutput } from 'lucide-react';
 import { ThemeToggleButton } from '@/components/ui/theme-toggle-button';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function HomePage() {
+  const { isSignedIn, isLoaded } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      router.push('/dashboard');
+    }
+  }, [isSignedIn, isLoaded, router]);
+
   return (
     <div className='min-h-screen bg-background'>
       <SignedOut>
         <LandingPage />
       </SignedOut>
-      <SignedIn>
-        <div className='flex items-center justify-center min-h-screen'>
-          <Card className='w-full max-w-md'>
-            <CardHeader className='text-center'>
-              <CardTitle className='font-sans'>
-                Bem vindo, to Projeta Plus!
-              </CardTitle>
-              <CardDescription className='font-serif'>
-                Your SaaS billing dashboard is ready
-              </CardDescription>
-            </CardHeader>
-            <CardContent className='space-y-4'>
-              <div className='flex items-center justify-center'>
-                <UserButton afterSignOutUrl='/' />
-              </div>
-              <Link href='/dashboard'>
-                <Button className='w-full' size='lg'>
-                  Go to Dashboard
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </SignedIn>
     </div>
+  );
+}
+
+function AnimatedSubtitle() {
+  const subtitles = [
+    'Turbine seu SketchUp com anotações inteligentes e ferramentas profissionais',
+    'Do conceito ao projeto executivo em tempo recorde',
+    'Projete mais rápido. Anote melhor. Entregue com confiança.',
+    'Transforme seu SketchUp em uma máquina de projetos executivos',
+    'Plugins profissionais para arquitetos que valorizam seu tempo',
+    'Inteligência encontra design. Criatividade encontra produtividade.',
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [fadeIn, setFadeIn] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFadeIn(false);
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % subtitles.length);
+        setFadeIn(true);
+      }, 1000);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [subtitles.length]);
+
+  return (
+    <p
+      className={`text-xl font-serif text-muted-foreground mb-8 leading-relaxed transition-opacity duration-500 ${
+        fadeIn ? 'opacity-100' : 'opacity-0'
+      }`}
+    >
+      {subtitles[currentIndex]}
+    </p>
   );
 }
 
@@ -54,9 +76,8 @@ function LandingPage() {
       <header className='border-b bg-card'>
         <div className='container mx-auto px-4 py-4 flex items-center justify-between'>
           <div className='flex items-center space-x-2 w-full'>
-            <HousePlus className='h-6 w-6 mt-1 font-bold text-primary' />
             <h1 className='text-xl font-bold font-sans flex mt-2'>
-              Projeta <Plus className='h-4 w-4 mt-1 font-bold text-primary' />
+              Projeta <Plus className='h-4 w-4 mt-1 font-bold text-secondary' />
             </h1>
           </div>
           <SignInButton mode='modal'>
@@ -70,78 +91,74 @@ function LandingPage() {
       <main className='flex-1'>
         <section className='py-20 px-4'>
           <div className='container mx-auto text-center max-w-4xl'>
-            <h2 className='text-5xl font-bold font-sans mb-6 text-foreground'>
-              Projeta
-              <span className='text-primary'> Plus</span>
-            </h2>
-            <p className='text-xl font-serif text-muted-foreground mb-8 leading-relaxed'>
-              Launch your SaaS with professional billing in minutes. Clerk
-              authentication meets Stripe payments in a beautiful, ready-to-use
-              dashboard.
-            </p>
+            <div className='flex items-center justify-center space-x-3 w-full'>
+              <h1 className='flex items-center text-5xl font-bold font-sans mb-6 text-foreground'>
+                Projeta <Plus className='h-10 w-10 font-bold text-secondary' />
+              </h1>
+            </div>
+            <AnimatedSubtitle />
             <div className='flex flex-col sm:flex-row gap-4 justify-center'>
               <SignInButton mode='modal'>
-                <Button size='lg' className='text-lg px-8'>
-                  Get Started Free
+                <Button size='lg' className='text-lg px-8' variant='secondary'>
+                  Comece Agora
                 </Button>
               </SignInButton>
-              <Button
-                variant='outline'
-                size='lg'
-                className='text-lg px-8 bg-transparent'
-              >
-                View Demo
+              <Button variant='outline' size='lg' className='text-lg px-8 '>
+                Premium Plus
               </Button>
             </div>
           </div>
         </section>
 
         {/* Features */}
-        <section className='py-16 px-4 bg-muted/30'>
+        <section className='py-10 px-4 bg-muted/30'>
           <div className='container mx-auto max-w-6xl'>
             <h3 className='text-3xl font-bold font-sans text-center mb-12'>
-              Everything You Need to Start Billing
+              Tudo que você precisa para projetos profissionais
             </h3>
             <div className='grid md:grid-cols-3 gap-8'>
               <Card>
                 <CardHeader>
-                  <Shield className='h-12 w-12 text-primary mb-4' />
+                  <FileText className='h-12 w-12 text-secondary mb-4' />
                   <CardTitle className='font-sans'>
-                    Secure Authentication
+                    Anotações Inteligentes
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription className='font-serif'>
-                    Clerk handles user management, authentication, and security
-                    so you can focus on your product.
+                    Anote ambientes, alturas, vistas, circuitos elétricos e
+                    seções automaticamente. Documentação profissional em
+                    segundos.
                   </CardDescription>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <Plus className='h-12 w-12 text-primary mb-4' />
+                  <Package className='h-12 w-12 text-secondary mb-4' />
                   <CardTitle className='font-sans'>
-                    Stripe Integration
+                    Bibliotecas Completas
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription className='font-serif'>
-                    Accept payments, manage subscriptions, and handle billing
-                    with Stripes powerful platform.
+                    Mobiliário, iluminação, esquadrias, revestimentos e rodapés.
+                    Componentes prontos para seus projetos de interiores.
                   </CardDescription>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <Zap className='h-12 w-12 text-primary mb-4' />
-                  <CardTitle className='font-sans'>Instant Setup</CardTitle>
+                  <FileOutput className='h-12 w-12 text-secondary mb-4' />
+                  <CardTitle className='font-sans'>
+                    Relatórios Automáticos
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription className='font-serif'>
-                    No complex integrations. Get your billing dashboard running
-                    in minutes, not days.
+                    Gere layouts customizados e relatórios detalhados
+                    automaticamente. Do modelo 3D à prancha final em minutos.
                   </CardDescription>
                 </CardContent>
               </Card>
@@ -152,10 +169,86 @@ function LandingPage() {
 
       {/* Footer */}
       <footer className='border-t bg-card py-8'>
-        <div className='container mx-auto px-4 text-center'>
-          <p className='text-muted-foreground font-serif'>
-            Built with Next.js, Clerk, and Stripe
-          </p>
+        <div className='container mx-auto px-4'>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-4'>
+            <div>
+              <h4 className='font-bold font-sans mb-4 flex items-center'>
+                Projeta <Plus className='h-4 w-4 ml-1 text-secondary' />
+              </h4>
+              <p className='text-sm text-muted-foreground font-serif'>
+                Plugins profissionais para SketchUp que transformam seu workflow
+                de projetos.
+              </p>
+            </div>
+            <div className='grid grid-cols-2 md:grid-cols-2 gap-4 mb-4 justify-center items-center'>
+              <div>
+                <h4 className='font-bold font-sans mb-4'>Produto</h4>
+                <ul className='space-y-2 text-sm text-muted-foreground font-serif'>
+                  <li>
+                    <a
+                      href='#'
+                      className='hover:text-foreground transition-colors'
+                    >
+                      Features
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href='#'
+                      className='hover:text-foreground transition-colors'
+                    >
+                      Preços
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href='#'
+                      className='hover:text-foreground transition-colors'
+                    >
+                      Documentação
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className='font-bold font-sans mb-4'>Empresa</h4>
+                <ul className='space-y-2 text-sm text-muted-foreground font-serif'>
+                  <li>
+                    <a
+                      href='#'
+                      className='hover:text-foreground transition-colors'
+                    >
+                      Sobre
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href='#'
+                      className='hover:text-foreground transition-colors'
+                    >
+                      Contato
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href='#'
+                      className='hover:text-foreground transition-colors'
+                    >
+                      Suporte
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className='border-t pt-8 text-center'>
+            <p className='text-sm text-muted-foreground font-serif'>
+              © {new Date().getFullYear()} Panda Experience. Todos os direitos
+              reservados.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
