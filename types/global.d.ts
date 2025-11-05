@@ -14,7 +14,20 @@ export interface RoomDefaults {
   level?: string;
 }
 
+// Clerk custom types
+export {};
+
 declare global {
+  interface CustomJwtSessionClaims {
+    metadata: {
+      plan?: 'free' | 'premium' | 'pro_user';
+    };
+  }
+
+  interface UserPublicMetadata {
+    plan?: 'free' | 'premium' | 'pro_user';
+  }
+
   interface Window {
     sketchup: {
       requestAllSettings: () => void;
