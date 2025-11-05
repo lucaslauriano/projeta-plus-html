@@ -191,8 +191,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 variant='secondary'
                 className={
                   userPlan === 'free'
-                    ? 'bg-secondary text-white'
-                    : 'bg-secondary/20 text-secondary'
+                    ? 'bg-accent text-white'
+                    : 'bg-accent/20 text-white'
                 }
               >
                 {userPlan === 'free' ? 'Plano Free' : 'Plano Premium'}

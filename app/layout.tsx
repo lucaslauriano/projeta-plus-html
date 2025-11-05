@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
 import { Manrope } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
+import { ContrastProvider } from '@/contexts/ContrastContext';
 import { SketchupProvider } from '@/contexts/SketchupContext';
 import './globals.css';
 
@@ -37,7 +38,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <SketchupProvider>{children}</SketchupProvider>
+            <ContrastProvider>
+              <SketchupProvider>{children}</SketchupProvider>
+            </ContrastProvider>
           </ThemeProvider>
         </body>
       </html>

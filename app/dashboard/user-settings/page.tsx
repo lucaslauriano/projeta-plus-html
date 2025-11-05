@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSettings } from '@/hooks/useSettings';
 import PageHeader from '@/components/page-header';
+import { ThemeSelector } from '@/components/ui/theme-selector';
+import { ThemePreview } from '@/components/theme-preview';
 
 export default function GlobalSettingsPage() {
   const {
@@ -228,6 +230,12 @@ export default function GlobalSettingsPage() {
               </div>
             )}
           </form>
+        </div>
+
+        {/* Theme Selector */}
+        <div className='mt-8 space-y-6'>
+          <ThemeSelector />
+          <ThemePreview />
         </div>
       </div>
     </div>
