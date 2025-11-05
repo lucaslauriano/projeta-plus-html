@@ -13,7 +13,6 @@ export default function DashboardPage() {
   const { user, isLoaded } = useUser();
   const [activeTab, setActiveTab] = useState<TabId>('tutoriais');
 
-  // Verificar se o usuário tem plano premium no metadata do Clerk
   const hasPremiumPlan =
     user?.publicMetadata?.plan === 'premium' ||
     user?.publicMetadata?.plan === 'pro_user';
@@ -47,7 +46,6 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Tabs */}
       <div className='border-b border-border'>
         <nav aria-label='Tabs' className=' -mb-px flex space-x-8'>
           {tabs.map((tab) => {
@@ -71,7 +69,6 @@ export default function DashboardPage() {
         </nav>
       </div>
 
-      {/* Tab Content */}
       <div className='mt-4'>
         {activeTab === 'tutoriais' && (
           <VideoCarousel
