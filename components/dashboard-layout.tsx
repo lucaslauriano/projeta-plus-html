@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { useSubscription } from '@clerk/nextjs/experimental';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { HousePlus, Plus, Home, Menu, Settings } from 'lucide-react';
 import { AiTwotoneLayout } from 'react-icons/ai';
@@ -68,6 +69,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user } = useUser();
   const { data } = useSubscription();
   const pathname = usePathname();
+
+  // Verificar se o usuário tem plano premium
+  const hasPremiumPlan =
+    user?.publicMetadata?.plan === 'premium' ||
+    user?.publicMetadata?.plan === 'pro_user';
+  const userPlan: 'free' | 'premium' = hasPremiumPlan ? 'premium' : 'free';
 
   return (
     <div className='min-h-screen bg-background'>
@@ -179,7 +186,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className='sticky top-0 z-30 flex h-16 items-center gap-x-4 border-b bg-background px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8'>
           <div className='flex flex-1 gap-x-4 self-stretch lg:gap-x-6'>
             <div className='flex flex-1'></div>
-            <div className='flex items-center justify-end gap-x-4 lg:gap-x-6'>
+            <div className=' flex items-center justify-end gap-x-4 lg:gap-x-6'>
+              <Badge
+                variant='secondary'
+                className={
+                  userPlan === 'free'
+                    ? 'bg-secondary text-white'
+                    : 'bg-secondary/20 text-secondary'
+                }
+              >
+                {userPlan === 'free' ? 'Plano Free' : 'Plano Premium'}
+              </Badge>
               <ThemeToggleButton />
             </div>
           </div>

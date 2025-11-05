@@ -11,7 +11,8 @@
   --card-foreground: oklch(0.08 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.08 0 0);
-  --primary: oklch(0.9231 0.1595 115.24); /* Green #E2F26B */
+  /*  --primary: oklch(0.9231 0.1595 115.24); Green #E2F26B */
+  --primary: oklch(0.74 0.12 284);
   --primary-foreground: oklch(0.08 0 0); /* Black text for contrast */
   --secondary: oklch(0.74 0.12 284); /* Purple #A79BF2 */
   --secondary-foreground: oklch(0.08 0 0); /* Black text for contrast */
@@ -32,7 +33,7 @@
   --radius: 0.5rem;
   --sidebar: oklch(0.99 0 0); /* White sidebar */
   --sidebar-foreground: oklch(0.08 0 0);
-  --sidebar-primary: oklch(0.9231 0.1595 115.24); /* Green active */
+  --sidebar-primary: oklch(0.74 0.12 284); /* Green active */
   --sidebar-primary-foreground: oklch(0.08 0 0);
   --sidebar-accent: oklch(0.96 0 0); /* Grey hover */
   --sidebar-accent-foreground: oklch(0.08 0 0);
@@ -48,7 +49,7 @@
   --card-foreground: oklch(0.96 0 0);
   --popover: oklch(0.08 0 0);
   --popover-foreground: oklch(0.96 0 0);
-  --primary: oklch(0.9231 0.1595 115.24); /* Green #E2F26B */
+  --primary:oklch(0.74 0.12 284) /* Green #E2F26B */
   --primary-foreground: oklch(0.08 0 0); /* Black text for contrast */
   --secondary: oklch(0.74 0.12 284); /* Purple #A79BF2 */
   --secondary-foreground: oklch(0.08 0 0); /* Black text for contrast */
@@ -146,5 +147,12 @@
   .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
+  }
+  /* Line clamp utilities */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }
