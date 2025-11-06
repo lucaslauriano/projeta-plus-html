@@ -56,7 +56,7 @@ export function RoomAnnotation() {
                 id='ceillingHeight'
                 value={ceillingHeight}
                 onChange={(e) => setCeillingHeight(e.target.value)}
-                required
+                required={showCeillingHeight}
                 disabled={isLoading}
                 placeholder='2,50'
                 label='Pé Direito (m):'

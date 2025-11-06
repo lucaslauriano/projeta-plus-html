@@ -33,7 +33,6 @@ export default function DashboardPage() {
 
   return (
     <div className='space-y-4'>
-      {/* Header */}
       <div>
         <h1 className='text-3xl font-bold font-sans'>Dashboard</h1>
         <p className='text-muted-foreground font-serif flex items-center gap-1'>
