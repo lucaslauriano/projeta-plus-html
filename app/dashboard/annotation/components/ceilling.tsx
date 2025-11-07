@@ -58,7 +58,7 @@ function AnnotationCeilingInner() {
     <div className='border border-border rounded-md p-4 space-y-8'>
       {/* Forro Section */}
       <div className='w-full mx-auto'>
-        <h2 className='text-lg font-semibold mb-4 text-center'>Forro</h2>
+        <h2 className='text-lg font-semibold mb-4 text-start'>Forro</h2>
         <form
           onSubmit={handleCeilingSubmit}
           className='w-full flex items-center justify-center'
@@ -76,7 +76,7 @@ function AnnotationCeilingInner() {
 
       {/* Iluminação Section */}
       <div className='w-full mx-auto'>
-        <h2 className='text-lg font-semibold mb-4 text-center'>Iluminação</h2>
+        <h2 className='text-lg font-semibold mb-4 text-start'>Iluminação</h2>
         <div className='flex flex-col items-center space-y-4'>
           <form
             onSubmit={handleLightingSubmit}
