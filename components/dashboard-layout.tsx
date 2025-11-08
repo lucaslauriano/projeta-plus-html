@@ -92,11 +92,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className='h-screen overflow-hidden'>
+    <div className='relative h-full overflow-hidden'>
       {/* Navbar Flutuante */}
       <div
         className={cn(
-          'fixed left-5 top-5 bottom-5 z-50 flex flex-col bg-card shadow-2xl rounded-3xl transition-all duration-300 ease-in-out',
+          'absolute left-5 top-5 bottom-5 z-50 flex flex-col bg-card shadow-2xl rounded-3xl transition-all duration-300 ease-in-out',
           sidebarExpanded ? 'w-64' : 'w-18'
         )}
       >
@@ -190,7 +190,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       {/* Main content */}
-      <div className='fixed inset-y-0 right-0 left-24 overflow-y-auto'>
+      <div className='absolute inset-y-0 right-0 left-22 overflow-y-auto'>
         <div className='sticky top-5 z-30 mx-4 mb-4'>
           <div className='flex h-14 items-center justify-end gap-3 px-4 bg-card rounded-2xl shadow-lg'>
             <Badge

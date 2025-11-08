@@ -32,7 +32,7 @@ export default function RootLayout({
         className={`${manrope.variable} antialiased h-full`}
         suppressHydrationWarning
       >
-        <body className='h-full'>
+        <body className='h-full p-2'>
           <ThemeProvider
             attribute='class'
             defaultTheme='light'
@@ -40,7 +40,9 @@ export default function RootLayout({
           >
             <ContrastProvider>
               <SketchupProvider>
-                <div className='rounded-4xl bg-background '>{children}</div>
+                <div className='rounded-4xl bg-background h-full overflow-hidden shadow-2xl'>
+                  {children}
+                </div>
                 <ToastContainer
                   position='bottom-right'
                   autoClose={3000}

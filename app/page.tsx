@@ -25,7 +25,7 @@ export default function HomePage() {
   }, [isSignedIn, isLoaded, router]);
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className='h-full bg-background overflow-y-auto'>
       <SignedOut>
         <LandingPage />
       </SignedOut>
@@ -71,7 +71,7 @@ function AnimatedSubtitle() {
 
 function LandingPage() {
   return (
-    <div className='flex flex-col min-h-screen'>
+    <div className='flex flex-col '>
       {/* Header */}
       <header className='border-b bg-card'>
         <div className='container mx-auto px-4 py-4 flex items-center justify-between'>
