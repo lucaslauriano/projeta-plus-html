@@ -36,17 +36,8 @@ export default function GlobalSettingsPage() {
   return (
     <div className='flex flex-col w-full gap-4 justify-start items-start'>
       <PageHeader
-        title='Annotation'
-        breadcrumbs={[
-          {
-            name: 'Dashboard',
-            href: '/dashboard',
-          },
-          {
-            name: 'Configurações',
-            href: '/dashboard/user-settings',
-          },
-        ]}
+        title='Configurações'
+        description='Configure as preferências e ajustes do sistema'
       />
 
       <div className='w-full '>

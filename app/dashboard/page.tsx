@@ -32,35 +32,37 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className='space-y-4'>
-      <div>
-        <h1 className='text-3xl font-bold font-sans'>Dashboard</h1>
-        <p className='text-muted-foreground font-serif flex items-center gap-1'>
-          Bem-vindo ao
-          <span className='font-sans font-bold inline-flex items-center'>
-            Projeta
-            <Plus className='h-3 w-3 text-secondary' />
-          </span>
-          , {user?.firstName}.
+    <div className='flex flex-col w-full max-w-4xl mx-auto px-4'>
+      <div className='mb-8 pt-2'>
+        <h1 className='text-2xl font-bold font-sans tracking-tight'>
+          Dashboard
+        </h1>
+        <p className='text-sm text-muted-foreground mt-1'>
+          Bem-vindo de volta, {user?.firstName}
         </p>
       </div>
 
-      <div className='border-b border-border'>
-        <nav aria-label='Tabs' className=' -mb-px flex space-x-8'>
+      <div className='mb-6'>
+        <nav
+          aria-label='Tabs'
+          className='flex gap-2 p-1 bg-muted/50 rounded-2xl'
+        >
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
+            const TabIcon = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 aria-current={isActive ? 'page' : undefined}
                 className={cn(
+                  'flex items-center gap-2 flex-1 px-4 py-3 rounded-xl text-sm font-medium transition-all',
                   isActive
-                    ? 'border-indigo-500 text-indigo-400'
-                    : 'border-transparent text-gray-400 hover:border-gray-300 hover:text-gray-300',
-                  'whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium transition-colors'
+                    ? 'bg-background shadow-sm text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
                 )}
               >
+                <TabIcon className='w-4 h-4' />
                 {tab.name}
               </button>
             );
@@ -68,7 +70,7 @@ export default function DashboardPage() {
         </nav>
       </div>
 
-      <div className='mt-4'>
+      <div className='pb-8'>
         {activeTab === 'tutoriais' && (
           <VideoCarousel
             useChannel={true}

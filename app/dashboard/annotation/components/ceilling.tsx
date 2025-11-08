@@ -56,23 +56,21 @@ function AnnotationCeilingInner() {
   };
 
   return (
-    <div className='space-y-4'>
+    <div className='w-full max-w-lg mx-auto space-y-5'>
       {/* Forro Section */}
-      <div className='w-full mx-auto border border-border rounded-md p-4'>
-        <h2 className='text-md font-medium mb-1 text-start'>Forro</h2>
-        <p className='text-xs text-muted-foreground mb-4 text-start'>
-          Gere anotação com a área e a altura do pé-direito, calculadas
-          automaticamente a partir do ponto 0 (Z) somado ao nível do piso.
-        </p>
-        <form
-          onSubmit={handleCeilingSubmit}
-          className='w-full flex flex-col gap-y-4 items-center justify-center'
-        >
+      <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
+        <div className='space-y-2'>
+          <h3 className='text-sm font-semibold text-foreground'>Forro</h3>
+          <p className='text-xs text-muted-foreground'>
+            Gere anotação com área e altura do pé-direito, calculadas
+            automaticamente
+          </p>
+        </div>
+        <form onSubmit={handleCeilingSubmit} className='space-y-4'>
           <Input
             type='text'
-            placeholder='Ex: A ou C1'
-            className='w-full'
-            label='Nível do Piso:'
+            placeholder='Ex: 0,00'
+            label='Nível do Piso'
             value={level}
             onChange={(e) => setLevel(e.target.value)}
             required
@@ -81,25 +79,28 @@ function AnnotationCeilingInner() {
             type='submit'
             size='lg'
             disabled={isCeilingLoading}
-            className='w-[150px]'
+            className='w-full'
           >
-            {isCeilingLoading ? 'Ativando Ferramenta...' : 'Área + PD'}
+            {isCeilingLoading ? 'Ativando...' : 'Criar Anotação'}
           </Button>
         </form>
       </div>
 
       {/* Iluminação Section */}
-      <div className='w-full mx-auto border border-border rounded-md p-4 space-y-8'>
-        <h2 className='text-lg font-semibold mb-4 text-start'>Iluminação</h2>
-        <div className='flex flex-col items-center space-y-4'>
-          <form
-            onSubmit={handleLightingSubmit}
-            className='w-full flex flex-col gap-y-4 items-center justify-center'
-          >
+      <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
+        <div className='space-y-2'>
+          <h3 className='text-sm font-semibold text-foreground'>Iluminação</h3>
+          <p className='text-xs text-muted-foreground'>
+            Configure circuitos e conexões de iluminação
+          </p>
+        </div>
+
+        <div className='space-y-4'>
+          {/* Circuitos Form */}
+          <form onSubmit={handleLightingSubmit} className='space-y-4'>
             <Input
               type='text'
-              placeholder='Ex: A ou C1'
-              className='w-full'
+              placeholder='Ex: C1 ou A'
               label='Circuito'
               value={circuitText}
               onChange={(e) => setCircuitText(e.target.value)}
@@ -109,23 +110,22 @@ function AnnotationCeilingInner() {
               size='lg'
               type='submit'
               disabled={isLightingLoading}
-              className='w-[150px]'
+              className='w-full'
             >
-              {isLightingLoading ? 'Ativando Ferramenta...' : 'Circuitos'}
+              {isLightingLoading ? 'Ativando...' : 'Anotar Circuitos'}
             </Button>
           </form>
 
-          <form
-            onSubmit={handleCircuitConnectionSubmit}
-            className='w-full flex items-center justify-center'
-          >
+          {/* Ligar Circuitos Form */}
+          <form onSubmit={handleCircuitConnectionSubmit}>
             <Button
               size='lg'
               type='submit'
               disabled={isCircuitLoading}
-              className='w-[150px]'
+              variant='secondary'
+              className='w-full'
             >
-              {isCircuitLoading ? 'Ativando Ferramenta...' : 'Ligar Circuitos'}
+              {isCircuitLoading ? 'Ativando...' : 'Ligar Circuitos'}
             </Button>
           </form>
         </div>

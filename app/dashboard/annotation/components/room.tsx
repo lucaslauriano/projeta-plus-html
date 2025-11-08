@@ -32,104 +32,104 @@ export function RoomAnnotation() {
   };
 
   return (
-    <div className='border border-border rounded-md p-4'>
-      <div className='w-full mx-auto'>
-        <form
-          onSubmit={handleSubmit}
-          className='grid grid-cols-1 md:grid-cols-2 gap-4'
-        >
+    <div className='w-full max-w-lg mx-auto space-y-4'>
+      <form onSubmit={handleSubmit} className='space-y-5'>
+        {/* Nome do Ambiente */}
+        <div className='space-y-2'>
           <Input
             id='environmentName'
             type='text'
-            label='Nome do Ambiente:'
+            label='Nome do Ambiente'
             value={environmentName}
             onChange={(e) => setEnvironmentName(e.target.value)}
             required
             disabled={isLoading}
             placeholder='Ex: Sala de Estar'
           />
+        </div>
 
-          <div className='flex items-center space-x-4'>
-            <div className='w-2/4'>
-              <Input
-                type='text'
-                id='ceillingHeight'
-                value={ceillingHeight}
-                onChange={(e) => setCeillingHeight(e.target.value)}
-                required={showCeillingHeight}
-                disabled={isLoading}
-                placeholder='2,50'
-                label='Pé Direito (m):'
-              />
-            </div>
-            <div className='w-2/4 flex items-center justify-start'>
-              <Checkbox
-                id='showCeillingHeight'
-                label='Mostrar Pé Direito?'
-                disabled={isLoading}
-                checked={showCeillingHeight}
-                onCheckedChange={(checked) =>
-                  setShowCeillingHeight(
-                    checked === 'indeterminate' ? false : checked
-                  )
-                }
-              />
-            </div>
+        {/* Pé Direito Section */}
+        <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
+          <div className='flex items-center justify-between'>
+            <h3 className='text-sm font-semibold text-foreground'>
+              Pé Direito
+            </h3>
+            <Checkbox
+              id='showCeillingHeight'
+              label='Mostrar'
+              disabled={isLoading}
+              checked={showCeillingHeight}
+              onCheckedChange={(checked) =>
+                setShowCeillingHeight(
+                  checked === 'indeterminate' ? false : checked
+                )
+              }
+            />
+          </div>
+          {showCeillingHeight && (
+            <Input
+              type='text'
+              id='ceillingHeight'
+              value={ceillingHeight}
+              onChange={(e) => setCeillingHeight(e.target.value)}
+              required={showCeillingHeight}
+              disabled={isLoading}
+              placeholder='2,50'
+              label='Altura (m)'
+            />
+          )}
+        </div>
+
+        {/* Nível do Piso Section */}
+        <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
+          <div className='flex items-center justify-between'>
+            <h3 className='text-sm font-semibold text-foreground'>
+              Nível do Piso
+            </h3>
+            <Checkbox
+              id='showLevel'
+              label='Mostrar'
+              disabled={isLoading}
+              checked={showLevel}
+              onCheckedChange={(checked) =>
+                setShowLevel(checked === 'indeterminate' ? false : checked)
+              }
+            />
           </div>
 
-          <div className='flex items-center space-x-4'>
-            <div className='w-2/4'>
-              <Input
-                type='text'
-                id='level'
-                value={level}
-                onChange={(e) => setLevel(e.target.value)}
-                required
-                disabled={isLoading || isAutoLevel}
-                placeholder='0,00'
-                label='Nível Piso:'
-              />
-            </div>
-            <div className='w-2/4 pt-6 flex items-center justify-start'>
-              <Checkbox
-                id='showLevel'
-                label='Mostrar Nível'
-                disabled={isLoading}
-                checked={showLevel}
-                onCheckedChange={(checked) =>
-                  setShowLevel(checked === 'indeterminate' ? false : checked)
-                }
-              />
-            </div>
-          </div>
-
-          <div className='flex items-center space-x-4'>
-            <div className='w-2/4'></div>
-            <div className='w-2/4 flex items-center justify-start'>
+          {showLevel && (
+            <div className='space-y-3'>
               <Checkbox
                 id='isAutoLevel'
                 label='Nível Automático'
-                disabled={isLoading || !showLevel}
+                disabled={isLoading}
                 checked={isAutoLevel}
                 onCheckedChange={(checked) =>
                   setIsAutoLevel(checked === 'indeterminate' ? true : checked)
                 }
               />
-            </div>
-          </div>
 
-          <div className='flex items-center justify-center mt-4 w-full'>
-            <Button
-              type='submit'
-              size='lg'
-              disabled={isLoading}
-              className='min-w-[150px]'
-            >
-              {isLoading ? 'Executando...' : 'Anotação de Ambiente'}
-            </Button>
-          </div>
-        </form>
-      </div>
+              {!isAutoLevel && (
+                <Input
+                  type='text'
+                  id='level'
+                  value={level}
+                  onChange={(e) => setLevel(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  placeholder='0,00'
+                  label='Valor do Nível'
+                />
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <Button type='submit' size='lg' disabled={isLoading} className='w-full'>
+          {isLoading ? 'Executando...' : 'Criar Anotação'}
+        </Button>
+      </form>
     </div>
   );
 }

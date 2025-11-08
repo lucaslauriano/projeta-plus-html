@@ -18,44 +18,48 @@ function Input({
   error,
   ...props
 }: InputProps) {
+  const [isFocused, setIsFocused] = React.useState(false);
+
   return (
     <div className='w-full'>
       {label && (
         <label
           className={cn(
-            'block text-sm font-medium mb-1',
+            'block text-sm font-semibold mb-2',
             error ? 'text-destructive' : 'text-foreground'
           )}
         >
           {label}
         </label>
       )}
-      <div className='flex items-stretch w-full'>
+      <div
+        className={cn(
+          'flex items-stretch w-full rounded-xl overflow-hidden transition-all',
+          'border-2 shadow-sm',
+          isFocused && !error
+            ? 'border-primary ring-2 ring-primary/20'
+            : error
+            ? 'border-destructive'
+            : 'border-border hover:border-primary/30'
+        )}
+      >
         {prefix && (
-          <div
-            className={cn(
-              'flex shrink-0 items-center justify-center rounded-l-md px-3 text-sm',
-              'border border-r-0 border-border bg-muted/50',
-              error ? 'border-destructive' : 'border-border'
-            )}
-          >
-            <span className='text-muted-foreground'>{prefix}</span>
+          <div className='flex shrink-0 items-center justify-center px-3 text-sm bg-muted/50 border-r border-border'>
+            <span className='text-muted-foreground font-medium'>{prefix}</span>
           </div>
         )}
         <input
           type={type}
           data-slot='input'
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           className={cn(
-            'flex h-9 w-full rounded-md bg-background dark:bg-background/10 px-3 py-1 text-sm transition-colors',
-            'shadow border border-border',
-            prefix && 'rounded-l-none border-l-0',
+            'flex h-11 w-full bg-background px-4 py-2 text-sm font-medium transition-colors',
             'file:border-0 file:bg-transparent file:text-sm file:font-medium',
-            'placeholder:text-muted-foreground/70',
-            'focus-visible:outline-none focus-visible:ring-1',
+            'placeholder:text-muted-foreground/60',
+            'focus:outline-none',
             'disabled:cursor-not-allowed disabled:opacity-50',
-            error
-              ? 'border-destructive focus-visible:ring-destructive'
-              : 'focus-visible:ring-primary focus-visible:border-primary',
+            'border-0',
             className
           )}
           autoComplete='on'
@@ -65,7 +69,7 @@ function Input({
       {helperText && (
         <p
           className={cn(
-            'mt-1 text-sm',
+            'mt-1.5 text-xs',
             error ? 'text-destructive' : 'text-muted-foreground'
           )}
         >

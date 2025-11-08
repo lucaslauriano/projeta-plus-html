@@ -30,15 +30,11 @@ export function ElectricalChangeAtributes() {
   const [selectedSituation, setSelectedSituation] = useState<SituationType>(
     defaults.last_situation_type as SituationType
   );
-  const [lastFieldOption, setLastFieldOption] = useState<AttributeType>(
-    defaults.last_attribute as AttributeType
-  );
 
   useEffect(() => {
     setSelectedOption(defaults.last_attribute as SelectionType);
     setInputValue(defaults.last_value);
     setSelectedSituation(defaults.last_situation_type as SituationType);
-    setLastFieldOption(defaults.last_attribute as AttributeType);
   }, [defaults]);
 
   const fieldConfig: Record<
@@ -87,105 +83,110 @@ export function ElectricalChangeAtributes() {
   }, [selectedOption]);
 
   return (
-    <>
-      <div className='border border-border rounded-md p-4 mb-6'>
-        <div className='w-full mx-auto'>
-          <form onSubmit={handleSubmit} className='space-y-6'>
-            <div>
-              <label className='text-sm font-medium leading-none mb-3 block'>
-                Selecione uma opção:
-              </label>
-              <RadioGroup
-                value={selectedOption}
-                onValueChange={(value) => {
-                  const newValue = value as SelectionType;
-                  setSelectedOption(newValue);
+    <div className='w-full max-w-lg mx-auto space-y-5'>
+      <form onSubmit={handleSubmit} className='space-y-5'>
+        {/* Atributos Section */}
+        <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
+          <div className='space-y-2'>
+            <h3 className='text-sm font-semibold text-foreground'>Atributos</h3>
+            <p className='text-xs text-muted-foreground'>
+              Selecione o tipo de atributo a modificar
+            </p>
+          </div>
 
-                  if (
-                    !(situacaoOptions as readonly string[]).includes(newValue)
-                  ) {
-                    // Field option selected - track it
-                    setLastFieldOption(newValue as AttributeType);
-                  } else {
-                    // Situation option selected - update situation
-                    setSelectedSituation(newValue as SituationType);
-                  }
-                }}
-                disabled={isLoading}
-                className='space-y-4'
-              >
-                {/* Attribute Type Section */}
-                <div className='pb-3 border-b border-border'>
-                  <p className='text-xs text-muted-foreground mb-3'>
-                    Atributo:
-                  </p>
-                  <div className='grid grid-cols-2 gap-3'>
-                    <RadioGroupItem value='scale' id='scale' label='Escala' />
-                    <RadioGroupItem
-                      value='environment'
-                      id='environment'
-                      label='Ambiente'
-                    />
-                    <RadioGroupItem value='usage' id='usage' label='Uso' />
-                    <RadioGroupItem
-                      value='usagePrefix'
-                      id='usagePrefix'
-                      label='Prefixo do uso'
-                    />
-                  </div>
-                </div>
-                <Input
-                  id='inputValue'
-                  type='text'
-                  prefix={
-                    isInputFieldSelected && selectedOption === 'scale'
-                      ? '1:'
-                      : undefined
-                  }
-                  label={
-                    isInputFieldSelected
-                      ? getFieldConfig().label
-                      : 'Desabilitado para situação'
-                  }
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  required={isInputFieldSelected}
-                  disabled={isLoading || !isInputFieldSelected}
-                  placeholder={
-                    isInputFieldSelected
-                      ? getFieldConfig().placeholder
-                      : 'Selecione uma entrada'
-                  }
-                />
-                {/* Situation Section */}
-                <div className='pt-1'>
-                  <p className='text-xs text-muted-foreground mb-3'>
-                    Situação:
-                  </p>
-                  <div className='flex flex-wrap gap-4'>
-                    <RadioGroupItem value='1' id='new' label='Novo' />
-                    <RadioGroupItem value='2' id='existing' label='Existente' />
-                    <RadioGroupItem value='3' id='modify' label='Modificar' />
-                    <RadioGroupItem value='4' id='remove' label='Remover' />
-                  </div>
-                </div>
-              </RadioGroup>
+          <RadioGroup
+            value={selectedOption}
+            onValueChange={(value) => {
+              const newValue = value as SelectionType;
+              setSelectedOption(newValue);
+
+              if ((situacaoOptions as readonly string[]).includes(newValue)) {
+                setSelectedSituation(newValue as SituationType);
+              }
+            }}
+            disabled={isLoading}
+            className='space-y-4'
+          >
+            <div className='grid grid-cols-2 gap-3'>
+              <RadioGroupItem value='scale' id='scale' label='Escala' />
+              <RadioGroupItem
+                value='environment'
+                id='environment'
+                label='Ambiente'
+              />
+              <RadioGroupItem value='usage' id='usage' label='Uso' />
+              <RadioGroupItem
+                value='usagePrefix'
+                id='usagePrefix'
+                label='Prefixo'
+              />
             </div>
 
-            <div className='flex items-center justify-center mt-4'>
-              <Button
-                type='submit'
-                size='lg'
-                disabled={isLoading}
-                className='min-w-[150px]'
-              >
-                {isLoading ? 'Executando...' : 'Anotação Elétrica'}
-              </Button>
-            </div>
-          </form>
+            {/* Input Value */}
+            <Input
+              id='inputValue'
+              type='text'
+              prefix={
+                isInputFieldSelected && selectedOption === 'scale'
+                  ? '1:'
+                  : undefined
+              }
+              label={
+                isInputFieldSelected
+                  ? getFieldConfig().label
+                  : 'Campo desabilitado'
+              }
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              required={isInputFieldSelected}
+              disabled={isLoading || !isInputFieldSelected}
+              placeholder={
+                isInputFieldSelected
+                  ? getFieldConfig().placeholder
+                  : 'Selecione um atributo primeiro'
+              }
+            />
+          </RadioGroup>
         </div>
-      </div>
+
+        {/* Situação Section */}
+        <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
+          <div className='space-y-2'>
+            <h3 className='text-sm font-semibold text-foreground'>Situação</h3>
+            <p className='text-xs text-muted-foreground'>
+              Defina o status do elemento no projeto
+            </p>
+          </div>
+
+          <RadioGroup
+            value={selectedOption}
+            onValueChange={(value) => {
+              const newValue = value as SelectionType;
+              setSelectedOption(newValue);
+
+              if ((situacaoOptions as readonly string[]).includes(newValue)) {
+                setSelectedSituation(newValue as SituationType);
+              }
+            }}
+            disabled={isLoading}
+          >
+            <div className='grid grid-cols-2 gap-3'>
+              <RadioGroupItem value='1' id='new' label='Novo' />
+              <RadioGroupItem value='2' id='existing' label='Existente' />
+              <RadioGroupItem value='3' id='modify' label='Modificar' />
+              <RadioGroupItem value='4' id='remove' label='Remover' />
+            </div>
+          </RadioGroup>
+        </div>
+
+        {/* Submit Button */}
+        <Button type='submit' size='lg' disabled={isLoading} className='w-full'>
+          {isLoading ? 'Executando...' : 'Aplicar Alterações'}
+        </Button>
+      </form>
+
+      {/* Print Attributes */}
       <PrintAttributes />
-    </>
+    </div>
   );
 }

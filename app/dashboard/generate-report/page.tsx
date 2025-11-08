@@ -1,9 +1,14 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import PageHeader from '@/components/page-header';
 
 export default function GenerateReportDashboardPage() {
-  const pathname = usePathname();
-  const slug = pathname?.split('/').filter(Boolean).pop();
-  return <div>Dashboard Page - {slug}</div>;
+  return (
+    <div className='flex flex-col w-full max-w-2xl mx-auto px-2'>
+      <PageHeader
+        title='Relatórios'
+        description='Gere relatórios detalhados do seu projeto'
+      />
+    </div>
+  );
 }

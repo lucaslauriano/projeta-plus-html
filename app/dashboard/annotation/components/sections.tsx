@@ -34,36 +34,43 @@ function AnnotationSectionInner() {
   };
 
   return (
-    <div className='space-y-4'>
-      <div className='flex flex-col space-y-4 border border-border rounded-md p-4 '>
-        <h2 className='text-md font-semibold mb-4 text-start'>Cortes</h2>
-        <form
-          onSubmit={handleSectionSubmit}
-          className='w-full flex items-center justify-center'
-        >
+    <div className='w-full max-w-lg mx-auto space-y-4'>
+      {/* Cortes */}
+      <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
+        <div className='space-y-2'>
+          <h3 className='text-sm font-semibold text-foreground'>Cortes</h3>
+          <p className='text-xs text-muted-foreground'>
+            Ativar ferramenta de anotação de cortes no modelo
+          </p>
+        </div>
+        <form onSubmit={handleSectionSubmit} className='w-full'>
           <Button
             type='submit'
             disabled={sectionLoading}
             size='lg'
-            className='w-[150px]'
+            className='w-full'
           >
-            {sectionLoading ? 'Ativando Ferramenta...' : 'Anotação de Corte'}
+            {sectionLoading ? 'Ativando...' : 'Criar Anotação de Corte'}
           </Button>
         </form>
       </div>
-      <div className='flex flex-col space-y-4 border border-border rounded-md p-4'>
-        <h2 className='text-md font-semibold mb-4 text-start'>Vista</h2>
-        <form
-          onSubmit={handleViewSubmit}
-          className='w-full flex items-center justify-center'
-        >
+
+      {/* Vista */}
+      <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
+        <div className='space-y-2'>
+          <h3 className='text-sm font-semibold text-foreground'>Vista</h3>
+          <p className='text-xs text-muted-foreground'>
+            Ativar ferramenta de anotação de vistas no modelo
+          </p>
+        </div>
+        <form onSubmit={handleViewSubmit} className='w-full'>
           <Button
             type='submit'
             disabled={viewLoading}
             size='lg'
-            className='w-[150px]'
+            className='w-full'
           >
-            {viewLoading ? 'Ativando Ferramenta...' : 'Anotação de Vista'}
+            {viewLoading ? 'Ativando...' : 'Criar Anotação de Vista'}
           </Button>
         </form>
       </div>

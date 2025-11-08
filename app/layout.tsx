@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { ContrastProvider } from '@/contexts/ContrastContext';
 import { SketchupProvider } from '@/contexts/SketchupContext';
 import './globals.css';
+import { ToastContainer } from 'react-toastify';
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -34,12 +35,25 @@ export default function RootLayout({
         <body className='h-full'>
           <ThemeProvider
             attribute='class'
-            defaultTheme='system'
-            enableSystem
+            defaultTheme='light'
             disableTransitionOnChange
           >
             <ContrastProvider>
-              <SketchupProvider>{children}</SketchupProvider>
+              <SketchupProvider>
+                <div className='rounded-4xl bg-background '>{children}</div>
+                <ToastContainer
+                  position='bottom-right'
+                  autoClose={3000}
+                  hideProgressBar={false}
+                  newestOnTop
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  className='!bottom-6 !right-6'
+                />
+              </SketchupProvider>
             </ContrastProvider>
           </ThemeProvider>
         </body>

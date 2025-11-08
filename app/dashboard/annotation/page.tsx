@@ -14,10 +14,11 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { ElectricalChangeAtributes } from '@/app/dashboard/annotation/components/change-atributes';
+import { BsHouse } from 'react-icons/bs';
 
 const accordionItems = [
   {
-    icon: AiOutlineTag,
+    icon: BsHouse,
     value: 'room',
     label: 'Ambiente',
     content: <RoomAnnotation />,
@@ -50,34 +51,33 @@ const accordionItems = [
 
 export default function AnnotationDashboardPage() {
   return (
-    <div className='flex flex-col w-full justify-start items-start'>
+    <div className='flex flex-col w-full max-w-2xl mx-auto px-2'>
       <PageHeader
-        title='Annotation'
-        breadcrumbs={[
-          {
-            name: 'Dashboard',
-            href: '/dashboard',
-          },
-          {
-            name: 'Annotation',
-            href: '/dashboard/annotation',
-          },
-        ]}
+        title='Anotações'
+        description='Gerencie suas anotações do projeto'
       />
 
-      <div className='w-full'>
-        <Accordion type='multiple' className='w-full'>
+      <div className='w-full pb-8'>
+        <Accordion type='multiple' className='w-full space-y-4'>
           {accordionItems.map((item) => {
             const IconComponent = item.icon;
             return (
-              <AccordionItem key={item.value} value={item.value}>
-                <AccordionTrigger className='flex gap-2'>
-                  <div className='flex items-start justify-start gap-2 text-md font-semibold'>
-                    <IconComponent className='w-5 h-5' />
-                    {item.label}
+              <AccordionItem
+                key={item.value}
+                value={item.value}
+                className='border-0 bg-card rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow'
+              >
+                <AccordionTrigger className='px-5 py-5 hover:no-underline'>
+                  <div className='flex items-center gap-3 text-base font-semibold'>
+                    <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary/10'>
+                      <IconComponent className='w-5 h-5 text-primary' />
+                    </div>
+                    <span>{item.label}</span>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent>{item.content}</AccordionContent>
+                <AccordionContent className='px-5 pb-4'>
+                  {item.content}
+                </AccordionContent>
               </AccordionItem>
             );
           })}

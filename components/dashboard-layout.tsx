@@ -5,14 +5,11 @@ import type React from 'react';
 import { useState } from 'react';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { useSubscription } from '@clerk/nextjs/experimental';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { HousePlus, Plus, Home, Menu, Settings } from 'lucide-react';
-import { AiTwotoneLayout } from 'react-icons/ai';
+import { AiOutlineTag, AiTwotoneLayout } from 'react-icons/ai';
 import { HiOutlineLightBulb } from 'react-icons/hi';
 import { AiTwotoneProfile } from 'react-icons/ai';
-import { BsHouses } from 'react-icons/bs';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { PiWallDuotone } from 'react-icons/pi';
@@ -20,11 +17,12 @@ import { PiSquareHalfBottomDuotone } from 'react-icons/pi';
 import { PiPlugDuotone } from 'react-icons/pi';
 import { PiArmchairDuotone } from 'react-icons/pi';
 import { TbKeyframes } from 'react-icons/tb';
+import { Badge } from '@/components/ui/badge';
 import { ThemeToggleButton } from '@/components/ui/theme-toggle-button';
 
 const navigation = [
   { name: 'Sketchup Inteligente', href: '/dashboard/inteli-sket', icon: Home },
-  { name: 'Anotação', href: '/dashboard/annotation', icon: BsHouses },
+  { name: 'Anotação', href: '/dashboard/annotation', icon: AiOutlineTag },
   {
     name: 'Mobiliário',
     href: '/dashboard/furniture',
@@ -67,26 +65,29 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const { user } = useUser();
-  const { data } = useSubscription();
-  const pathname = usePathname();
-
-  // Verificar se o usuário tem plano premium
   const hasPremiumPlan =
     user?.publicMetadata?.plan === 'premium' ||
     user?.publicMetadata?.plan === 'pro_user';
   const userPlan: 'free' | 'premium' = hasPremiumPlan ? 'premium' : 'free';
+  const { data } = useSubscription();
+  const pathname = usePathname();
 
   return (
-    <div className='min-h-screen bg-background'>
-      {/* Sidebar */}
+    <div className='h-screen overflow-hidden'>
+      {/* Navbar Flutuante */}
       <div
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out',
-          sidebarExpanded ? 'w-64' : 'w-16'
+          'fixed left-5 top-5 bottom-5 z-50 flex flex-col bg-card shadow-2xl rounded-3xl transition-all duration-300 ease-in-out',
+          sidebarExpanded ? 'w-64' : 'w-18'
         )}
       >
-        {/* Sidebar header */}
-        <div className='flex h-16 items-center justify-between px-4 border-b border-sidebar-border '>
+        {/* Header */}
+        <div
+          className={cn(
+            'flex h-16 px-4 items-center justify-between border-b border-sidebar-border',
+            sidebarExpanded ? 'justify-between' : 'justify-center'
+          )}
+        >
           {sidebarExpanded && (
             <Link
               href='/dashboard'
@@ -98,24 +99,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </h1>
             </Link>
           )}
-          {!sidebarExpanded && (
-            <Plus className='h-8 w-8 text-sidebar-primary mx-auto' />
-          )}
 
-          {/* Toggle */}
-          <Button
-            variant='ghost'
-            size='sm'
+          <button
             className='text-sidebar-foreground hover:bg-sidebar-accent'
             onClick={() => setSidebarExpanded(!sidebarExpanded)}
             onMouseEnter={() => setSidebarExpanded(true)}
           >
-            <Menu className='h-4 w-4' />
-          </Button>
+            <Menu className='h-6 w-6' />
+          </button>
         </div>
 
         {/* Navigation */}
-        <nav className='flex-1 space-y-1 p-2 '>
+        <nav className='flex-1 space-y-1 p-2 overflow-y-auto'>
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -126,7 +121,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   'flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                   'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                   isActive
-                    ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                    ? 'bg-sidebar-primary/10 text-shadow-sidebar-primary-foreground'
                     : 'text-sidebar-foreground',
                   !sidebarExpanded && 'justify-center'
                 )}
@@ -144,7 +139,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </nav>
 
         {/* User section */}
-        <div className='border-t border-sidebar-border p-4'>
+        <div className='mt-auto border-t border-sidebar-border p-4'>
           <div
             className={cn(
               'flex items-center',
@@ -176,34 +171,25 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       {/* Main content */}
-      <div
-        className={cn(
-          'transition-all duration-300',
-          sidebarExpanded ? 'pl-0' : 'pl-16'
-        )}
-      >
-        {/* Top bar */}
-        <div className='sticky top-0 z-30 flex h-16 items-center gap-x-4 border-b bg-background px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8'>
-          <div className='flex flex-1 gap-x-4 self-stretch lg:gap-x-6'>
-            <div className='flex flex-1'></div>
-            <div className=' flex items-center justify-end gap-x-4 lg:gap-x-6'>
-              <Badge
-                variant='secondary'
-                className={
-                  userPlan === 'free'
-                    ? 'bg-accent text-white'
-                    : 'bg-accent/20 text-white'
-                }
-              >
-                {userPlan === 'free' ? 'Plano Free' : 'Plano Premium'}
-              </Badge>
-              <ThemeToggleButton />
-            </div>
+      <div className='fixed inset-y-0 right-0 left-24 overflow-y-auto'>
+        <div className='sticky top-5 z-30 mx-4 mb-4'>
+          <div className='flex h-14 items-center justify-end gap-3 px-4 bg-card rounded-2xl shadow-lg'>
+            <Badge
+              variant='secondary'
+              className={cn(
+                'font-semibold',
+                userPlan === 'free'
+                  ? 'bg-primary/10 text-primary border border-primary/20'
+                  : 'bg-accent/10 text-accent-foreground border border-accent/20'
+              )}
+            >
+              {userPlan === 'free' ? 'Free' : 'Premium'}
+            </Badge>
+            <ThemeToggleButton />
           </div>
         </div>
 
-        {/* Page content */}
-        <main className='py-8 px-4 sm:px-6 lg:px-8'>{children}</main>
+        <main className='px-3 pb-6 min-h-full'>{children}</main>
       </div>
     </div>
   );

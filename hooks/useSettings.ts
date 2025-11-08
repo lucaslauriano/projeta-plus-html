@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
+import { toastWithDebounce } from '@/lib/toast-utils';
 import { useSketchup } from '@/contexts/SketchupContext';
 import { GlobalSettings } from '@/types/global';
 
@@ -114,7 +115,7 @@ export function useSettings() {
   // Carregar configurações do backend
   const loadSettings = useCallback(async () => {
     if (!isAvailable) {
-      toast.error('SketchUp API não disponível');
+      toastWithDebounce.error('SketchUp API não disponível');
       return;
     }
 
@@ -143,7 +144,7 @@ export function useSettings() {
   const saveSetting = useCallback(
     async (key: keyof GlobalSettings, value: unknown) => {
       if (!isAvailable) {
-        toast.error('SketchUp API não disponível');
+        toastWithDebounce.error('SketchUp API não disponível');
         return;
       }
 
@@ -196,7 +197,7 @@ export function useSettings() {
   const selectFolder = useCallback(
     async (settingKey: keyof GlobalSettings, dialogTitle: string) => {
       if (!isAvailable) {
-        toast.error('SketchUp API não disponível');
+        toastWithDebounce.error('SketchUp API não disponível');
         return;
       }
 

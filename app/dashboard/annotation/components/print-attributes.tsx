@@ -4,6 +4,13 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useHeightAnnotation } from '@/hooks/useHeightAnnotation';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { InfoIcon } from 'lucide-react';
 
 export function PrintAttributes() {
   const { startHeightAnnotation, defaults, isLoading } = useHeightAnnotation();
@@ -23,48 +30,88 @@ export function PrintAttributes() {
   };
 
   return (
-    <div className='border border-border rounded-md p-4'>
-      <div className='w-full mx-auto'>
+    <TooltipProvider>
+      <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
+        <div className='flex items-center justify-between'>
+          <div className='space-y-1'>
+            <h3 className='text-sm font-semibold text-foreground'>
+              Anotação de Altura
+            </h3>
+            <p className='text-xs text-muted-foreground'>
+              Configure e aplique anotações de altura nos elementos
+            </p>
+          </div>
+
+          {/* Tooltip with Instructions */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type='button'
+                className='p-2 rounded-lg hover:bg-accent/50 transition-colors'
+              >
+                <InfoIcon className='h-4 w-4 text-muted-foreground' />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent
+              side='left'
+              className='max-w-xs p-4 bg-popover border-border'
+            >
+              <div className='space-y-3'>
+                <p className='text-xs font-semibold text-foreground'>
+                  Instruções:
+                </p>
+                <ul className='space-y-2 text-xs text-muted-foreground'>
+                  <li className='flex items-start gap-2'>
+                    <span className='text-primary font-mono font-semibold'>
+                      ↑↓←→
+                    </span>
+                    <span>Mudar posição do texto</span>
+                  </li>
+                  <li className='flex items-start gap-2'>
+                    <span className='text-primary font-mono font-semibold'>
+                      Ctrl
+                    </span>
+                    <span>Alternar rotação (0° / 90°)</span>
+                  </li>
+                  <li className='flex items-start gap-2'>
+                    <span className='text-primary font-mono font-semibold'>
+                      +/-
+                    </span>
+                    <span>Ajustar distância do texto</span>
+                  </li>
+                  <li className='flex items-start gap-2'>
+                    <span className='text-primary font-mono font-semibold'>
+                      ESC
+                    </span>
+                    <span>Cancelar</span>
+                  </li>
+                </ul>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
         <form onSubmit={handleSubmit} className='space-y-4'>
           {/* Show Usage Checkbox */}
-          <div className='flex items-center space-x-2'>
-            <Checkbox
-              id='showUsage'
-              checked={showUsage}
-              onCheckedChange={(checked) => setShowUsage(checked as boolean)}
-              disabled={isLoading}
-            />
-            <label
-              htmlFor='showUsage'
-              className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-            >
-              Mostrar uso?
-            </label>
-          </div>
+          <Checkbox
+            id='showUsage'
+            label='Mostrar uso?'
+            checked={showUsage}
+            onCheckedChange={(checked) => setShowUsage(checked as boolean)}
+            disabled={isLoading}
+          />
 
           {/* Submit Button */}
-          <div className='flex items-center justify-center mt-4'>
-            <Button
-              type='submit'
-              size='lg'
-              disabled={isLoading}
-              className='min-w-[150px]'
-            >
-              {isLoading ? 'Executando...' : 'Anotação de Altura'}
-            </Button>
-          </div>
+          <Button
+            type='submit'
+            size='lg'
+            disabled={isLoading}
+            className='w-full'
+          >
+            {isLoading ? 'Executando...' : 'Criar Anotação de Altura'}
+          </Button>
         </form>
-
-        <div className='mt-4 p-3 bg-muted rounded-md text-sm'>
-          <p className='font-medium mb-1'>Instruções:</p>
-          <ul className='list-disc list-inside space-y-1 text-muted-foreground'>
-            <li>Use as setas ↑ ↓ ← → para mudar a posição do texto</li>
-            <li>Pressione Ctrl para alternar rotação (0° / 90°)</li>
-            <li>Use +/- para ajustar a distância do texto</li>
-            <li>ESC para cancelar</li>
-          </ul>
-        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
