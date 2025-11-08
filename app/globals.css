@@ -274,7 +274,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    background-color: #000;
+    background-color: transparent;
   }
   .no-scrollbar::-webkit-scrollbar {
     display: none;
