@@ -2,7 +2,7 @@
 
 import type React from 'react';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { useSubscription } from '@clerk/nextjs/experimental';
 import { cn } from '@/lib/utils';
@@ -19,6 +19,7 @@ import { PiArmchairDuotone } from 'react-icons/pi';
 import { TbKeyframes } from 'react-icons/tb';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggleButton } from '@/components/ui/theme-toggle-button';
+import { Loading } from '@/components/ui/loading';
 
 const navigation = [
   { name: 'Sketchup Inteligente', href: '/dashboard/inteli-sket', icon: Home },
@@ -64,13 +65,31 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const { user } = useUser();
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const { user, isLoaded: isUserLoaded } = useUser();
   const hasPremiumPlan =
     user?.publicMetadata?.plan === 'premium' ||
     user?.publicMetadata?.plan === 'pro_user';
   const userPlan: 'free' | 'premium' = hasPremiumPlan ? 'premium' : 'free';
-  const { data } = useSubscription();
+  const { data, isLoading: isSubscriptionLoading } = useSubscription();
   const pathname = usePathname();
+
+  // Loading inicial após login
+  useEffect(() => {
+    if (isUserLoaded && !isSubscriptionLoading) {
+      // Simula um pequeno delay para melhor UX
+      const timer = setTimeout(() => {
+        setIsInitialLoading(false);
+      }, 800);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isUserLoaded, isSubscriptionLoading]);
+
+  // Exibe loading enquanto carrega dados do usuário
+  if (isInitialLoading || !isUserLoaded) {
+    return <Loading message='Carregando dashboard...' fullScreen size='lg' />;
+  }
 
   return (
     <div className='h-screen overflow-hidden'>

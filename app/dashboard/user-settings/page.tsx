@@ -7,6 +7,7 @@ import { useSettings } from '@/hooks/useSettings';
 import PageHeader from '@/components/page-header';
 import { ThemeSelector } from '@/components/ui/theme-selector';
 import { ThemePreview } from '@/components/theme-preview';
+import { Loading } from '@/components/ui/loading';
 
 export default function GlobalSettingsPage() {
   const {
@@ -26,11 +27,7 @@ export default function GlobalSettingsPage() {
   }, [loadSettings]);
 
   if (isLoading || !settings) {
-    return (
-      <div className='flex justify-center items-center h-full'>
-        <p className='text-muted-foreground'>Loading global settings...</p>
-      </div>
-    );
+    return <Loading message='Carregando configurações...' size='md' />;
   }
 
   return (
