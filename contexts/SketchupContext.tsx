@@ -44,7 +44,6 @@ export function SketchupProvider({ children }: SketchupProviderProps) {
   }, []);
 
   useEffect(() => {
-    // Generic Ruby response handler
     window.handleRubyResponse = (response) => {
       setIsLoading(false);
       if (response.success) {
@@ -67,6 +66,7 @@ export function SketchupProvider({ children }: SketchupProviderProps) {
     method: string,
     args: Record<string, unknown> = {}
   ) => {
+    console.log('callSketchupMethod', method, args);
     if (!isAvailable) {
       toast.error('SketchUp API não disponível');
       return;

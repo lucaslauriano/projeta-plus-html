@@ -21,6 +21,7 @@ export default function AnnotationLightingCeiling() {
 
 function AnnotationCeilingInner() {
   const [circuitText, setCircuitText] = useState('C1');
+  const [level, setLevel] = useState('0,00');
   const { startCeilingAnnotation, isLoading: isCeilingLoading } =
     useCeilingAnnotation();
 
@@ -55,14 +56,27 @@ function AnnotationCeilingInner() {
   };
 
   return (
-    <div className='border border-border rounded-md p-4 space-y-8'>
+    <div className='space-y-4'>
       {/* Forro Section */}
-      <div className='w-full mx-auto'>
-        <h2 className='text-lg font-semibold mb-4 text-start'>Forro</h2>
+      <div className='w-full mx-auto border border-border rounded-md p-4'>
+        <h2 className='text-md font-medium mb-1 text-start'>Forro</h2>
+        <p className='text-xs text-muted-foreground mb-4 text-start'>
+          Gere anotação com a área e a altura do pé-direito, calculadas
+          automaticamente a partir do ponto 0 (Z) somado ao nível do piso.
+        </p>
         <form
           onSubmit={handleCeilingSubmit}
-          className='w-full flex items-center justify-center'
+          className='w-full flex flex-col gap-y-4 items-center justify-center'
         >
+          <Input
+            type='text'
+            placeholder='Ex: A ou C1'
+            className='w-full'
+            label='Nível do Piso:'
+            value={level}
+            onChange={(e) => setLevel(e.target.value)}
+            required
+          />
           <Button
             type='submit'
             size='lg'
@@ -75,7 +89,7 @@ function AnnotationCeilingInner() {
       </div>
 
       {/* Iluminação Section */}
-      <div className='w-full mx-auto'>
+      <div className='w-full mx-auto border border-border rounded-md p-4 space-y-8'>
         <h2 className='text-lg font-semibold mb-4 text-start'>Iluminação</h2>
         <div className='flex flex-col items-center space-y-4'>
           <form

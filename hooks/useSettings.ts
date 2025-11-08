@@ -140,7 +140,6 @@ export function useSettings() {
     [originalSettings]
   );
 
-  // Salvar configuração específica no backend
   const saveSetting = useCallback(
     async (key: keyof GlobalSettings, value: unknown) => {
       if (!isAvailable) {

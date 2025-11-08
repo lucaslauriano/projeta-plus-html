@@ -31,7 +31,7 @@ const accordionItems = [
   {
     icon: LampCeiling,
     value: 'ceiling',
-    label: 'Iluminação e Forro',
+    label: 'Forro e Iluminação',
     content: <AnnotationLightingCeiling />,
   },
   {
@@ -72,7 +72,7 @@ export default function AnnotationDashboardPage() {
             return (
               <AccordionItem key={item.value} value={item.value}>
                 <AccordionTrigger className='flex gap-2'>
-                  <div className='flex items-start justify-start gap-2'>
+                  <div className='flex items-start justify-start gap-2 text-md font-semibold'>
                     <IconComponent className='w-5 h-5' />
                     {item.label}
                   </div>
