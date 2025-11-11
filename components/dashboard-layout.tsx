@@ -186,7 +186,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       {/* Main content */}
-      <div className='absolute inset-y-0 right-0 left-21 overflow-y-auto'>
+      <div className='absolute inset-y-0 right-0 left-21'>
         <div className='sticky top-5 z-30 ml-2 mr-4 mb-4'>
           <div className='flex h-14 items-center justify-end gap-3 px-4 bg-card rounded-2xl shadow-lg'>
             <Badge
@@ -204,7 +204,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </div>
 
-        <main className='pb-6'>{children}</main>
+        <main className='pb-6 overflow-y-auto max-h-[calc(100vh-100px)]'>
+          {children}
+        </main>
       </div>
     </div>
   );
