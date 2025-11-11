@@ -32,7 +32,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className='flex flex-col w-full max-w-4xl mx-auto px-4'>
+    <div className='flex flex-col w-full mx-auto mt-10'>
       <div className='mb-8 pt-2'>
         <h1 className='text-2xl font-bold font-sans tracking-tight'>
           Dashboard

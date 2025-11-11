@@ -71,10 +71,10 @@ function AnimatedSubtitle() {
 
 function LandingPage() {
   return (
-    <div className='flex flex-col '>
+    <div className='flex flex-col'>
       {/* Header */}
       <header className='border-b bg-card'>
-        <div className='container mx-auto px-4 py-4 flex items-center justify-between'>
+        <div className='container mx-auto px-3 py-4 flex items-center justify-between'>
           <div className='flex items-center space-x-2 w-full'>
             <h1 className='text-xl font-bold font-sans flex mt-2'>
               Projeta <Plus className='h-4 w-4 mt-1 font-bold text-secondary' />

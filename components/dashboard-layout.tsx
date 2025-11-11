@@ -74,10 +74,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { data, isLoading: isSubscriptionLoading } = useSubscription();
   const pathname = usePathname();
 
-  // Loading inicial após login
   useEffect(() => {
     if (isUserLoaded && !isSubscriptionLoading) {
-      // Simula um pequeno delay para melhor UX
       const timer = setTimeout(() => {
         setIsInitialLoading(false);
       }, 800);
@@ -86,18 +84,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     }
   }, [isUserLoaded, isSubscriptionLoading]);
 
-  // Exibe loading enquanto carrega dados do usuário
   if (isInitialLoading || !isUserLoaded) {
     return <Loading message='Carregando dashboard...' fullScreen size='lg' />;
   }
 
   return (
     <div className='relative h-full overflow-hidden'>
-      {/* Navbar Flutuante */}
       <div
         className={cn(
-          'absolute left-5 top-5 bottom-5 z-50 flex flex-col bg-card shadow-2xl rounded-3xl transition-all duration-300 ease-in-out',
-          sidebarExpanded ? 'w-64' : 'w-18'
+          'absolute left-3 top-5 bottom-5 z-50 flex flex-col bg-card shadow-2xl rounded-2xl transition-all duration-300 ease-in-out',
+          sidebarExpanded ? 'w-64' : 'w-16'
         )}
       >
         {/* Header */}
@@ -137,7 +133,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  'flex items-center rounded-lg px-2 py-2 text-sm font-medium transition-colors',
                   'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                   isActive
                     ? 'bg-sidebar-primary/10 text-shadow-sidebar-primary-foreground'
@@ -190,8 +186,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       {/* Main content */}
-      <div className='absolute inset-y-0 right-0 left-22 overflow-y-auto'>
-        <div className='sticky top-5 z-30 mx-4 mb-4'>
+      <div className='absolute inset-y-0 right-0 left-21 overflow-y-auto'>
+        <div className='sticky top-5 z-30 ml-2 mr-4 mb-4'>
           <div className='flex h-14 items-center justify-end gap-3 px-4 bg-card rounded-2xl shadow-lg'>
             <Badge
               variant='secondary'
@@ -208,7 +204,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </div>
 
-        <main className='px-3 pb-6 min-h-full'>{children}</main>
+        <main className='pb-6'>{children}</main>
       </div>
     </div>
   );

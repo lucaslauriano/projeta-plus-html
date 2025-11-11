@@ -51,7 +51,7 @@ const accordionItems = [
 
 export default function AnnotationDashboardPage() {
   return (
-    <div className='flex flex-col w-full max-w-2xl mx-auto px-2'>
+    <div className='flex flex-col w-full max-w-2xl mx-auto'>
       <PageHeader
         title='Anotações'
         description='Gerencie suas anotações do projeto'
