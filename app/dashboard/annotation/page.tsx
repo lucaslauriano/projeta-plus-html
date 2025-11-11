@@ -5,7 +5,7 @@ import { RoomAnnotation } from '@/app/dashboard/annotation/components/room';
 import AnnotationSection from '@/app/dashboard/annotation/components/sections';
 import PageHeader from '@/components/page-header';
 import { Zap, Frame, LampCeiling } from 'lucide-react';
-import { AiOutlineScan, AiOutlineTag } from 'react-icons/ai';
+import { AiOutlineScan } from 'react-icons/ai';
 import AnnotationLightingCeiling from '@/app/dashboard/annotation/components/ceilling';
 import {
   Accordion,
@@ -58,7 +58,7 @@ export default function AnnotationDashboardPage() {
       />
 
       <div className='w-full pb-8'>
-        <Accordion type='multiple' className='w-full space-y-4'>
+        <Accordion type='single' collapsible className='w-full space-y-4'>
           {accordionItems.map((item) => {
             const IconComponent = item.icon;
             return (
