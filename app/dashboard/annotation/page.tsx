@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/accordion';
 import { ElectricalChangeAtributes } from '@/app/dashboard/annotation/components/change-atributes';
 import { BsHouse } from 'react-icons/bs';
+import PageWrapper from '@/components/ui/page-wraper';
 
 const accordionItems = [
   {
@@ -51,7 +52,7 @@ const accordionItems = [
 
 export default function AnnotationDashboardPage() {
   return (
-    <div className='flex flex-col w-full max-w-2xl mx-auto'>
+    <PageWrapper>
       <PageHeader
         title='Anotações'
         description='Gerencie suas anotações do projeto'
@@ -83,6 +84,6 @@ export default function AnnotationDashboardPage() {
           })}
         </Accordion>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

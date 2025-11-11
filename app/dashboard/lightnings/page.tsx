@@ -1,14 +1,15 @@
 'use client';
 
 import PageHeader from '@/components/page-header';
+import PageWrapper from '@/components/ui/page-wraper';
 
 export default function LightningsDashboardPage() {
   return (
-    <div className='flex flex-col w-full max-w-2xl mx-auto px-2'>
+    <PageWrapper>
       <PageHeader
         title='Iluminação'
         description='Configure pontos de iluminação e circuitos'
       />
-    </div>
+    </PageWrapper>
   );
 }

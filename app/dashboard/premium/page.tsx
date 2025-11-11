@@ -1,4 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
+import PageWrapper from '@/components/ui/page-wraper';
 
 export default async function BronzeContentPage() {
   const { has, userId } = await auth();
@@ -14,8 +15,8 @@ export default async function BronzeContentPage() {
     );
 
   return (
-    <div className='p-6'>
+    <PageWrapper>
       <h1>Welcome! {userId}</h1>
-    </div>
+    </PageWrapper>
   );
 }

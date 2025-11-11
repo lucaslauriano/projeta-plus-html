@@ -8,6 +8,7 @@ import PageHeader from '@/components/page-header';
 import { ThemeSelector } from '@/components/ui/theme-selector';
 import { ThemePreview } from '@/components/theme-preview';
 import { Loading } from '@/components/ui/loading';
+import PageWrapper from '@/components/ui/page-wraper';
 
 export default function GlobalSettingsPage() {
   const {
@@ -30,13 +31,13 @@ export default function GlobalSettingsPage() {
   }
 
   return (
-    <div className='flex flex-col w-full max-w-2xl mx-auto'>
+    <PageWrapper>
       <PageHeader
         title='Configurações'
         description='Configure as preferências e ajustes do sistema'
       />
 
-      <div className='w-full pb-8'>
+      <div className='w-full'>
         <div className='flex w-full border-b border-border justify-center items-center '>
           <form className='grid grid-cols-1 gap-4'>
             {/* Language */}
@@ -224,6 +225,6 @@ export default function GlobalSettingsPage() {
           <ThemePreview />
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }
