@@ -43,3 +43,5 @@ next-env.d.ts
 # SketchUp
 /plugin-sketchup
 /ui
+# clerk configuration (can include secrets)
+/.clerk/
