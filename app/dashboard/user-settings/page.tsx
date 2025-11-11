@@ -18,7 +18,6 @@ export default function GlobalSettingsPage() {
     updateLocalSetting,
     saveAllChanges,
     selectFolder,
-    discardChanges,
   } = useSettings();
 
   useEffect(() => {
@@ -31,13 +30,13 @@ export default function GlobalSettingsPage() {
   }
 
   return (
-    <div className='flex flex-col w-full gap-4 justify-start items-start'>
+    <div className='flex flex-col w-full max-w-2xl mx-auto'>
       <PageHeader
         title='Configurações'
         description='Configure as preferências e ajustes do sistema'
       />
 
-      <div className='w-full '>
+      <div className='w-full pb-8'>
         <div className='flex w-full border-b border-border justify-center items-center '>
           <form className='grid grid-cols-1 gap-4'>
             {/* Language */}
@@ -220,7 +219,6 @@ export default function GlobalSettingsPage() {
           </form>
         </div>
 
-        {/* Theme Selector */}
         <div className='mt-8 space-y-6'>
           <ThemeSelector />
           <ThemePreview />
