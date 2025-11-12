@@ -25,12 +25,10 @@ import { cn } from '@/lib/utils';
 import { useFurniture } from '@/hooks/useFurniture';
 
 const DIMENSION_FORMAT_OPTIONS = [
-  { value: 'L x D x H', label: 'L x P x A' },
-  { value: 'L x H x D', label: 'L x A x P' },
-  { value: 'H x L x D', label: 'A x L x P' },
-  { value: 'H x D x L', label: 'A x P x L' },
-  { value: 'D x L x H', label: 'P x L x A' },
-  { value: 'D x H x L', label: 'P x A x L' },
+  { value: 'L x P x A', label: 'L x P x A' },
+  { value: 'L x P', label: 'L x P' },
+  { value: 'L x A', label: 'L x A' },
+  { value: 'SEM DIMENSÃO', label: 'SEM DIMENSÃO' },
 ];
 
 const DEFAULT_TYPES = [
@@ -67,7 +65,7 @@ const INITIAL_FURNITURE_FORM: FurnitureForm = {
   color: '',
   brand: '',
   type: '',
-  dimensionFormat: 'L x D x H',
+  dimensionFormat: 'L x P x A',
   finalDimension: '',
   environment: '',
   value: '',
@@ -133,6 +131,11 @@ export default function FurnitureDashboardPage() {
   useEffect(() => {
     console.log('[FurniturePage] Attributes changed:', attributes);
     console.log('[FurniturePage] isSelected:', isSelected);
+    console.log('[FurniturePage] Dimensions from attributes:', {
+      width: attributes?.width,
+      depth: attributes?.depth,
+      height: attributes?.height,
+    });
 
     setFurnitureForm((prev) => {
       if (!attributes) {
@@ -147,7 +150,7 @@ export default function FurnitureDashboardPage() {
       }
 
       console.log('[FurniturePage] Updating form with attributes');
-      return {
+      const newForm = {
         ...prev,
         name: attributes.name,
         color: attributes.color,
@@ -163,6 +166,12 @@ export default function FurnitureDashboardPage() {
         depth: attributes.depth,
         height: attributes.height,
       };
+      console.log('[FurniturePage] New form state:', {
+        width: newForm.width,
+        depth: newForm.depth,
+        height: newForm.height,
+      });
+      return newForm;
     });
   }, [attributes, isSelected]);
 
@@ -174,17 +183,6 @@ export default function FurnitureDashboardPage() {
       }));
     }
   }, [isAvailable]);
-
-  useEffect(() => {
-    if (dimensions) {
-      setFurnitureForm((prev) => ({
-        ...prev,
-        width: dimensions.width,
-        depth: dimensions.depth,
-        height: dimensions.height,
-      }));
-    }
-  }, [dimensions]);
 
   useEffect(() => {
     if (dimensionPreview) {
@@ -422,6 +420,33 @@ export default function FurnitureDashboardPage() {
               </Tooltip>
             </div>
 
+            <div>
+              <label className='block text-sm font-semibold mb-2 text-foreground'>
+                Formato da dimensão
+              </label>
+              <Select
+                value={dimensionFormat}
+                onValueChange={(selected) =>
+                  setFurnitureField(
+                    'dimensionFormat',
+                    selected as DimensionFormat
+                  )
+                }
+                disabled={isBusy}
+              >
+                <SelectTrigger className='h-11 rounded-xl border-2'>
+                  <SelectValue placeholder='Selecione o formato' />
+                </SelectTrigger>
+                <SelectContent>
+                  {DIMENSION_FORMAT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className='space-y-3'>
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
@@ -507,44 +532,6 @@ export default function FurnitureDashboardPage() {
                 />
               </div>
             </div>
-          </div>
-
-          <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
-            <div className='space-y-1 mb-3'>
-              <h3 className='text-sm font-semibold text-foreground'>
-                Informações adicionais
-              </h3>
-              <p className='text-xs text-muted-foreground'>
-                Detalhes complementares para relatórios e documentação
-              </p>
-            </div>
-
-            <div>
-              <label className='block text-sm font-semibold mb-2 text-foreground'>
-                Formato da dimensão
-              </label>
-              <Select
-                value={dimensionFormat}
-                onValueChange={(selected) =>
-                  setFurnitureField(
-                    'dimensionFormat',
-                    selected as DimensionFormat
-                  )
-                }
-                disabled={isBusy}
-              >
-                <SelectTrigger className='h-11 rounded-xl border-2'>
-                  <SelectValue placeholder='Selecione o formato' />
-                </SelectTrigger>
-                <SelectContent>
-                  {DIMENSION_FORMAT_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
 
             <Input
               id='finalDimension'
@@ -555,8 +542,19 @@ export default function FurnitureDashboardPage() {
                 setFurnitureField('finalDimension', e.target.value)
               }
               disabled={isBusy}
-              placeholder='Ex: 120W x 80D x 75H cm'
+              placeholder='Ex: 120 x 80 x 75 cm'
             />
+          </div>
+
+          <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
+            <div className='space-y-1 mb-3'>
+              <h3 className='text-sm font-semibold text-foreground'>
+                Informações complementares
+              </h3>
+              <p className='text-xs text-muted-foreground'>
+                Ambiente, valor e link de referência
+              </p>
+            </div>
 
             <Input
               id='environment'
@@ -587,6 +585,17 @@ export default function FurnitureDashboardPage() {
               disabled={isBusy}
               placeholder='Ex: https://...'
             />
+          </div>
+
+          <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
+            <div className='space-y-1 mb-3'>
+              <h3 className='text-sm font-semibold text-foreground'>
+                Observações
+              </h3>
+              <p className='text-xs text-muted-foreground'>
+                Informações adicionais e notas
+              </p>
+            </div>
 
             <div className='space-y-2'>
               <label

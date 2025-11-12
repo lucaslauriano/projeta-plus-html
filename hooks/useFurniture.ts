@@ -100,6 +100,12 @@ export function useFurniture() {
         return;
       }
 
+      console.log('[useFurniture] Raw dimensions from response:', {
+        width: response.width,
+        depth: response.depth,
+        height: response.height,
+      });
+
       const nextAttributes: FurnitureData = {
         selected: response.selected ?? false,
         entity_id: response.entity_id,
@@ -119,12 +125,18 @@ export function useFurniture() {
       };
 
       console.log('[useFurniture] ✅ Setting attributes:', nextAttributes);
+      console.log('[useFurniture] Dimensions in nextAttributes:', {
+        width: nextAttributes.width,
+        depth: nextAttributes.depth,
+        height: nextAttributes.height,
+      });
       setAttributes(nextAttributes);
       setDimensions({
         width: nextAttributes.width,
         depth: nextAttributes.depth,
         height: nextAttributes.height,
       });
+      console.log('[useFurniture] Dimensions state updated');
       setDimensionPreview(nextAttributes.dimension);
       console.log(
         '[useFurniture] ==========================================\n'
