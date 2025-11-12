@@ -420,33 +420,6 @@ export default function FurnitureDashboardPage() {
               </Tooltip>
             </div>
 
-            <div>
-              <label className='block text-sm font-semibold mb-2 text-foreground'>
-                Formato da dimensão
-              </label>
-              <Select
-                value={dimensionFormat}
-                onValueChange={(selected) =>
-                  setFurnitureField(
-                    'dimensionFormat',
-                    selected as DimensionFormat
-                  )
-                }
-                disabled={isBusy}
-              >
-                <SelectTrigger className='h-11 rounded-xl border-2'>
-                  <SelectValue placeholder='Selecione o formato' />
-                </SelectTrigger>
-                <SelectContent>
-                  {DIMENSION_FORMAT_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             <div className='space-y-3'>
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
@@ -531,6 +504,33 @@ export default function FurnitureDashboardPage() {
                   placeholder='Ex: 75'
                 />
               </div>
+            </div>
+
+            <div>
+              <label className='block text-sm font-semibold mb-2 text-foreground'>
+                Formato da dimensão
+              </label>
+              <Select
+                value={dimensionFormat}
+                onValueChange={(selected) =>
+                  setFurnitureField(
+                    'dimensionFormat',
+                    selected as DimensionFormat
+                  )
+                }
+                disabled={isBusy}
+              >
+                <SelectTrigger className='h-11 rounded-xl border-2'>
+                  <SelectValue placeholder='Selecione o formato' />
+                </SelectTrigger>
+                <SelectContent>
+                  {DIMENSION_FORMAT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <Input

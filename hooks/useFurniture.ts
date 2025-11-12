@@ -149,7 +149,7 @@ export function useFurniture() {
       if (response.success) {
         toast.success(response.message);
         setLastOperation(response.message);
-        void callSketchupMethod('get_furniture_attributes');
+        // SelectionObserver no backend já atualiza automaticamente
       } else {
         handleError(response.message);
       }

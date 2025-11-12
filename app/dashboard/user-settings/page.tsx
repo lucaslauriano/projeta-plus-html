@@ -132,7 +132,6 @@ export default function GlobalSettingsPage() {
             <div>
               <Input
                 type='text'
-                step='0.01'
                 id='cut_height'
                 label='Altura de corte (m):'
                 value={settings?.cut_height?.toString() || ''}
@@ -145,7 +144,7 @@ export default function GlobalSettingsPage() {
             </div>
 
             {/* Styles Folder */}
-            <div>
+            {/* <div>
               <label
                 htmlFor='styles_folder'
                 className='block text-foreground text-sm font-bold mb-2'
@@ -171,10 +170,10 @@ export default function GlobalSettingsPage() {
                   Select
                 </Button>
               </div>
-            </div>
+            </div> */}
 
             {/* Sheets Folder */}
-            <div>
+            {/* <div>
               <label
                 htmlFor='sheets_folder'
                 className='block text-foreground text-sm font-bold mb-2'
@@ -203,7 +202,7 @@ export default function GlobalSettingsPage() {
                   Select
                 </Button>
               </div>
-            </div>
+            </div> */}
 
             {/* Actions Buttons */}
             {hasChanges && (
