@@ -3,6 +3,66 @@ interface RoomAnnotationResult {
   message: string;
 }
 
+interface FurnitureAttributesResponse {
+  success: boolean;
+  selected: boolean;
+  entity_id?: number;
+  name?: string;
+  color?: string;
+  brand?: string;
+  type?: string;
+  width?: string;
+  depth?: string;
+  height?: string;
+  dimension_format?: string;
+  dimension?: string;
+  environment?: string;
+  value?: string;
+  link?: string;
+  observations?: string;
+  message?: string;
+}
+
+interface FurnitureDimensionsResponse {
+  success: boolean;
+  width?: string;
+  depth?: string;
+  height?: string;
+  message?: string;
+}
+
+interface FurnitureDimensionPreviewResponse {
+  success: boolean;
+  dimension?: string;
+  message?: string;
+}
+
+interface FurnitureOperationResponse {
+  success: boolean;
+  message: string;
+  path?: string;
+}
+
+export interface FurnitureReportItem {
+  name: string;
+  color: string;
+  brand: string;
+  type: string;
+  dimension: string;
+  environment: string;
+  observations: string;
+  link: string;
+  value: string;
+  quantity: number;
+  ids: number[];
+}
+
+interface FurnitureReportResponse {
+  success: boolean;
+  items: FurnitureReportItem[];
+  message?: string;
+}
+
 export interface RoomDefaults {
   scale?: string;
   font?: string;
@@ -66,6 +126,19 @@ declare global {
       defaults: ComponentUpdaterDefaults
     ) => void;
     handleComponentUpdaterResult?: (result: RoomAnnotationResult) => void;
+    handleFurnitureAttributes?: (response: FurnitureAttributesResponse) => void;
+    handleFurnitureSave?: (response: FurnitureOperationResponse) => void;
+    handleFurnitureDimensions?: (response: FurnitureDimensionsResponse) => void;
+    handleFurnitureDimensionPreview?: (
+      response: FurnitureDimensionPreviewResponse
+    ) => void;
+    handleFurnitureTypes?: (
+      response: { success: boolean; types: string[]; message?: string }
+    ) => void;
+    handleFurnitureReport?: (response: FurnitureReportResponse) => void;
+    handleFurnitureOperation?: (
+      response: FurnitureOperationResponse
+    ) => void;
   }
 }
 
