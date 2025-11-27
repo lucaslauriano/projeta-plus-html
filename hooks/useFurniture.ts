@@ -17,6 +17,9 @@ export interface FurnitureFormPayload {
   value: string;
   link: string;
   observations: string;
+  width: string;
+  depth: string;
+  height: string;
 }
 
 export interface FurnitureDimensions {
@@ -94,7 +97,7 @@ export function useFurniture() {
       clearPending();
       if (!response.success) {
         console.log('[useFurniture] ❌ Failed - clearing attributes');
-        handleError(response.message);
+
         setAttributes(null);
         setDimensions(null);
         return;
@@ -330,13 +333,6 @@ export function useFurniture() {
     },
     [callSketchupMethod, isAvailable]
   );
-
-  useEffect(() => {
-    if (isAvailable) {
-      void loadFurnitureAttributes();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAvailable]);
 
   const resetForm = useCallback(() => {
     setAttributes(null);

@@ -1,12 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { InfoIcon, Lock, Save, Target } from 'lucide-react';
+import { InfoIcon, Save, Target } from 'lucide-react';
 import PageHeader from '@/components/page-header';
 import PageWrapper from '@/components/ui/page-wraper';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -82,7 +81,6 @@ const INITIAL_FURNITURE_FORM: FurnitureForm = {
 export default function FurnitureDashboardPage() {
   const {
     attributes,
-    dimensions,
     dimensionPreview,
     availableTypes,
     isBusy,
@@ -226,6 +224,9 @@ export default function FurnitureDashboardPage() {
       value,
       link,
       observations,
+      width,
+      depth,
+      height,
     });
   };
 
@@ -423,15 +424,6 @@ export default function FurnitureDashboardPage() {
             <div className='space-y-3'>
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
-                  <Checkbox
-                    id='keep-width'
-                    checked={keepWidth}
-                    onCheckedChange={(checked) =>
-                      setFurnitureField('keepWidth', checked === true)
-                    }
-                    disabled={isBusy}
-                  />
-                  <Lock className='h-3.5 w-3.5 text-warning' />
                   <label
                     htmlFor='keep-width'
                     className='text-sm font-semibold text-foreground'
@@ -451,15 +443,6 @@ export default function FurnitureDashboardPage() {
 
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
-                  <Checkbox
-                    id='keep-depth'
-                    checked={keepDepth}
-                    onCheckedChange={(checked) =>
-                      setFurnitureField('keepDepth', checked === true)
-                    }
-                    disabled={isBusy}
-                  />
-                  <Lock className='h-3.5 w-3.5 text-warning' />
                   <label
                     htmlFor='keep-depth'
                     className='text-sm font-semibold text-foreground'
@@ -479,15 +462,6 @@ export default function FurnitureDashboardPage() {
 
               <div className='space-y-2'>
                 <div className='flex items-center gap-2'>
-                  <Checkbox
-                    id='keep-height'
-                    checked={keepHeight}
-                    onCheckedChange={(checked) =>
-                      setFurnitureField('keepHeight', checked === true)
-                    }
-                    disabled={isBusy}
-                  />
-                  <Lock className='h-3.5 w-3.5 text-warning' />
                   <label
                     htmlFor='keep-height'
                     className='text-sm font-semibold text-foreground'
