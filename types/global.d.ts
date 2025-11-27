@@ -73,8 +73,22 @@ export interface RoomDefaults {
   is_auto_level?: boolean;
   level?: string;
 }
+export interface SketchUpTag {
+  name: string;
+  visible: boolean;
+  color: number[];
+}
 
-// Clerk custom types
+export interface SketchUpFolder {
+  name: string;
+  tags: SketchUpTag[];
+}
+
+export interface LayersData {
+  folders: SketchUpFolder[];
+  tags: SketchUpTag[];
+}
+
 export {};
 
 declare global {
@@ -101,6 +115,13 @@ declare global {
       startRoomAnnotation: (args: RoomAnnotationArgs) => void;
       showMessageBox: (message: string) => void;
       requestModelName: () => void;
+      getLayers: () => void;
+      getJsonPath: () => void;
+      deleteLayer: (name: string) => void;
+      toggleVisibility: (payload: string) => void;
+      saveToJson: (payload: string) => void;
+      loadFromFile: () => void;
+      importLayers: (payload: string) => void;
     };
     changeLanguage: (langCode: string) => void;
     loadGlobalSettings: () => void;
@@ -132,13 +153,49 @@ declare global {
     handleFurnitureDimensionPreview?: (
       response: FurnitureDimensionPreviewResponse
     ) => void;
-    handleFurnitureTypes?: (
-      response: { success: boolean; types: string[]; message?: string }
-    ) => void;
+    handleFurnitureTypes?: (response: {
+      success: boolean;
+      types: string[];
+      message?: string;
+    }) => void;
     handleFurnitureReport?: (response: FurnitureReportResponse) => void;
-    handleFurnitureOperation?: (
-      response: FurnitureOperationResponse
+    handleFurnitureOperation?: (response: FurnitureOperationResponse) => void;
+    handleImportLayersResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleAddLayerResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleAddFolderResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleGetLayersResult?: (result: LayersData) => void;
+    handleDeleteLayerResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleToggleVisibilityResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleSaveToJsonResult?: (result: {
+      success: boolean;
+      message: string;
+      path?: string;
+    }) => void;
+    handleLoadFromFileResult?: (
+      result: LayersData & {
+        success: boolean;
+        message: string;
+      }
     ) => void;
+    handleGetJsonPathResult?: (result: {
+      success: boolean;
+      path?: string;
+    }) => void;
   }
 }
 
