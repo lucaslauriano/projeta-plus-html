@@ -40,6 +40,7 @@ export default function LayersComponent() {
     loadLayers,
     addFolder,
     addTag,
+    deleteFolder,
     deleteLayer,
     toggleVisibility,
     saveToJson,
@@ -50,7 +51,7 @@ export default function LayersComponent() {
 
   const [newFolderName, setNewFolderName] = useState('');
   const [newTagName, setNewTagName] = useState('');
-  const [newTagColor, setNewTagColor] = useState('#00d9ff');
+  const [newTagColor, setNewTagColor] = useState('#ffffff');
   const [selectedFolder, setSelectedFolder] = useState<string>('root');
 
   const handleAddFolder = async () => {
@@ -195,18 +196,30 @@ export default function LayersComponent() {
                     value={`folder-${i}`}
                     className='border rounded-md overflow-hidden bg-muted/20 px-0'
                   >
-                    <AccordionTrigger className=' px-3 py-2 hover:no-underline hover:bg-yellow-500/20 data-[state=open]:bg-yellow-500/20 '>
+                    <AccordionTrigger className=' px-3 py-2 hover:no-underline hover:bg-yellow-500/20 data-[state=open]:bg-yellow-500/20 group'>
                       <div className='flex items-center justify-between w-full pr-2'>
                         <div className='flex items-center gap-2 font-medium text-sm'>
                           <Folder className='w-4 h-4 text-yellow-500' />
                           {folder.name}
                         </div>
-                        <Badge
-                          variant='outline'
-                          className='text-xs bg-green-500/20 border-green-500/30 ml-2'
-                        >
-                          {folder.tags.length}
-                        </Badge>
+                        <div className='flex items-center gap-2'>
+                          <Badge
+                            variant='outline'
+                            className='text-xs bg-green-500/20 border-green-500/30'
+                          >
+                            {folder.tags.length}
+                          </Badge>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteFolder(folder.name);
+                            }}
+                            className='opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-600 transition-opacity p-1'
+                            title='Excluir pasta'
+                          >
+                            <X className='w-4 h-4' />
+                          </button>
+                        </div>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className='p-0'>
@@ -223,15 +236,11 @@ export default function LayersComponent() {
                               }
                               className='h-3 w-3'
                             />
-                            <div
-                              className='w-3 h-3 rounded-full border border-white/20'
-                              style={{
-                                backgroundColor: rgbToHex(
-                                  tag.color[0],
-                                  tag.color[1],
-                                  tag.color[2]
-                                ),
-                              }}
+                            <input
+                              type='color'
+                              value={newTagColor}
+                              onChange={(e) => setNewTagColor(e.target.value)}
+                              className='h-2 w-2 rounded-full cursor-pointer border-2 border-border p-1'
                             />
                             <span className='flex-1'>{tag.name}</span>
                             <button
@@ -301,7 +310,7 @@ export default function LayersComponent() {
             type='button'
             onClick={loadLayers}
             disabled={isBusy}
-            className='relative inline-flex flex-col items-center justify-center rounded-l-md bg-secondary px-4 py-4 text-xs font-medium text-secondary-foreground ring-1 ring-inset ring-secondary-foreground/20 hover:bg-secondary/90 focus:z-10 disabled:opacity-50 gap-1 '
+            className='relative inline-flex flex-col items-center justify-center rounded-l-md bg-primary px-3 py-3 text-xs font-medium text-primary-foreground ring-1 ring-inset ring-primary-foreground/20 hover:bg-primary/90 focus:z-10 disabled:opacity-50 gap-1 '
             title='Trazer do Modelo'
           >
             <Download className='w-5 h-5' />
@@ -309,15 +318,15 @@ export default function LayersComponent() {
           <button
             type='button'
             onClick={loadFromJson}
-            className='relative -ml-px inline-flex flex-col items-center justify-center bg-secondary px-4 py-4 text-xs font-medium text-secondary-foreground ring-1 ring-inset ring-secondary-foreground/20 hover:bg-secondary/90 focus:z-10 gap-1'
-            title='Carregar JSON'
+            className='relative -ml-px inline-flex flex-col items-center justify-center bg-primary px-3 py-3 text-xs font-medium text-primary-foreground ring-1 ring-inset ring-primary-foreground/20 hover:bg-primary/90 focus:z-10 gap-1'
+            title='Redefinir'
           >
             <FileJson className='w-5 h-5' />
           </button>
           <button
             type='button'
             onClick={saveToJson}
-            className='relative -ml-px inline-flex flex-col items-center justify-center bg-secondary px-4 py-4 text-xs font-medium text-secondary-foreground ring-1 ring-inset ring-secondary-foreground/20 hover:bg-secondary/90 focus:z-10 gap-1'
+            className='relative -ml-px inline-flex flex-col items-center justify-center bg-primary px-3 py-3 text-xs font-medium text-primary-foreground ring-1 ring-inset ring-primary-foreground/20 hover:bg-primary/90 focus:z-10 gap-1'
             title='Salvar JSON'
           >
             <Save className='w-5 h-5' />
@@ -325,7 +334,7 @@ export default function LayersComponent() {
           <button
             type='button'
             onClick={importToModel}
-            className='relative -ml-px inline-flex flex-col items-center justify-center bg-secondary px-4 py-4 text-xs font-medium text-secondary-foreground ring-1 ring-inset ring-primary-foreground/20 hover:bg-primary/90 focus:z-10 gap-1 '
+            className='relative -ml-px inline-flex flex-col items-center justify-center bg-primary px-3 py-3 text-xs font-medium text-primary-foreground ring-1 ring-inset ring-primary-foreground/20 hover:bg-primary/90 focus:z-10 gap-1 '
             title='Importar no Modelo'
           >
             <Upload className='w-5 h-5' />
@@ -333,7 +342,7 @@ export default function LayersComponent() {
           <button
             type='button'
             onClick={clearAll}
-            className='relative -ml-px inline-flex flex-col items-center justify-center rounded-r-md bg-destructive px-4 py-4 text-xs font-medium text-destructive-foreground ring-1 ring-inset ring-destructive-foreground/20 hover:bg-destructive/90 focus:z-10 gap-1 '
+            className='relative -ml-px inline-flex flex-col items-center justify-center rounded-r-md bg-destructive px-3 py-3 text-xs font-medium text-destructive-foreground ring-1 ring-inset ring-destructive-foreground/20 hover:bg-destructive/80 focus:z-10 gap-1 '
             title='Limpar'
           >
             <Trash2 className='w-5 h-5' />

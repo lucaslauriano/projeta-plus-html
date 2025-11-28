@@ -179,6 +179,10 @@ declare global {
       tag?: SketchUpTag;
     }) => void;
     handleGetLayersResult?: (result: LayersData) => void;
+    handleDeleteFolderResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
     handleDeleteLayerResult?: (result: {
       success: boolean;
       message: string;

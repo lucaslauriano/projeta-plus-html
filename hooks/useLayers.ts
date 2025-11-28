@@ -104,6 +104,22 @@ export function useLayers() {
       }
     };
 
+    window.handleDeleteFolderResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      clearPending();
+      if (result.success) {
+        toast.success(result.message);
+        // Reload layers to get updated state
+        if (isAvailable) {
+          callSketchupMethod('getLayers').catch(() => {});
+        }
+      } else {
+        toast.error(result.message);
+      }
+    };
+
     window.handleDeleteLayerResult = (result: {
       success: boolean;
       message: string;
@@ -111,7 +127,10 @@ export function useLayers() {
       clearPending();
       if (result.success) {
         toast.success(result.message);
-        loadLayers();
+        // Reload layers to get updated state
+        if (isAvailable) {
+          callSketchupMethod('getLayers').catch(() => {});
+        }
       } else {
         toast.error(result.message);
       }
@@ -171,6 +190,7 @@ export function useLayers() {
       delete window.handleAddTagResult;
       delete window.handleGetLayersResult;
       delete window.handleImportLayersResult;
+      delete window.handleDeleteFolderResult;
       delete window.handleDeleteLayerResult;
       delete window.handleToggleVisibilityResult;
       delete window.handleSaveToJsonResult;
@@ -332,16 +352,49 @@ export function useLayers() {
     [data.folders, data.tags, hexToRgb, isAvailable, callSketchupMethod]
   );
 
+  const deleteFolder = useCallback(
+    async (name: string) => {
+      if (!confirm(`Excluir pasta "${name}" e mover suas tags para fora?`))
+        return;
+
+      if (!isAvailable) {
+        // Mock mode - update local state
+        setData((prev) => ({
+          ...prev,
+          folders: prev.folders.filter((f) => f.name !== name),
+        }));
+        toast.info(`Pasta "${name}" excluída (modo simulação)`);
+        return;
+      }
+
+      setPendingAction('deleteFolder');
+      await callSketchupMethod('deleteFolder', { name });
+    },
+    [callSketchupMethod, isAvailable]
+  );
+
   const deleteLayer = useCallback(
     async (name: string) => {
       if (!confirm(`Excluir tag "${name}"?`)) return;
 
       if (!isAvailable) {
-        toast.info(`Tag "${name}" excluída`);
+        // Mock mode - update local state
+        setData((prev) => {
+          const newData = { ...prev };
+          // Remove from root tags
+          newData.tags = newData.tags.filter((t) => t.name !== name);
+          // Remove from folders
+          newData.folders = newData.folders.map((f) => ({
+            ...f,
+            tags: f.tags.filter((t) => t.name !== name),
+          }));
+          return newData;
+        });
+        toast.info(`Tag "${name}" excluída (modo simulação)`);
         return;
       }
 
-      setPendingAction('delete');
+      setPendingAction('deleteLayer');
       await callSketchupMethod('deleteLayer', { name });
     },
     [callSketchupMethod, isAvailable]
@@ -455,6 +508,7 @@ export function useLayers() {
     getJsonPath,
     addFolder,
     addTag,
+    deleteFolder,
     deleteLayer,
     toggleVisibility,
     saveToJson,
