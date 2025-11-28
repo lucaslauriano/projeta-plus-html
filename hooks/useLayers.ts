@@ -45,6 +45,40 @@ export function useLayers() {
   }, []);
 
   useEffect(() => {
+    window.handleAddFolderResult = (result: {
+      success: boolean;
+      message: string;
+      folder?: { name: string };
+    }) => {
+      clearPending();
+      if (result.success) {
+        toast.success(`Pasta "${result.folder?.name}" criada no modelo`);
+        // Reload layers to get updated state
+        if (isAvailable) {
+          callSketchupMethod('getLayers').catch(() => {});
+        }
+      } else {
+        toast.error(result.message);
+      }
+    };
+
+    window.handleAddTagResult = (result: {
+      success: boolean;
+      message: string;
+      tag?: SketchUpTag;
+    }) => {
+      clearPending();
+      if (result.success) {
+        toast.success(`Tag "${result.tag?.name}" criada no modelo`);
+        // Reload layers to get updated state
+        if (isAvailable) {
+          callSketchupMethod('getLayers').catch(() => {});
+        }
+      } else {
+        toast.error(result.message);
+      }
+    };
+
     window.handleGetLayersResult = (
       result: LayersData | { success: boolean; message: string }
     ) => {
@@ -112,6 +146,7 @@ export function useLayers() {
     ) => {
       clearPending();
       if (result.success) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { success, message, ...layersData } = result;
         setData(layersData);
         const count = countTagsFromData(layersData);
@@ -132,6 +167,8 @@ export function useLayers() {
     };
 
     return () => {
+      delete window.handleAddFolderResult;
+      delete window.handleAddTagResult;
       delete window.handleGetLayersResult;
       delete window.handleImportLayersResult;
       delete window.handleDeleteLayerResult;
@@ -140,7 +177,14 @@ export function useLayers() {
       delete window.handleLoadFromFileResult;
       delete window.handleGetJsonPathResult;
     };
-  }, [clearPending, countTags, countTagsFromData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    clearPending,
+    countTags,
+    countTagsFromData,
+    callSketchupMethod,
+    isAvailable,
+  ]);
 
   const loadLayers = useCallback(async () => {
     if (!isAvailable) {
@@ -205,7 +249,7 @@ export function useLayers() {
   }, [callSketchupMethod, isAvailable]);
 
   const addFolder = useCallback(
-    (folderName: string) => {
+    async (folderName: string) => {
       if (!folderName.trim()) {
         toast.warning('Digite o nome da pasta');
         return false;
@@ -216,19 +260,25 @@ export function useLayers() {
         return false;
       }
 
-      setData((prev) => ({
-        ...prev,
-        folders: [...prev.folders, { name: folderName, tags: [] }],
-      }));
+      if (!isAvailable) {
+        // Mock mode - only update local state
+        setData((prev) => ({
+          ...prev,
+          folders: [...prev.folders, { name: folderName, tags: [] }],
+        }));
+        toast.success(`Pasta "${folderName}" adicionada (modo simulação)`);
+        return true;
+      }
 
-      toast.success(`Pasta "${folderName}" adicionada`);
+      setPendingAction('addFolder');
+      await callSketchupMethod('addFolder', { folderName });
       return true;
     },
-    [data.folders]
+    [data.folders, isAvailable, callSketchupMethod]
   );
 
   const addTag = useCallback(
-    (tagName: string, color: string, folder: string) => {
+    async (tagName: string, color: string, folder: string) => {
       if (!tagName.trim()) {
         toast.warning('Digite o nome da tag');
         return false;
@@ -243,30 +293,43 @@ export function useLayers() {
         return false;
       }
 
-      const newTag: SketchUpTag = {
-        name: tagName,
-        visible: true,
-        color: hexToRgb(color),
-      };
+      const colorRgb = hexToRgb(color);
 
-      if (folder === 'root') {
-        setData((prev) => ({
-          ...prev,
-          tags: [...prev.tags, newTag],
-        }));
-      } else {
-        setData((prev) => ({
-          ...prev,
-          folders: prev.folders.map((f) =>
-            f.name === folder ? { ...f, tags: [...f.tags, newTag] } : f
-          ),
-        }));
+      if (!isAvailable) {
+        // Mock mode - only update local state
+        const newTag: SketchUpTag = {
+          name: tagName,
+          visible: true,
+          color: colorRgb,
+        };
+
+        if (folder === 'root') {
+          setData((prev) => ({
+            ...prev,
+            tags: [...prev.tags, newTag],
+          }));
+        } else {
+          setData((prev) => ({
+            ...prev,
+            folders: prev.folders.map((f) =>
+              f.name === folder ? { ...f, tags: [...f.tags, newTag] } : f
+            ),
+          }));
+        }
+
+        toast.success(`Tag "${tagName}" adicionada (modo simulação)`);
+        return true;
       }
 
-      toast.success(`Tag "${tagName}" adicionada`);
+      setPendingAction('addTag');
+      await callSketchupMethod('addTag', {
+        name: tagName,
+        color: colorRgb,
+        folder: folder,
+      });
       return true;
     },
-    [data.folders, data.tags, hexToRgb]
+    [data.folders, data.tags, hexToRgb, isAvailable, callSketchupMethod]
   );
 
   const deleteLayer = useCallback(
@@ -318,7 +381,10 @@ export function useLayers() {
     }
 
     setPendingAction('save');
-    await callSketchupMethod('saveToJson', data as unknown as Record<string, unknown>);
+    await callSketchupMethod(
+      'saveToJson',
+      data as unknown as Record<string, unknown>
+    );
   }, [callSketchupMethod, countTags, data, isAvailable]);
 
   const loadFromJson = useCallback(async () => {
@@ -358,7 +424,10 @@ export function useLayers() {
     }
 
     setPendingAction('import');
-    await callSketchupMethod('importLayers', data as unknown as Record<string, unknown>);
+    await callSketchupMethod(
+      'importLayers',
+      data as unknown as Record<string, unknown>
+    );
   }, [callSketchupMethod, countTags, data, isAvailable]);
 
   const clearAll = useCallback(() => {

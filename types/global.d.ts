@@ -171,6 +171,12 @@ declare global {
     handleAddFolderResult?: (result: {
       success: boolean;
       message: string;
+      folder?: { name: string };
+    }) => void;
+    handleAddTagResult?: (result: {
+      success: boolean;
+      message: string;
+      tag?: SketchUpTag;
     }) => void;
     handleGetLayersResult?: (result: LayersData) => void;
     handleDeleteLayerResult?: (result: {
