@@ -175,6 +175,21 @@ export function useLayers() {
       }
     };
 
+    window.handleLoadDefaultTagsResult = (
+      result: LayersData & { success: boolean; message: string }
+    ) => {
+      clearPending();
+      if (result.success) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { success, message, ...layersData } = result;
+        setData(layersData);
+        const count = countTagsFromData(layersData);
+        toast.success(`${count} tags padrão carregadas`);
+      } else {
+        toast.error(result.message);
+      }
+    };
+
     window.handleGetJsonPathResult = (result: {
       success: boolean;
       path?: string;
@@ -195,6 +210,7 @@ export function useLayers() {
       delete window.handleToggleVisibilityResult;
       delete window.handleSaveToJsonResult;
       delete window.handleLoadFromFileResult;
+      delete window.handleLoadDefaultTagsResult;
       delete window.handleGetJsonPathResult;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -440,7 +456,7 @@ export function useLayers() {
     );
   }, [callSketchupMethod, countTags, data, isAvailable]);
 
-  const loadFromJson = useCallback(async () => {
+  const loadDefaultTags = useCallback(async () => {
     if (!isAvailable) {
       const mockData: LayersData = {
         folders: [
@@ -455,6 +471,16 @@ export function useLayers() {
         tags: [{ name: '-DET-1', visible: true, color: [180, 180, 180] }],
       };
       setData(mockData);
+      toast.info('Tags padrão carregadas (simulação)');
+      return;
+    }
+
+    setPendingAction('loadDefault');
+    await callSketchupMethod('loadDefaultTags');
+  }, [callSketchupMethod, isAvailable]);
+
+  const loadFromJson = useCallback(async () => {
+    if (!isAvailable) {
       toast.info('Arquivo JSON carregado (simulação)');
       return;
     }
@@ -513,6 +539,7 @@ export function useLayers() {
     toggleVisibility,
     saveToJson,
     loadFromJson,
+    loadDefaultTags,
     importToModel,
     clearAll,
   };

@@ -202,6 +202,12 @@ declare global {
         message: string;
       }
     ) => void;
+    handleLoadDefaultTagsResult?: (
+      result: LayersData & {
+        success: boolean;
+        message: string;
+      }
+    ) => void;
     handleGetJsonPathResult?: (result: {
       success: boolean;
       path?: string;
