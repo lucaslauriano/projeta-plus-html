@@ -87,6 +87,9 @@ export default function FurnitureDashboardPage() {
     isAvailable,
     saveFurnitureAttributes,
     requestDimensionPreview,
+    resizeIndependentLive,
+    loadFurnitureAttributes,
+    resetForm,
   } = useFurniture();
 
   const [furnitureForm, setFurnitureForm] = useState<FurnitureForm>(
@@ -136,8 +139,9 @@ export default function FurnitureDashboardPage() {
     });
 
     setFurnitureForm((prev) => {
-      if (!attributes) {
-        console.log('[FurniturePage] No attributes - resetting form');
+      // Se não há attributes OU se selected é false, reseta o formulário
+      if (!attributes || !attributes.selected) {
+        console.log('[FurniturePage] No attributes or not selected - resetting form');
         return {
           ...prev,
           ...INITIAL_FURNITURE_FORM,
@@ -188,6 +192,13 @@ export default function FurnitureDashboardPage() {
     }
   }, [dimensionPreview]);
 
+  // Reseta o formulário ao sair da tela
+  useEffect(() => {
+    return () => {
+      resetForm();
+    };
+  }, [resetForm]);
+
   useEffect(() => {
     if (!attributes?.selected) return;
     if (!width || !depth || !height) return;
@@ -209,6 +220,64 @@ export default function FurnitureDashboardPage() {
     requestDimensionPreview,
   ]);
 
+  // Redimensionamento ao vivo enquanto o usuário digita
+  useEffect(() => {
+    // Não redimensiona se não houver componente selecionado
+    if (!attributes?.selected || !isAvailable) {
+      return;
+    }
+    
+    // Não redimensiona se estiver salvando
+    if (isBusy) {
+      return;
+    }
+    
+    // Valida se pelo menos uma dimensão foi fornecida
+    const hasWidth = width && width.trim() !== '';
+    const hasDepth = depth && depth.trim() !== '';
+    const hasHeight = height && height.trim() !== '';
+    
+    if (!hasWidth && !hasDepth && !hasHeight) {
+      return;
+    }
+    
+    // Converte valores e valida (similar ao exemplo)
+    const parseValue = (val: string): number => {
+      if (!val || val.trim() === '') return 0;
+      const parsed = parseFloat(val.replace(',', '.'));
+      return isNaN(parsed) ? 0 : parsed;
+    };
+    
+    const widthVal = parseValue(width || '');
+    const depthVal = parseValue(depth || '');
+    const heightVal = parseValue(height || '');
+    
+    // Validação: não aceita valores zerados ou negativos (similar ao exemplo)
+    if (widthVal <= 0 || depthVal <= 0 || heightVal <= 0) {
+      return;
+    }
+    
+    // Debounce reduzido para 200ms (mais responsivo, similar ao exemplo)
+    const controller = setTimeout(() => {
+      console.log('[Furniture] Redimensionando ao vivo:', { widthVal, depthVal, heightVal });
+      void resizeIndependentLive({
+        width: width || '',
+        depth: depth || '',
+        height: height || '',
+      });
+    }, 200);
+    
+    return () => clearTimeout(controller);
+  }, [
+    width,
+    depth,
+    height,
+    attributes?.selected,
+    isAvailable,
+    isBusy,
+    resizeIndependentLive,
+  ]);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isBusy || !isSelected) return;
@@ -228,6 +297,8 @@ export default function FurnitureDashboardPage() {
       depth,
       height,
     });
+    // Reseta o formulário após salvar para feedback visual de sucesso
+    resetForm();
   };
 
   if (!isAvailable) {
@@ -287,6 +358,26 @@ export default function FurnitureDashboardPage() {
           }
         />
 
+        
+
+        <div className='mb-6 space-y-3'>
+          <Button
+            type='button'
+            size='lg'
+            disabled={isBusy || !isAvailable}
+            onClick={() => {
+              console.log('[FurniturePage] Botão Carregar Componente clicado');
+              void loadFurnitureAttributes();
+            }}
+            className='w-full flex items-center justify-center gap-2'
+            variant={isSelected ? 'outline' : 'default'}
+          >
+            <Target className='h-5 w-5' />
+            {isBusy ? 'Carregando...' : isSelected ? 'Recarregar Componente' : 'Selecionar Componente'}
+          </Button>
+          
+        </div>
+        
         <Alert
           className={cn(
             'mb-4 text-sm',
@@ -319,85 +410,19 @@ export default function FurnitureDashboardPage() {
           >
             {isSelected
               ? 'Edite os campos e salve para atualizar o componente.'
-              : 'Selecione um componente ou grupo no SketchUp para começar.'}
+              : 'Selecione um componente ou grupo no SketchUp e clique no botão acima.'}
           </AlertDescription>
         </Alert>
 
         <form onSubmit={handleSubmit} className='space-y-6 pb-8'>
           <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
-            <div className='space-y-1 mb-3'>
-              <h3 className='text-sm font-semibold text-foreground'>
-                Informações básicas
-              </h3>
-              <p className='text-xs text-muted-foreground'>
-                Dados principais do mobiliário selecionado
-              </p>
-            </div>
-
-            <Input
-              id='name'
-              type='text'
-              label='Nome'
-              value={name}
-              onChange={(e) => setFurnitureField('name', e.target.value)}
-              required
-              disabled={isBusy}
-              placeholder='Ex: Mesa de Jantar'
-            />
-
-            <Input
-              id='color'
-              type='text'
-              label='Cor'
-              value={color}
-              onChange={(e) => setFurnitureField('color', e.target.value)}
-              disabled={isBusy}
-              placeholder='Ex: Branco'
-            />
-
-            <Input
-              id='brand'
-              type='text'
-              label='Marca'
-              value={brand}
-              onChange={(e) => setFurnitureField('brand', e.target.value)}
-              disabled={isBusy}
-              placeholder='Ex: Tok&Stok'
-            />
-
-            <div>
-              <label className='block text-sm font-semibold mb-2 text-foreground'>
-                Tipo
-              </label>
-              <Select
-                value={type}
-                onValueChange={(selected) =>
-                  setFurnitureField('type', selected)
-                }
-                disabled={isBusy}
-              >
-                <SelectTrigger className='h-11 rounded-xl border-2'>
-                  <SelectValue placeholder='Selecione o tipo' />
-                </SelectTrigger>
-                <SelectContent>
-                  {typeOptions.map((option) => (
-                    <SelectItem key={option} value={option}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
             <div className='flex items-center justify-between mb-3'>
               <div className='space-y-1'>
                 <h3 className='text-sm font-semibold text-foreground'>
-                  Dimensões (live)
+                  Dimensões (Redimensionamento ao vivo)
                 </h3>
                 <p className='text-xs text-muted-foreground'>
-                  Medidas atuais do componente segundo o SketchUp
+                  Altere os valores e o componente será redimensionado automaticamente no SketchUp
                 </p>
               </div>
               <Tooltip>
@@ -414,8 +439,7 @@ export default function FurnitureDashboardPage() {
                   className='max-w-[200px] p-4 bg-popover border-border'
                 >
                   <p className='text-xs text-muted-foreground'>
-                    Use os cadeados para travar uma dimensão antes de realizar
-                    ajustes proporcionais diretamente no SketchUp.
+                    As dimensões são aplicadas automaticamente enquanto você digita. Não é necessário salvar.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -518,6 +542,72 @@ export default function FurnitureDashboardPage() {
               disabled={isBusy}
               placeholder='Ex: 120 x 80 x 75 cm'
             />
+          </div>
+
+          <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
+            <div className='space-y-1 mb-3'>
+              <h3 className='text-sm font-semibold text-foreground'>
+                Informações básicas
+              </h3>
+              <p className='text-xs text-muted-foreground'>
+                Dados principais do mobiliário (requer salvar)
+              </p>
+            </div>
+
+            <Input
+              id='name'
+              type='text'
+              label='Nome'
+              value={name}
+              onChange={(e) => setFurnitureField('name', e.target.value)}
+              required
+              disabled={isBusy}
+              placeholder='Ex: Mesa de Jantar'
+            />
+
+            <Input
+              id='color'
+              type='text'
+              label='Cor'
+              value={color}
+              onChange={(e) => setFurnitureField('color', e.target.value)}
+              disabled={isBusy}
+              placeholder='Ex: Branco'
+            />
+
+            <Input
+              id='brand'
+              type='text'
+              label='Marca'
+              value={brand}
+              onChange={(e) => setFurnitureField('brand', e.target.value)}
+              disabled={isBusy}
+              placeholder='Ex: Tok&Stok'
+            />
+
+            <div>
+              <label className='block text-sm font-semibold mb-2 text-foreground'>
+                Tipo
+              </label>
+              <Select
+                value={type}
+                onValueChange={(selected) =>
+                  setFurnitureField('type', selected)
+                }
+                disabled={isBusy}
+              >
+                <SelectTrigger className='h-11 rounded-xl border-2'>
+                  <SelectValue placeholder='Selecione o tipo' />
+                </SelectTrigger>
+                <SelectContent>
+                  {typeOptions.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>

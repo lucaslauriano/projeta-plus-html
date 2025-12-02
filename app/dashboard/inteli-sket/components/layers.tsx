@@ -63,7 +63,7 @@ export default function LayersComponent() {
     <div className='space-y-3'>
       <div className='flex items-center justify-between'>
         <h2 className='text-lg font-semibold flex items-center gap-2'>
-          <Tag className='w-5 h-5' />
+          <Tag className='w-4 h-4' />
           Gerenciador de Tags
         </h2>
         <Badge variant='secondary'>{countTags()} tags</Badge>
@@ -79,7 +79,7 @@ export default function LayersComponent() {
           </p>
         </div>
 
-        <div className='flex flex-col gap-2 items-start'>
+        <div className='flex flex-col gap-0 items-start'>
           <div className='w-full'>
             <Input
               type='text'
@@ -132,7 +132,7 @@ export default function LayersComponent() {
             </div>
           </div>
 
-          <div className='flex flex-col gap-2 items-start'>
+          <div className='flex flex-col gap-0 items-start'>
             <div className='w-full'>
               <label className='block text-sm font-semibold mb-2 text-foreground'>
                 Pasta (Opcional)
@@ -213,7 +213,7 @@ export default function LayersComponent() {
           <button
             type='button'
             onClick={clearAll}
-            className='relative -ml-px inline-flex flex-col items-center justify-center rounded-r-md bg-destructive px-3 py-3 text-xs font-medium text-destructive-foreground ring-1 ring-inset ring-destructive-foreground/20 hover:bg-destructive/80 focus:z-10 gap-1 '
+            className='relative -ml-px inline-flex flex-col items-center justify-center rounded-r-md bg-primary px-3 py-3 text-xs font-medium text-primary-foreground ring-1 ring-inset ring-destructive-foreground/20 hover:bg-destructive/80 focus:z-10 gap-1 '
             title='Limpar'
           >
             <Trash2 className='w-5 h-5' />

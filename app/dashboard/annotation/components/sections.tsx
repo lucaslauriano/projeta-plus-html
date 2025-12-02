@@ -40,7 +40,7 @@ function AnnotationSectionInner() {
         <div className='space-y-2'>
           <h3 className='text-sm font-semibold text-foreground'>Cortes</h3>
           <p className='text-xs text-muted-foreground'>
-            Ativar ferramenta de anotação de cortes no modelo
+            Anotação de todas as seções no modelo, com o nome atribuído automaticamente.
           </p>
         </div>
         <form onSubmit={handleSectionSubmit} className='w-full'>
@@ -50,7 +50,7 @@ function AnnotationSectionInner() {
             size='lg'
             className='w-full'
           >
-            {sectionLoading ? 'Ativando...' : 'Criar Anotação de Corte'}
+            {sectionLoading ? 'Ativando...' : 'Criar Anotação'}
           </Button>
         </form>
       </div>
@@ -60,7 +60,7 @@ function AnnotationSectionInner() {
         <div className='space-y-2'>
           <h3 className='text-sm font-semibold text-foreground'>Vista</h3>
           <p className='text-xs text-muted-foreground'>
-            Ativar ferramenta de anotação de vistas no modelo
+            Inserir bloco de indicação de vistas no centro da face selecionada.
           </p>
         </div>
         <form onSubmit={handleViewSubmit} className='w-full'>
@@ -70,7 +70,7 @@ function AnnotationSectionInner() {
             size='lg'
             className='w-full'
           >
-            {viewLoading ? 'Ativando...' : 'Criar Anotação de Vista'}
+            {viewLoading ? 'Ativando...' : 'Inserir Anotação'}
           </Button>
         </form>
       </div>

@@ -62,8 +62,8 @@ function AnnotationCeilingInner() {
         <div className='space-y-2'>
           <h3 className='text-sm font-semibold text-foreground'>Forro</h3>
           <p className='text-xs text-muted-foreground'>
-            Gere anotação com área e altura do pé-direito, calculadas
-            automaticamente
+            Anotação com área da face selecionada e altura do pé-direito, calculadas
+            automaticamente. <br /> Não esquecer de informar o nível do piso caso seja diferente de 0,00.
           </p>
         </div>
         <form onSubmit={handleCeilingSubmit} className='space-y-4'>
@@ -91,7 +91,7 @@ function AnnotationCeilingInner() {
         <div className='space-y-2'>
           <h3 className='text-sm font-semibold text-foreground'>Iluminação</h3>
           <p className='text-xs text-muted-foreground'>
-            Configure circuitos e conexões de iluminação
+            Anotar os circuitos: digite no campo o valor do circuito, clique para anotar e selecione as faces de interruptores.
           </p>
         </div>
 
@@ -101,7 +101,6 @@ function AnnotationCeilingInner() {
             <Input
               type='text'
               placeholder='Ex: C1 ou A'
-              label='Circuito'
               value={circuitText}
               onChange={(e) => setCircuitText(e.target.value)}
               required
@@ -116,13 +115,16 @@ function AnnotationCeilingInner() {
             </Button>
           </form>
 
+          <p className='text-xs text-muted-foreground'>
+            Ligar os circuitos: clique no botão para ligar os circuitos e selecione os códigos dos circuitos.
+          </p>
+
           {/* Ligar Circuitos Form */}
           <form onSubmit={handleCircuitConnectionSubmit}>
             <Button
               size='lg'
               type='submit'
               disabled={isCircuitLoading}
-              variant='secondary'
               className='w-full'
             >
               {isCircuitLoading ? 'Ativando...' : 'Ligar Circuitos'}
