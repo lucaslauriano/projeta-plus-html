@@ -34,6 +34,11 @@ export function RoomAnnotation() {
   return (
     <div className='w-full max-w-lg mx-auto space-y-4'>
       <form onSubmit={handleSubmit} className='space-y-5'>
+        <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
+          <p className='text-xs text-muted-foreground'>
+            Inserir nome do ambiente + área, de acordo com a face selecionada. Selecione os campos para anotar pé direito e nível do piso.
+          </p>
+        </div>
         {/* Nome do Ambiente */}
         <div className='space-y-2'>
           <Input
@@ -50,13 +55,13 @@ export function RoomAnnotation() {
 
         {/* Pé Direito Section */}
         <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
-          <div className='flex items-center justify-between'>
+          <div className='flex items-center'>
             <h3 className='text-sm font-semibold text-foreground'>
-              Pé Direito
+              
             </h3>
             <Checkbox
               id='showCeillingHeight'
-              label='Mostrar'
+              label='Mostrar Pé Direito'
               disabled={isLoading}
               checked={showCeillingHeight}
               onCheckedChange={(checked) =>
@@ -82,13 +87,13 @@ export function RoomAnnotation() {
 
         {/* Nível do Piso Section */}
         <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
-          <div className='flex items-center justify-between'>
+          <div className='flex items-center '>
             <h3 className='text-sm font-semibold text-foreground'>
-              Nível do Piso
+              
             </h3>
             <Checkbox
               id='showLevel'
-              label='Mostrar'
+              label='Mostrar Nível do Piso'
               disabled={isLoading}
               checked={showLevel}
               onCheckedChange={(checked) =>
@@ -118,7 +123,7 @@ export function RoomAnnotation() {
                   required
                   disabled={isLoading}
                   placeholder='0,00'
-                  label='Valor do Nível'
+                  label='Nível do Piso Manual'
                 />
               )}
             </div>
