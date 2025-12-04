@@ -5,6 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { useRoomAnnotation } from '@/hooks/useRoomAnnotation';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
 
 export function RoomAnnotation() {
   const { startRoomAnnotation, isLoading } = useRoomAnnotation();
@@ -33,18 +40,16 @@ export function RoomAnnotation() {
 
   return (
     <div className='w-full max-w-lg mx-auto space-y-4'>
+      <div className='flex items-center justify-between'></div>
       <form onSubmit={handleSubmit} className='space-y-5'>
-        <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
-          <p className='text-xs text-muted-foreground'>
-            Inserir nome do ambiente + área, de acordo com a face selecionada. Selecione os campos para anotar pé direito e nível do piso.
-          </p>
-        </div>
-        {/* Nome do Ambiente */}
         <div className='space-y-2'>
           <Input
             id='environmentName'
             type='text'
             label='Nome do Ambiente'
+            tooltip=' Inserir nome do ambiente + área, de acordo com a face
+                selecionada. Selecione os campos para anotar pé direito e nível
+                do piso.'
             value={environmentName}
             onChange={(e) => setEnvironmentName(e.target.value)}
             required
@@ -53,12 +58,8 @@ export function RoomAnnotation() {
           />
         </div>
 
-        {/* Pé Direito Section */}
         <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
           <div className='flex items-center'>
-            <h3 className='text-sm font-semibold text-foreground'>
-              
-            </h3>
             <Checkbox
               id='showCeillingHeight'
               label='Mostrar Pé Direito'
@@ -85,12 +86,8 @@ export function RoomAnnotation() {
           )}
         </div>
 
-        {/* Nível do Piso Section */}
         <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
           <div className='flex items-center '>
-            <h3 className='text-sm font-semibold text-foreground'>
-              
-            </h3>
             <Checkbox
               id='showLevel'
               label='Mostrar Nível do Piso'
@@ -130,8 +127,7 @@ export function RoomAnnotation() {
           )}
         </div>
 
-        {/* Submit Button */}
-        <Button type='submit' size='lg' disabled={isLoading} className='w-full'>
+        <Button type='submit' size='sm' disabled={isLoading} className='w-full'>
           {isLoading ? 'Executando...' : 'Criar Anotação'}
         </Button>
       </form>

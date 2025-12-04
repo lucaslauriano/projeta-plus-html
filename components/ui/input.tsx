@@ -1,5 +1,12 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -7,6 +14,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   prefix?: string;
   error?: boolean;
   className?: string;
+  tooltip?: string;
 }
 
 function Input({
@@ -15,6 +23,7 @@ function Input({
   type,
   label,
   helperText,
+  tooltip,
   error,
   ...props
 }: InputProps) {
@@ -26,16 +35,34 @@ function Input({
         <label
           className={cn(
             'block text-sm font-semibold mb-2',
+            tooltip && 'flex justify-between gap-1',
             error ? 'text-destructive' : 'text-foreground'
           )}
         >
           {label}
+          {tooltip && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type='button'
+                    className='p-1 hover:bg-accent rounded-md transition-colors'
+                  >
+                    <Info className='w-4 h-4 text-muted-foreground' />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className='max-w-xs'>
+                  <p className='text-sm font-normal'>{tooltip}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </label>
       )}
       <div
         className={cn(
           'flex items-stretch w-full rounded-xl overflow-hidden transition-all',
-          'border-2 shadow-sm',
+          'border-1 shadow-sm',
           isFocused && !error
             ? 'border-primary ring-2 ring-primary/20'
             : error
@@ -54,7 +81,7 @@ function Input({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           className={cn(
-            'flex h-11 w-full bg-background px-4 py-2 text-sm font-medium transition-colors',
+            'flex h-8 w-full bg-background px-4 py-2 text-sm font-medium transition-colors',
             'file:border-0 file:bg-transparent file:text-sm file:font-medium',
             'placeholder:text-muted-foreground/60',
             'focus:outline-none',

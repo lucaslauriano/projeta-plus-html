@@ -7,6 +7,13 @@ import { useCeilingAnnotation } from '@/hooks/useCeilingAnnotation';
 import { useLightingAnnotation } from '@/hooks/useLightingAnnotation';
 import { useCircuitConnection } from '@/hooks/useCircuitConnection';
 import { Input } from '@/components/ui/input';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
 
 const AnnotationLightingCeilingContent = dynamic(
   () => Promise.resolve(AnnotationCeilingInner),
@@ -59,12 +66,27 @@ function AnnotationCeilingInner() {
     <div className='w-full max-w-lg mx-auto space-y-5'>
       {/* Forro Section */}
       <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
-        <div className='space-y-2'>
+        <div className='flex items-center justify-between'>
           <h3 className='text-sm font-semibold text-foreground'>Forro</h3>
-          <p className='text-xs text-muted-foreground'>
-            Anotação com área da face selecionada e altura do pé-direito, calculadas
-            automaticamente. <br /> Não esquecer de informar o nível do piso caso seja diferente de 0,00.
-          </p>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type='button'
+                  className='p-1 hover:bg-accent rounded-md transition-colors'
+                >
+                  <Info className='w-4 h-4 text-muted-foreground' />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className='max-w-xs'>
+                <p className='text-sm'>
+                  Anotação com área da face selecionada e altura do pé-direito,
+                  calculadas automaticamente. Não esquecer de informar o nível
+                  do piso caso seja diferente de 0,00.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <form onSubmit={handleCeilingSubmit} className='space-y-4'>
           <Input
@@ -88,11 +110,26 @@ function AnnotationCeilingInner() {
 
       {/* Iluminação Section */}
       <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
-        <div className='space-y-2'>
+        <div className='flex items-center justify-between'>
           <h3 className='text-sm font-semibold text-foreground'>Iluminação</h3>
-          <p className='text-xs text-muted-foreground'>
-            Anotar os circuitos: digite no campo o valor do circuito, clique para anotar e selecione as faces de interruptores.
-          </p>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type='button'
+                  className='p-1 hover:bg-accent rounded-md transition-colors'
+                >
+                  <Info className='w-4 h-4 text-muted-foreground' />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className='max-w-xs'>
+                <p className='text-sm'>
+                  Anotar os circuitos: digite no campo o valor do circuito,
+                  clique para anotar e selecione as faces de interruptores.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         <div className='space-y-4'>
@@ -115,9 +152,29 @@ function AnnotationCeilingInner() {
             </Button>
           </form>
 
-          <p className='text-xs text-muted-foreground'>
-            Ligar os circuitos: clique no botão para ligar os circuitos e selecione os códigos dos circuitos.
-          </p>
+          <div className='flex items-center justify-between'>
+            <h4 className='text-sm font-medium text-foreground'>
+              Ligar Circuitos
+            </h4>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type='button'
+                    className='p-1 hover:bg-accent rounded-md transition-colors'
+                  >
+                    <Info className='w-4 h-4 text-muted-foreground' />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className='max-w-xs'>
+                  <p className='text-sm'>
+                    Clique no botão para ligar os circuitos e selecione os
+                    códigos dos circuitos.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
 
           {/* Ligar Circuitos Form */}
           <form onSubmit={handleCircuitConnectionSubmit}>

@@ -88,9 +88,12 @@ export function ElectricalChangeAtributes() {
         {/* Atributos Section */}
         <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
           <div className='space-y-2'>
-            <h3 className='text-sm font-semibold text-foreground'>Modificar Atributos</h3>
+            <h3 className='text-sm font-semibold text-foreground'>
+              Modificar Atributos
+            </h3>
             <p className='text-xs text-muted-foreground'>
-            Selecione os componentes dinâmicos de pontos técnicos no modelo e defina o tipo de atributo a modificar.
+              Selecione os componentes dinâmicos de pontos técnicos no modelo e
+              defina o tipo de atributo a modificar.
             </p>
           </div>
 
@@ -121,8 +124,6 @@ export function ElectricalChangeAtributes() {
                 label='Prefixo'
               />
             </div>
-
-            {/* Input Value */}
             <Input
               id='inputValue'
               type='text'
@@ -148,10 +149,14 @@ export function ElectricalChangeAtributes() {
             />
           </RadioGroup>
 
-          <Button type='submit' size='lg' disabled={isLoading} className='w-full'>
-          {isLoading ? 'Executando...' : 'Aplicar Alterações'}
-        </Button>
-        
+          <Button
+            type='submit'
+            size='sm'
+            disabled={isLoading}
+            className='w-full'
+          >
+            {isLoading ? 'Executando...' : 'Aplicar Alterações'}
+          </Button>
         </div>
 
         {/* Situação Section */}
@@ -159,7 +164,8 @@ export function ElectricalChangeAtributes() {
           <div className='space-y-2'>
             <h3 className='text-sm font-semibold text-foreground'>Situação</h3>
             <p className='text-xs text-muted-foreground'>
-              Selecione os componentes dinâmicos de pontos técnicos no modelo e defina o status da situação.
+              Selecione os componentes dinâmicos de pontos técnicos no modelo e
+              defina o status da situação.
             </p>
           </div>
 
@@ -183,15 +189,16 @@ export function ElectricalChangeAtributes() {
             </div>
           </RadioGroup>
 
-          <Button type='submit' size='lg' disabled={isLoading} className='w-full'>
-          {isLoading ? 'Executando...' : 'Aplicar Alterações'}
-        </Button>
-
+          <Button
+            type='submit'
+            size='sm'
+            disabled={isLoading}
+            className='w-full'
+          >
+            {isLoading ? 'Executando...' : 'Aplicar Alterações'}
+          </Button>
         </div>
-  
       </form>
-
-      {/* Print Attributes */}
       <PrintAttributes />
     </div>
   );

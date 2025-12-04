@@ -42,7 +42,6 @@ const accordionItems = [
     label: 'Eletrica',
     content: <ElectricalChangeAtributes />,
   },
-  
 ];
 
 export default function AnnotationDashboardPage() {
@@ -53,7 +52,7 @@ export default function AnnotationDashboardPage() {
         description='Gerencie suas anotações diretamente no modelo 3D.'
       />
 
-      <div className='w-full pb-8'>
+      <div className='w-full pb-8 overflow-y-scroll'>
         <Accordion type='single' collapsible className='w-full space-y-4'>
           {accordionItems.map((item) => {
             const IconComponent = item.icon;
@@ -64,8 +63,8 @@ export default function AnnotationDashboardPage() {
                 className='border-0 bg-card rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow'
               >
                 <AccordionTrigger className='px-5 py-3 hover:no-underline'>
-                  <div className='flex items-center gap-3 text-base font-semibold'>
-                    <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary/10'>
+                  <div className='flex items-center gap-3 text-base font-semibold '>
+                    <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 '>
                       <IconComponent className='w-5 h-5 text-primary' />
                     </div>
                     <span>{item.label}</span>

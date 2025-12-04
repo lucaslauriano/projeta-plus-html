@@ -1,7 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Info, Layers, ScanLine, Map } from 'lucide-react';
+import {
+  Info,
+  Layers,
+  ScanLine,
+  Map,
+  CuboidIcon,
+  LayoutDashboard,
+  BoxesIcon,
+  FileSearch,
+} from 'lucide-react';
 import PageHeader from '@/components/page-header';
 import PageWrapper from '@/components/ui/page-wraper';
 import {
@@ -14,6 +23,7 @@ import DetailsComponent from './components/details';
 import LayersComponent from './components/layers';
 import SectionsComponent from './components/sections';
 import PlansComponent from './components/plans';
+import ScenesComponent from '@/app/dashboard/inteli-sket/components/scenes';
 
 export default function InteliSketDashboardPage() {
   const [activeTab, setActiveTab] = useState('layers');
@@ -24,10 +34,14 @@ export default function InteliSketDashboardPage() {
         return <DetailsComponent />;
       case 'layers':
         return <LayersComponent />;
-      case 'sections':
-        return <SectionsComponent />;
+      case 'layers':
+        return <LayersComponent />;
+      case 'scenes':
+        return <ScenesComponent />;
       case 'plans':
         return <PlansComponent />;
+      case 'sections':
+        return <SectionsComponent />;
       default:
         return <DetailsComponent />;
     }
@@ -35,9 +49,10 @@ export default function InteliSketDashboardPage() {
 
   const tabs = [
     { id: 'layers', label: 'Camadas', icon: Layers },
+    { id: 'scenes', label: 'Cenas', icon: BoxesIcon },
+    { id: 'plans', label: 'Plantas', icon: LayoutDashboard },
     { id: 'sections', label: 'Seções', icon: ScanLine },
-    { id: 'plans', label: 'Plantas', icon: Map },
-    { id: 'details', label: 'Detalhes', icon: Info },
+    { id: 'details', label: 'Detalhes', icon: FileSearch },
   ];
 
   return (

@@ -6,7 +6,21 @@ import { useState, useEffect } from 'react';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { useSubscription } from '@clerk/nextjs/experimental';
 import { cn } from '@/lib/utils';
-import { HousePlus, Plus, Home, Menu, Settings } from 'lucide-react';
+import {
+  HousePlus,
+  Plus,
+  Home,
+  Menu,
+  Settings,
+  Armchair,
+  Proportions,
+  Plug,
+  BrickWall,
+  FileTextIcon,
+  PanelBottom,
+  Lightbulb,
+  LampCeiling,
+} from 'lucide-react';
 import { AiOutlineTag, AiTwotoneLayout } from 'react-icons/ai';
 import { HiOutlineLightBulb } from 'react-icons/hi';
 import { AiTwotoneProfile } from 'react-icons/ai';
@@ -15,46 +29,47 @@ import { usePathname } from 'next/navigation';
 import { PiWallDuotone } from 'react-icons/pi';
 import { PiSquareHalfBottomDuotone } from 'react-icons/pi';
 import { PiPlugDuotone } from 'react-icons/pi';
-import { PiArmchairDuotone } from 'react-icons/pi';
 import { TbKeyframes } from 'react-icons/tb';
-import { Badge } from '@/components/ui/badge';
-import { ThemeToggleButton } from '@/components/ui/theme-toggle-button';
 import { Loading } from '@/components/ui/loading';
+import { FILE } from 'dns';
 
 const navigation = [
-  { name: 'Sketchup Inteligente', href: '/dashboard/inteli-sket', icon: Home },
+  {
+    name: 'Sketchup Inteligente',
+    href: '/dashboard/inteli-sket',
+    icon: HousePlus,
+  },
   { name: 'Anotação', href: '/dashboard/annotation', icon: AiOutlineTag },
   {
     name: 'Mobiliário',
     href: '/dashboard/furniture',
-    icon: PiArmchairDuotone,
+    icon: Armchair,
   },
-  { name: 'Esquadrias', href: '/dashboard/frames', icon: TbKeyframes },
-  { name: 'Elétrica', href: '/dashboard/electrical', icon: PiPlugDuotone },
+  { name: 'Elétrica', href: '/dashboard/electrical', icon: Plug },
   {
     name: 'Iluminação',
     href: '/dashboard/lightnings',
-    icon: HiOutlineLightBulb,
+    icon: LampCeiling,
   },
   {
     name: 'Revestimentos',
     href: '/dashboard/coatings',
-    icon: PiWallDuotone,
+    icon: BrickWall,
   },
   {
     name: 'Rodapés',
     href: '/dashboard/baseboards',
-    icon: PiSquareHalfBottomDuotone,
+    icon: PanelBottom,
   },
   {
     name: 'Relatórios',
     href: '/dashboard/generate-report',
-    icon: AiTwotoneProfile,
+    icon: FileTextIcon,
   },
   {
     name: 'Layout Inteligente',
     href: '/dashboard/inteli-layout',
-    icon: AiTwotoneLayout,
+    icon: Proportions,
   },
   { name: 'Settings', href: '/dashboard/user-settings', icon: Settings },
 ];
@@ -136,14 +151,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   'flex items-center rounded-lg px-2 py-2 text-sm font-medium transition-colors',
                   'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                   isActive
-                    ? 'bg-sidebar-primary/10 text-shadow-sidebar-primary-foreground'
+                    ? 'bg-sidebar-accent text-sidebar-primary-foreground'
                     : 'text-sidebar-foreground',
                   !sidebarExpanded && 'justify-center'
                 )}
                 title={!sidebarExpanded ? item.name : undefined}
               >
                 <item.icon
-                  className={cn('h-6 w-6', sidebarExpanded && 'mr-3')}
+                  className={cn(
+                    'h-6 w-6',
+                    sidebarExpanded && 'mr-3',
+                    isActive &&
+                      !sidebarExpanded &&
+                      'text-sidebar-primary-foreground'
+                  )}
                 />
                 {sidebarExpanded && (
                   <span className='font-serif'>{item.name}</span>
@@ -187,7 +208,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Main content */}
       <div className='absolute inset-y-0 right-0 left-21'>
-        <div className='sticky top-5 z-30 ml-2 mr-4 mb-4'>
+        {/* <div className='sticky top-5 z-30 ml-2 mr-4 mb-4'>
           <div className='flex h-14 items-center justify-end gap-3 px-4 bg-card rounded-2xl shadow-lg'>
             <Badge
               variant='secondary'
@@ -202,11 +223,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </Badge>
             <ThemeToggleButton />
           </div>
-        </div>
+        </div> */}
 
-        <main className='pb-6 overflow-y-auto max-h-[calc(100vh-100px)]'>
-          {children}
-        </main>
+        <main className='pb-6 overflow-y-auto py-4'>{children}</main>
       </div>
     </div>
   );
