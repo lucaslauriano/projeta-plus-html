@@ -35,7 +35,7 @@ export default function RootLayout({
         <body className='h-full' suppressHydrationWarning>
           <ThemeProvider
             attribute='class'
-            defaultTheme='light'
+            defaultTheme='dark'
             disableTransitionOnChange
           >
             <ContrastProvider>

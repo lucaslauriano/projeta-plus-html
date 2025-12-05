@@ -1,0 +1,61 @@
+import React from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { FileText, MoreVertical, Edit, Copy, Trash2 } from 'lucide-react';
+
+interface PlanItemProps {
+  title: string;
+  onEdit: () => void;
+  onDuplicate: () => void;
+  onDelete: () => void;
+}
+
+export function PlanItem({
+  title,
+  onEdit,
+  onDuplicate,
+  onDelete,
+}: PlanItemProps) {
+  return (
+    <div className='flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors'>
+      <div className='flex items-center gap-2 text-sm font-medium'>
+        <FileText className='w-4 h-4 text-primary' />
+        {title}
+      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className='p-1 hover:bg-accent rounded-md transition-colors'>
+            <MoreVertical className='w-4 h-4 text-muted-foreground' />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align='end' className='min-w-[140px]'>
+          <DropdownMenuItem
+            className='cursor-pointer justify-between'
+            onClick={onEdit}
+          >
+            Editar
+            <Edit className='w-4 h-4' />
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className='cursor-pointer justify-between'
+            onClick={onDuplicate}
+          >
+            Duplicar
+            <Copy className='w-4 h-4' />
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className='text-destructive focus:text-destructive cursor-pointer justify-between'
+            onClick={onDelete}
+          >
+            Deletar
+            <Trash2 className='w-4 h-4' />
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}

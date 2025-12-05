@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PlanItem } from '@/components/PlanItem';
 import {
   Accordion,
   AccordionContent,
@@ -10,13 +11,19 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   FileText,
   X,
-  Plus,
-  MoreVertical,
-  Trash2,
-  Edit,
   PlusCircle,
+  FolderPlus,
+  Folder,
+  MoreVertical,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import {
@@ -45,68 +52,65 @@ interface Plan {
   segments: Segment[];
 }
 
-const DEFAULT_PLANS: Plan[] = [
-  { id: '1', title: 'Detalhamento', segments: [] },
-  { id: '2', title: 'Cenas Básicas', segments: [] },
-  { id: '3', title: 'Plantas', segments: [] },
-  { id: '4', title: 'Civil', segments: [] },
-  { id: '5', title: 'Revestimentos', segments: [] },
-  { id: '6', title: 'Pontos Técnicos', segments: [] },
-  { id: '7', title: 'Iluminação', segments: [] },
-  { id: '8', title: 'Forro', segments: [] },
+interface Group {
+  id: string;
+  name: string;
+  plans: Plan[];
+}
+
+const DEFAULT_GROUPS: Group[] = [
+  {
+    id: '1',
+    name: 'Arquitetônico',
+    plans: [
+      { id: '1-1', title: 'Detalhamento', segments: [] },
+      { id: '1-2', title: 'Cenas Básicas', segments: [] },
+      { id: '1-3', title: 'Plantas', segments: [] },
+    ],
+  },
+  {
+    id: '2',
+    name: 'Estrutural',
+    plans: [
+      { id: '2-1', title: 'Civil', segments: [] },
+      { id: '2-2', title: 'Revestimentos', segments: [] },
+    ],
+  },
+  {
+    id: '3',
+    name: 'Instalações',
+    plans: [
+      { id: '3-1', title: 'Pontos Técnicos', segments: [] },
+      { id: '3-2', title: 'Iluminação', segments: [] },
+      { id: '3-3', title: 'Forro', segments: [] },
+    ],
+  },
 ];
 
 export default function PlansComponent() {
-  const [plans, setPlans] = useState<Plan[]>(DEFAULT_PLANS);
+  const [groups, setGroups] = useState<Group[]>(DEFAULT_GROUPS);
+  const [newGroupName, setNewGroupName] = useState('');
   const [newPlanTitle, setNewPlanTitle] = useState('');
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [newSegmentName, setNewSegmentName] = useState<{
-    [planId: string]: string;
-  }>({});
+  const [selectedGroup, setSelectedGroup] = useState<string>('root');
+  const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
+  const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
 
-  const handleAddSegment = (planId: string) => {
-    const segmentName = newSegmentName[planId]?.trim();
-    if (!segmentName) {
-      toast.error('Digite um nome para a segmentação');
+  const handleAddGroup = () => {
+    if (!newGroupName.trim()) {
+      toast.error('Digite um nome para o grupo');
       return;
     }
 
-    setPlans(
-      plans.map((plan) => {
-        if (plan.id === planId) {
-          return {
-            ...plan,
-            segments: [
-              ...plan.segments,
-              { id: Date.now().toString(), name: segmentName },
-            ],
-          };
-        }
-        return plan;
-      })
-    );
+    const newGroup: Group = {
+      id: Date.now().toString(),
+      name: newGroupName.trim(),
+      plans: [],
+    };
 
-    setNewSegmentName({ ...newSegmentName, [planId]: '' });
-    toast.success('Segmentação adicionada!');
-  };
-
-  const handleDeleteSegment = (planId: string, segmentId: string) => {
-    const confirmed = confirm('Deseja realmente remover esta segmentação?');
-    if (!confirmed) return;
-
-    setPlans(
-      plans.map((plan) => {
-        if (plan.id === planId) {
-          return {
-            ...plan,
-            segments: plan.segments.filter((seg) => seg.id !== segmentId),
-          };
-        }
-        return plan;
-      })
-    );
-
-    toast.success('Segmentação removida!');
+    setGroups([...groups, newGroup]);
+    setNewGroupName('');
+    setIsGroupDialogOpen(false);
+    toast.success('Grupo adicionado com sucesso!');
   };
 
   const handleAddPlan = () => {
@@ -121,21 +125,67 @@ export default function PlansComponent() {
       segments: [],
     };
 
-    setPlans([...plans, newPlan]);
+    if (selectedGroup === 'root') {
+      const newGroup: Group = {
+        id: Date.now().toString(),
+        name: newPlanTitle.trim(),
+        plans: [],
+      };
+      setGroups([...groups, newGroup]);
+    } else {
+      setGroups(
+        groups.map((group) => {
+          if (group.id === selectedGroup) {
+            return {
+              ...group,
+              plans: [...group.plans, newPlan],
+            };
+          }
+          return group;
+        })
+      );
+    }
+
     setNewPlanTitle('');
-    setIsCreateDialogOpen(false);
+    setIsPlanDialogOpen(false);
     toast.success('Planta adicionada com sucesso!');
   };
 
-  const handleDeletePlan = (id: string) => {
+  const handleDeleteGroup = (groupId: string) => {
+    const confirmed = confirm(
+      'Deseja realmente remover este grupo e todas as suas plantas?'
+    );
+    if (!confirmed) return;
+
+    setGroups(groups.filter((group) => group.id !== groupId));
+    toast.success('Grupo removido com sucesso!');
+  };
+
+  const handleDeletePlan = (groupId: string, planId: string) => {
     const confirmed = confirm('Deseja realmente remover esta planta?');
     if (!confirmed) return;
 
-    setPlans(plans.filter((plan) => plan.id !== id));
+    setGroups(
+      groups.map((group) => {
+        if (group.id === groupId) {
+          return {
+            ...group,
+            plans: group.plans.filter((plan) => plan.id !== planId),
+          };
+        }
+        return group;
+      })
+    );
     toast.success('Planta removida com sucesso!');
   };
 
-  const handleDialogKeyPress = (e: React.KeyboardEvent) => {
+  const handleGroupDialogKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleAddGroup();
+    }
+  };
+
+  const handlePlanDialogKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleAddPlan();
     }
@@ -143,22 +193,24 @@ export default function PlansComponent() {
 
   return (
     <>
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+      {/* Dialog para Criar Grupo */}
+      <Dialog open={isGroupDialogOpen} onOpenChange={setIsGroupDialogOpen}>
         <DialogContent className='sm:max-w-[425px]'>
           <DialogHeader>
-            <DialogTitle>Adicionar Nova Planta</DialogTitle>
+            <DialogTitle>Adicionar Novo Grupo</DialogTitle>
             <DialogDescription>
-              Digite o título da nova planta que você deseja adicionar.
+              Organize suas plantas em grupos personalizados.
             </DialogDescription>
           </DialogHeader>
           <div className='grid gap-4 py-4'>
             <div className='space-y-2'>
               <Input
-                id='plan-title'
-                placeholder='Ex: Planta de Situação'
-                value={newPlanTitle}
-                onChange={(e) => setNewPlanTitle(e.target.value)}
-                onKeyPress={handleDialogKeyPress}
+                id='group-name'
+                label='Nome do Grupo'
+                placeholder='Ex: Arquitetônico'
+                value={newGroupName}
+                onChange={(e) => setNewGroupName(e.target.value)}
+                onKeyPress={handleGroupDialogKeyPress}
                 autoFocus
               />
             </div>
@@ -167,13 +219,74 @@ export default function PlansComponent() {
             <Button
               variant='outline'
               onClick={() => {
-                setIsCreateDialogOpen(false);
+                setIsGroupDialogOpen(false);
+                setNewGroupName('');
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button onClick={handleAddGroup}>
+              <Folder className='w-4 h-4 mr-2' />
+              Criar Grupo
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para Criar Planta */}
+      <Dialog open={isPlanDialogOpen} onOpenChange={setIsPlanDialogOpen}>
+        <DialogContent className='sm:max-w-[425px]'>
+          <DialogHeader>
+            <DialogTitle>Adicionar Nova Planta</DialogTitle>
+            <DialogDescription>
+              Crie uma nova planta e escolha em qual grupo ela ficará.
+            </DialogDescription>
+          </DialogHeader>
+          <div className='grid gap-4 py-4'>
+            <div className='space-y-2'>
+              <Input
+                id='plan-title'
+                label='Nome da Planta'
+                placeholder='Ex: Planta Baixa'
+                value={newPlanTitle}
+                onChange={(e) => setNewPlanTitle(e.target.value)}
+                onKeyPress={handlePlanDialogKeyPress}
+                autoFocus
+              />
+            </div>
+            <div className='space-y-2'>
+              <label className='block text-sm font-semibold text-foreground'>
+                Grupo (Opcional)
+              </label>
+              <Select value={selectedGroup} onValueChange={setSelectedGroup}>
+                <SelectTrigger className='h-11 rounded-xl border-2 w-full'>
+                  <SelectValue placeholder='Sem Grupo' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='root'>Sem Grupo</SelectItem>
+                  {groups.map((g) => (
+                    <SelectItem key={g.id} value={g.id}>
+                      {g.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => {
+                setIsPlanDialogOpen(false);
                 setNewPlanTitle('');
               }}
             >
               Cancelar
             </Button>
-            <Button onClick={handleAddPlan}>Adicionar</Button>
+            <Button onClick={handleAddPlan}>
+              <FileText className='w-4 h-4 mr-2' />
+              Criar Planta
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -186,51 +299,56 @@ export default function PlansComponent() {
           </h2>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className='p-1 hover:bg-muted rounded-md transition-colors'>
+              <button className='p-1 hover:bg-accent rounded-md transition-colors'>
                 <MoreVertical className='w-4 h-4 text-muted-foreground' />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align='end' className='w-40'>
+            <DropdownMenuContent align='end' className='w-48'>
               <DropdownMenuItem
-                className='cursor-pointer justify-between'
-                onClick={() => setIsCreateDialogOpen(true)}
+                className='cursor-pointer'
+                onClick={() => setIsGroupDialogOpen(true)}
               >
-                Criar
-                <PlusCircle className='w-4 h-4 mr-2 ' />
+                <FolderPlus className='w-4 h-4 mr-2 text-blue-600' />
+                Adicionar Grupo
               </DropdownMenuItem>
               <DropdownMenuItem
-                className='text-foreground justify-between focus:text-foreground cursor-pointer'
-                onClick={() => setPlans([])}
+                className='cursor-pointer'
+                onClick={() => setIsPlanDialogOpen(true)}
               >
-                Deletar Todas
-                <Trash2 className='w-4 h-4 mr-2' />
+                <PlusCircle className='w-4 h-4 mr-2 text-green-600' />
+                Adicionar Planta
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
-        {plans.length > 0 && (
+        {groups.length > 0 && (
           <div className='space-y-4'>
             <Accordion type='single' collapsible className='w-full space-y-2'>
-              {plans.map((plan) => (
+              {groups.map((group) => (
                 <AccordionItem
-                  key={plan.id}
-                  value={plan.id}
+                  key={group.id}
+                  value={group.id}
                   className='border rounded-xl overflow-hidden bg-muted/20 px-0'
                 >
                   <AccordionTrigger className='px-4 py-3 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 group'>
                     <div className='flex items-center justify-between w-full pr-2'>
                       <div className='flex items-center gap-2 font-medium text-sm'>
-                        <FileText className='w-4 h-4 text-primary' />
-                        {plan.title}
+                        <Folder className='w-4 h-4 text-gray-500' />
+                        {group.name}
+                        {/* {group.plans.length > 0 && (
+                          <span className='text-xs text-muted-foreground'>
+                            ({group.plans.length})
+                          </span>
+                        )} */}
                       </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDeletePlan(plan.id);
+                          handleDeleteGroup(group.id);
                         }}
-                        className='opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 transition-opacity p-1'
-                        title='Excluir planta'
+                        className='opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 transition-opacity'
+                        title='Excluir grupo'
                       >
                         <X className='w-4 h-4' />
                       </button>
@@ -238,75 +356,61 @@ export default function PlansComponent() {
                   </AccordionTrigger>
                   <AccordionContent className='p-4'>
                     <div className='space-y-3'>
-                      <div className='flex gap-2 items-end'>
-                        <Input
-                          type='text'
-                          placeholder='Criar Novo'
-                          value={newSegmentName[plan.id] || ''}
-                          onChange={(e) =>
-                            setNewSegmentName({
-                              ...newSegmentName,
-                              [plan.id]: e.target.value,
-                            })
-                          }
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                              handleAddSegment(plan.id);
-                            }
-                          }}
-                          className='flex-1'
-                        />
-                        <Button
-                          size='icon'
-                          variant='default'
-                          onClick={() => handleAddSegment(plan.id)}
-                        >
-                          <Plus className='w-4 h-4' />
-                        </Button>
-                      </div>
-
-                      <div className='space-y-2'>
-                        {plan.segments.map((segment) => (
-                          <div
-                            key={segment.id}
-                            className='flex items-center justify-between p-2 rounded-lg border bg-card hover:bg-accent/50 transition-colors'
-                          >
-                            <span className='text-sm font-medium'>
-                              {segment.name}
-                            </span>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <button className='p-1 hover:bg-accent rounded-md transition-colors'>
-                                  <MoreVertical className='w-4 h-4 text-muted-foreground' />
-                                </button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align='end' className='w-40'>
-                                <DropdownMenuItem
-                                  className='text-destructive focus:text-destructive cursor-pointer'
-                                  onClick={() =>
-                                    handleDeleteSegment(plan.id, segment.id)
-                                  }
-                                >
-                                  <Trash2 className='w-4 h-4 mr-2' />
-                                  Deletar
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className='cursor-pointer'>
-                                  <PlusCircle className='w-4 h-4 mr-2 text-green-600' />
-                                  Criar
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className='cursor-pointer'>
-                                  <Edit className='w-4 h-4 mr-2 text-orange-600' />
-                                  Editar
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        ))}
-                      </div>
-
-                      {plan.segments.length === 0 && (
+                      {group.plans.length > 0 ? (
+                        <div className='space-y-2'>
+                          {group.plans.map((plan) => (
+                            <PlanItem
+                              key={plan.id}
+                              title={plan.title}
+                              onEdit={() => {
+                                const newName = prompt(
+                                  'Digite o novo nome:',
+                                  plan.title
+                                );
+                                if (newName?.trim()) {
+                                  setGroups(
+                                    groups.map((g) => ({
+                                      ...g,
+                                      plans: g.plans.map((p) =>
+                                        p.id === plan.id
+                                          ? { ...p, title: newName.trim() }
+                                          : p
+                                      ),
+                                    }))
+                                  );
+                                  toast.success('Planta editada!');
+                                }
+                              }}
+                              onDuplicate={() => {
+                                setGroups(
+                                  groups.map((g) => {
+                                    if (g.id === group.id) {
+                                      return {
+                                        ...g,
+                                        plans: [
+                                          ...g.plans,
+                                          {
+                                            id: Date.now().toString(),
+                                            title: `${plan.title} (cópia)`,
+                                            segments: [...plan.segments],
+                                          },
+                                        ],
+                                      };
+                                    }
+                                    return g;
+                                  })
+                                );
+                                toast.success('Planta duplicada!');
+                              }}
+                              onDelete={() =>
+                                handleDeletePlan(group.id, plan.id)
+                              }
+                            />
+                          ))}
+                        </div>
+                      ) : (
                         <div className='text-center py-4 text-sm text-muted-foreground italic'>
-                          Nenhuma segmentação adicionada
+                          Nenhuma planta neste grupo
                         </div>
                       )}
                     </div>
@@ -317,14 +421,14 @@ export default function PlansComponent() {
           </div>
         )}
 
-        {plans.length === 0 && (
+        {groups.length === 0 && (
           <div className='p-8 text-center border-2 border-dashed rounded-xl bg-muted/10'>
             <FileText className='w-12 h-12 mx-auto mb-3 text-muted-foreground/50' />
             <p className='text-sm text-muted-foreground'>
-              Nenhuma planta cadastrada
+              Nenhum grupo cadastrado
             </p>
             <p className='text-xs text-muted-foreground mt-1'>
-              Adicione uma planta para começar
+              Adicione um grupo para começar
             </p>
           </div>
         )}

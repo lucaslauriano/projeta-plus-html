@@ -81,7 +81,6 @@ export default function LayersComponent() {
 
   return (
     <>
-      {/* Dialog para Criar Pasta */}
       <Dialog open={isFolderDialogOpen} onOpenChange={setIsFolderDialogOpen}>
         <DialogContent className='sm:max-w-[425px]'>
           <DialogHeader>
@@ -125,7 +124,6 @@ export default function LayersComponent() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog para Criar Tag */}
       <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
         <DialogContent className='sm:max-w-[425px]'>
           <DialogHeader>
@@ -205,7 +203,6 @@ export default function LayersComponent() {
               <Tag className='w-4 h-4' />
               Etiquetas
             </h2>
-            <Badge variant='secondary'>{countTags()} tags</Badge>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

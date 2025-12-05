@@ -9,7 +9,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Badge } from '@/components/ui/badge';
 import type { LayersData } from '@/types/global';
 
 interface TagListProps {
@@ -26,29 +25,14 @@ interface TagListProps {
 export default function TagList({
   data,
   isBusy,
-  countTags,
   rgbToHex,
   deleteFolder,
   deleteLayer,
   toggleVisibility,
 }: TagListProps) {
   return (
-    <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
-      <div className='flex items-center justify-between'>
-        <div className='space-y-1'>
-          <h3 className='text-sm font-semibold text-foreground'>
-            Lista de Tags
-          </h3>
-          <p className='text-xs text-muted-foreground'>
-            Gerencie suas tags e pastas existentes
-          </p>
-        </div>
-        <Badge variant='outline' className='text-xs'>
-          {countTags()}
-        </Badge>
-      </div>
-
-      <div className='h-[300px] overflow-y-auto'>
+    <div className='space-y-4'>
+      <div className='max-h-[450px] overflow-y-auto'>
         {isBusy ? (
           <div className='flex justify-center items-center h-full text-muted-foreground'>
             <RefreshCw className='w-6 h-6 animate-spin mr-2' />
@@ -67,24 +51,18 @@ export default function TagList({
                   value={`folder-${i}`}
                   className='border rounded-xl overflow-hidden bg-muted/20 px-0 data-[state=open]:border-b-0'
                 >
-                  <AccordionTrigger className='px-3 py-1 hover:no-underline bg-muted/50 data-[state=open]:bg-gray-500/20 group'>
+                  <AccordionTrigger className='px-3 py-3 hover:no-underline bg-muted/50 data-[state=open]:bg-gray-500/20 group'>
                     <div className='flex items-center justify-between w-full pr-2'>
                       <div className='flex items-center gap-2 font-medium text-sm'>
                         <Folder className='w-4 h-4 text-gray-500' />
                         {folder.name}
-                        <Badge
-                          variant='outline'
-                          className='text-[12px] bg-muted/50 border-gray-500/30'
-                        >
-                          {folder.tags.length}
-                        </Badge>
                       </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           deleteFolder(folder.name);
                         }}
-                        className='opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-600 transition-opacity p-1'
+                        className='opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-600 transition-opacity'
                         title='Excluir pasta'
                       >
                         <X className='w-4 h-4' />
