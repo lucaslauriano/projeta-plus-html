@@ -95,8 +95,9 @@ export function useFurniture() {
       console.log('[useFurniture] Selected:', response.selected);
 
       clearPending();
-      if (!response.success) {
-        console.log('[useFurniture] ❌ Failed - clearing attributes');
+      // Limpa atributos se não tiver sucesso OU se não tiver nada selecionado
+      if (!response.success || !response.selected) {
+        console.log('[useFurniture] ❌ Failed or not selected - clearing attributes');
 
         setAttributes(null);
         setDimensions(null);
@@ -281,7 +282,6 @@ export function useFurniture() {
   const resizeIndependentLive = useCallback(
     async (payload: FurnitureDimensions) => {
       if (!isAvailable) return;
-      // Não usa setPendingAction para não bloquear a UI
       await callSketchupMethod(
         'resize_independent_live',
         payload as unknown as Record<string, unknown>

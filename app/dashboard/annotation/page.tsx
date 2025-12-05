@@ -42,12 +42,7 @@ const accordionItems = [
     label: 'Eletrica',
     content: <ElectricalChangeAtributes />,
   },
-  {
-    icon: Frame,
-    value: 'frames',
-    label: 'Esquadrias',
-    content: <div>Frames content coming soon...</div>,
-  },
+  
 ];
 
 export default function AnnotationDashboardPage() {
@@ -55,7 +50,7 @@ export default function AnnotationDashboardPage() {
     <PageWrapper>
       <PageHeader
         title='Anotações'
-        description='Gerencie suas anotações do projeto'
+        description='Gerencie suas anotações diretamente no modelo 3D.'
       />
 
       <div className='w-full pb-8'>
@@ -68,7 +63,7 @@ export default function AnnotationDashboardPage() {
                 value={item.value}
                 className='border-0 bg-card rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow'
               >
-                <AccordionTrigger className='px-5 py-5 hover:no-underline'>
+                <AccordionTrigger className='px-5 py-3 hover:no-underline'>
                   <div className='flex items-center gap-3 text-base font-semibold'>
                     <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary/10'>
                       <IconComponent className='w-5 h-5 text-primary' />

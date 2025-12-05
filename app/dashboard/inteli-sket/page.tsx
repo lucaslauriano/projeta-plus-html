@@ -44,10 +44,10 @@ export default function InteliSketDashboardPage() {
     <PageWrapper>
       <PageHeader
         title='Sketchup Inteligente'
-        description='Ferramentas inteligentes para otimizar seu fluxo de trabalho'
+        description='Organize suas camadas, seções e plantas, detalhes e mais.'
       />
 
-      <div className='mt-4'>
+      <div className='mt-1'>
         <div className='flex space-x-2 border-b mb-4 pb-2'>
           <TooltipProvider>
             {tabs.map((tab) => {

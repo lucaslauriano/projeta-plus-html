@@ -67,7 +67,7 @@ export default function TagList({
                   value={`folder-${i}`}
                   className='border rounded-xl overflow-hidden bg-muted/20 px-0 data-[state=open]:border-b-0'
                 >
-                  <AccordionTrigger className='px-3 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-gray-500/20 group'>
+                  <AccordionTrigger className='px-3 py-1 hover:no-underline bg-muted/50 data-[state=open]:bg-gray-500/20 group'>
                     <div className='flex items-center justify-between w-full pr-2'>
                       <div className='flex items-center gap-2 font-medium text-sm'>
                         <Folder className='w-4 h-4 text-gray-500' />
