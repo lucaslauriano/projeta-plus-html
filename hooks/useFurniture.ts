@@ -153,7 +153,10 @@ export function useFurniture() {
       if (response.success) {
         toast.success(response.message);
         setLastOperation(response.message);
-        // SelectionObserver no backend já atualiza automaticamente
+        // Limpa os atributos após salvar com sucesso
+        setAttributes(null);
+        setDimensions(null);
+        setDimensionPreview('');
       } else {
         handleError(response.message);
       }
@@ -279,7 +282,6 @@ export function useFurniture() {
   const resizeIndependentLive = useCallback(
     async (payload: FurnitureDimensions) => {
       if (!isAvailable) return;
-      // Não seta pendingAction para não bloquear a UI
       await callSketchupMethod(
         'resize_independent_live',
         payload as unknown as Record<string, unknown>
@@ -353,6 +355,13 @@ export function useFurniture() {
     setDimensionPreview('');
   }, []);
 
+  const captureSelectedComponent = useCallback(async () => {
+    if (!isAvailable) return;
+    console.log('[useFurniture] Capturing selected component...');
+    setPendingAction('capture');
+    await callSketchupMethod('capture_selected_component');
+  }, [callSketchupMethod, isAvailable]);
+
   const typeOptions = useMemo(
     () => (availableTypes.length ? availableTypes : []),
     [availableTypes]
@@ -390,5 +399,6 @@ export function useFurniture() {
     exportFurnitureXlsx,
     requestReport,
     resetForm,
+    captureSelectedComponent,
   };
 }
