@@ -87,6 +87,8 @@ export default function FurnitureDashboardPage() {
     isAvailable,
     saveFurnitureAttributes,
     requestDimensionPreview,
+    resizeIndependentLive,
+    captureSelectedComponent,
   } = useFurniture();
 
   const [furnitureForm, setFurnitureForm] = useState<FurnitureForm>(
@@ -188,6 +190,7 @@ export default function FurnitureDashboardPage() {
     }
   }, [dimensionPreview]);
 
+  // Atualiza preview da dimensão (texto)
   useEffect(() => {
     if (!attributes?.selected) return;
     if (!width || !depth || !height) return;
@@ -207,6 +210,40 @@ export default function FurnitureDashboardPage() {
     height,
     dimensionFormat,
     requestDimensionPreview,
+  ]);
+
+  // Redimensiona componente ao vivo quando dimensões mudam
+  useEffect(() => {
+    if (!attributes?.selected) return;
+    if (!width || !depth || !height) return;
+    
+    // Verifica se as dimensões mudaram em relação aos atributos originais
+    const hasChanged = 
+      width !== attributes.width ||
+      depth !== attributes.depth ||
+      height !== attributes.height;
+    
+    if (!hasChanged) return;
+    
+    const controller = setTimeout(() => {
+      console.log('[FurniturePage] Redimensionando ao vivo:', { width, depth, height });
+      void resizeIndependentLive({
+        width,
+        depth,
+        height,
+      });
+    }, 500);
+    
+    return () => clearTimeout(controller);
+  }, [
+    attributes?.selected,
+    attributes?.width,
+    attributes?.depth,
+    attributes?.height,
+    width,
+    depth,
+    height,
+    resizeIndependentLive,
   ]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -319,78 +356,26 @@ export default function FurnitureDashboardPage() {
           >
             {isSelected
               ? 'Edite os campos e salve para atualizar o componente.'
-              : 'Selecione um componente ou grupo no SketchUp para começar.'}
+              : 'Selecione um componente ou grupo no SketchUp e clique no botão abaixo.'}
           </AlertDescription>
         </Alert>
 
-        <form onSubmit={handleSubmit} className='space-y-6 pb-8'>
-          <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
-            <div className='space-y-1 mb-3'>
-              <h3 className='text-sm font-semibold text-foreground'>
-                Informações básicas
-              </h3>
-              <p className='text-xs text-muted-foreground'>
-                Dados principais do mobiliário selecionado
-              </p>
-            </div>
-
-            <Input
-              id='name'
-              type='text'
-              label='Nome'
-              value={name}
-              onChange={(e) => setFurnitureField('name', e.target.value)}
-              required
+        {!isSelected && (
+          <div className='mb-6'>
+            <Button
+              type='button'
+              size='lg'
+              onClick={() => captureSelectedComponent()}
               disabled={isBusy}
-              placeholder='Ex: Mesa de Jantar'
-            />
-
-            <Input
-              id='color'
-              type='text'
-              label='Cor'
-              value={color}
-              onChange={(e) => setFurnitureField('color', e.target.value)}
-              disabled={isBusy}
-              placeholder='Ex: Branco'
-            />
-
-            <Input
-              id='brand'
-              type='text'
-              label='Marca'
-              value={brand}
-              onChange={(e) => setFurnitureField('brand', e.target.value)}
-              disabled={isBusy}
-              placeholder='Ex: Tok&Stok'
-            />
-
-            <div>
-              <label className='block text-sm font-semibold mb-2 text-foreground'>
-                Tipo
-              </label>
-              <Select
-                value={type}
-                onValueChange={(selected) =>
-                  setFurnitureField('type', selected)
-                }
-                disabled={isBusy}
-              >
-                <SelectTrigger className='h-11 rounded-xl border-2'>
-                  <SelectValue placeholder='Selecione o tipo' />
-                </SelectTrigger>
-                <SelectContent>
-                  {typeOptions.map((option) => (
-                    <SelectItem key={option} value={option}>
-                      {option}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+              className='w-full flex items-center justify-center gap-2'
+            >
+              <Target className='h-4 w-4' />
+              {isBusy ? 'Capturando...' : 'Selecionar Componente'}
+            </Button>
           </div>
+        )}
 
-          <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
+<div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
             <div className='flex items-center justify-between mb-3'>
               <div className='space-y-1'>
                 <h3 className='text-sm font-semibold text-foreground'>
@@ -519,6 +504,75 @@ export default function FurnitureDashboardPage() {
               placeholder='Ex: 120 x 80 x 75 cm'
             />
           </div>
+
+        <form onSubmit={handleSubmit} className='space-y-6 pb-8'>
+          <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
+            <div className='space-y-1 mb-3'>
+              <h3 className='text-sm font-semibold text-foreground'>
+                Informações básicas
+              </h3>
+              <p className='text-xs text-muted-foreground'>
+                Dados principais do mobiliário selecionado
+              </p>
+            </div>
+
+            <Input
+              id='name'
+              type='text'
+              label='Nome'
+              value={name}
+              onChange={(e) => setFurnitureField('name', e.target.value)}
+              required
+              disabled={isBusy}
+              placeholder='Ex: Mesa de Jantar'
+            />
+
+            <Input
+              id='color'
+              type='text'
+              label='Cor'
+              value={color}
+              onChange={(e) => setFurnitureField('color', e.target.value)}
+              disabled={isBusy}
+              placeholder='Ex: Branco'
+            />
+
+            <Input
+              id='brand'
+              type='text'
+              label='Marca'
+              value={brand}
+              onChange={(e) => setFurnitureField('brand', e.target.value)}
+              disabled={isBusy}
+              placeholder='Ex: Tok&Stok'
+            />
+
+            <div>
+              <label className='block text-sm font-semibold mb-2 text-foreground'>
+                Tipo
+              </label>
+              <Select
+                value={type}
+                onValueChange={(selected) =>
+                  setFurnitureField('type', selected)
+                }
+                disabled={isBusy}
+              >
+                <SelectTrigger className='h-11 rounded-xl border-2'>
+                  <SelectValue placeholder='Selecione o tipo' />
+                </SelectTrigger>
+                <SelectContent>
+                  {typeOptions.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+
 
           <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
             <div className='space-y-1 mb-3'>
