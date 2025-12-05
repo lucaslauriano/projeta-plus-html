@@ -122,6 +122,16 @@ declare global {
       saveToJson: (payload: string) => void;
       loadFromFile: () => void;
       importLayers: (payload: string) => void;
+      getElectricalBlocks: () => void;
+      importElectricalBlock: (payload: string) => void;
+      openElectricalBlocksFolder: () => void;
+      exportElectricalReport: () => void;
+      getLightningBlocks: () => void;
+      importLightningBlock: (payload: string) => void;
+      openLightningBlocksFolder: () => void;
+      getBaseboardsBlocks: () => void;
+      importBaseboardsBlock: (payload: string) => void;
+      openBaseboardsBlocksFolder: () => void;
     };
     changeLanguage: (langCode: string) => void;
     loadGlobalSettings: () => void;
@@ -211,6 +221,67 @@ declare global {
     handleGetJsonPathResult?: (result: {
       success: boolean;
       path?: string;
+    }) => void;
+    handleGetElectricalBlocksResult?: (result: {
+      success: boolean;
+      message?: string;
+      groups?: Array<{
+        id: string;
+        title: string;
+        items: Array<{ id: string; name: string; path: string }>;
+      }>;
+      components_path?: string;
+    }) => void;
+    handleImportElectricalBlockResult?: (result: {
+      success: boolean;
+      message?: string;
+      block_name?: string;
+    }) => void;
+    handleOpenElectricalFolderResult?: (result: {
+      success: boolean;
+      message?: string;
+    }) => void;
+    handleExportElectricalReportResult?: (result: {
+      success: boolean;
+      message?: string;
+    }) => void;
+    handleGetLightningBlocksResult?: (result: {
+      success: boolean;
+      message?: string;
+      groups?: Array<{
+        id: string;
+        title: string;
+        items: Array<{ id: string; name: string; path: string }>;
+      }>;
+      components_path?: string;
+    }) => void;
+    handleImportLightningBlockResult?: (result: {
+      success: boolean;
+      message?: string;
+      block_name?: string;
+    }) => void;
+    handleOpenLightningFolderResult?: (result: {
+      success: boolean;
+      message?: string;
+    }) => void;
+    handleGetBaseboardsBlocksResult?: (result: {
+      success: boolean;
+      message?: string;
+      groups?: Array<{
+        id: string;
+        title: string;
+        items: Array<{ id: string; name: string; path: string }>;
+      }>;
+      components_path?: string;
+    }) => void;
+    handleImportBaseboardsBlockResult?: (result: {
+      success: boolean;
+      message?: string;
+      block_name?: string;
+    }) => void;
+    handleOpenBaseboardsFolderResult?: (result: {
+      success: boolean;
+      message?: string;
     }) => void;
   }
 }

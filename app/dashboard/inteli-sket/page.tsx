@@ -2,11 +2,8 @@
 
 import { useState } from 'react';
 import {
-  Info,
   Layers,
   ScanLine,
-  Map,
-  CuboidIcon,
   LayoutDashboard,
   BoxesIcon,
   FileSearch,

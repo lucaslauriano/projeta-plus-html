@@ -72,7 +72,6 @@ function AnimatedSubtitle() {
 function LandingPage() {
   return (
     <div className='flex flex-col'>
-      {/* Header */}
       <header className='border-b bg-card'>
         <div className='container mx-auto px-3 py-4 flex items-center justify-between'>
           <div className='flex items-center space-x-2 w-full'>
@@ -87,7 +86,6 @@ function LandingPage() {
         </div>
       </header>
 
-      {/* Hero Section */}
       <main className='flex-1'>
         <section className='py-20 px-4'>
           <div className='container mx-auto text-center max-w-4xl'>
@@ -110,7 +108,6 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* Features */}
         <section className='py-10 px-4 bg-muted/30'>
           <div className='container mx-auto max-w-6xl'>
             <h3 className='text-3xl font-bold font-sans text-center mb-12'>

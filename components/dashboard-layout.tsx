@@ -9,7 +9,6 @@ import { cn } from '@/lib/utils';
 import {
   HousePlus,
   Plus,
-  Home,
   Menu,
   Settings,
   Armchair,
@@ -18,20 +17,12 @@ import {
   BrickWall,
   FileTextIcon,
   PanelBottom,
-  Lightbulb,
   LampCeiling,
 } from 'lucide-react';
-import { AiOutlineTag, AiTwotoneLayout } from 'react-icons/ai';
-import { HiOutlineLightBulb } from 'react-icons/hi';
-import { AiTwotoneProfile } from 'react-icons/ai';
+import { AiOutlineTag } from 'react-icons/ai';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { PiWallDuotone } from 'react-icons/pi';
-import { PiSquareHalfBottomDuotone } from 'react-icons/pi';
-import { PiPlugDuotone } from 'react-icons/pi';
-import { TbKeyframes } from 'react-icons/tb';
 import { Loading } from '@/components/ui/loading';
-import { FILE } from 'dns';
 
 const navigation = [
   {
@@ -133,7 +124,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           <button
             className='text-sidebar-foreground hover:bg-sidebar-accent'
             onClick={() => setSidebarExpanded(!sidebarExpanded)}
-            onMouseEnter={() => setSidebarExpanded(true)}
+            onMouseEnter={() => setSidebarExpanded(!sidebarExpanded)}
           >
             <Menu className='h-6 w-6' />
           </button>
