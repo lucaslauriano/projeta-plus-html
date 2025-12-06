@@ -24,6 +24,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import { useFurniture } from '@/hooks/useFurniture';
 import { DEFAULT_TYPES, DIMENSION_FORMAT_OPTIONS } from '@/lib/consts';
+import PageContent from '@/components/ui/page-content';
 
 type DimensionFormat = (typeof DIMENSION_FORMAT_OPTIONS)[number]['value'];
 
@@ -272,9 +273,8 @@ export default function FurnitureDashboardPage() {
           <PageHeader
             title='Mobiliário'
             description='Gerencie os atributos do componente selecionado no SketchUp'
-            icon={<InfoIcon className='h-5 w-5 text-muted-foreground' />}
           />
-          <div className='px-4'>
+          <PageContent>
             <Alert className='border border-dashed'>
               <AlertTitle>SketchUp API indisponível</AlertTitle>
               <AlertDescription>
@@ -283,7 +283,7 @@ export default function FurnitureDashboardPage() {
                 nem salvar atributos.
               </AlertDescription>
             </Alert>
-          </div>
+          </PageContent>
         </PageWrapper>
       </TooltipProvider>
     );
@@ -321,7 +321,7 @@ export default function FurnitureDashboardPage() {
           }
         />
 
-        <div className=' h-scren overflow-y-auto pb-6'>
+        <PageContent>
           <SelectionStatusAlert isSelected={isSelected} />
 
           {!isSelected && (
@@ -339,8 +339,8 @@ export default function FurnitureDashboardPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className='space-y-4 bg-red-500'>
-            <div className='gap-y-4 h-[300px] p-4 bg-muted/30 rounded-xl border border-border/50'>
+          <form onSubmit={handleSubmit} className='space-y-4'>
+            <div className='gap-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
               <div className='flex items-center justify-between mb-3'>
                 <div className='gap-y-1'>
                   <h3 className='text-sm font-semibold text-foreground'>
@@ -473,7 +473,7 @@ export default function FurnitureDashboardPage() {
               />
             </div>
 
-            <div className='gap-y-4 h-[300px] p-4 bg-muted/30 rounded-xl border border-border/50'>
+            <div className='gap-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
               <div className='gap-y-1 mb-3'>
                 <h3 className='text-sm font-semibold text-foreground'>
                   Informações básicas
@@ -539,7 +539,7 @@ export default function FurnitureDashboardPage() {
               </div>
             </div>
 
-            <div className='gap-y-4  h-[300px]p-4 bg-muted/30 rounded-xl border border-border/50'>
+            <div className='gap-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
               <div className='gap-y-1 mb-3'>
                 <h3 className='text-sm font-semibold text-foreground'>
                   Informações complementares
@@ -582,7 +582,7 @@ export default function FurnitureDashboardPage() {
               />
             </div>
 
-            <div className='gap-y-4  h-[300px]p-4 bg-muted/30 rounded-xl border border-border/50'>
+            <div className='gap-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
               <div className='gap-y-1 mb-3'>
                 <h3 className='text-sm font-semibold text-foreground'>
                   Observações
@@ -651,7 +651,8 @@ export default function FurnitureDashboardPage() {
                 Limpar
               </Button>
             </div>
-            {/* <div className='flex flex-col gap-3 p-1'>
+
+            <div className='flex flex-col gap-3 p-1'>
               <Button
                 type='submit'
                 size='lg'
@@ -682,9 +683,9 @@ export default function FurnitureDashboardPage() {
               >
                 Limpar
               </Button>
-            </div> */}
+            </div>
           </form>
-        </div>
+        </PageContent>
       </div>
     </TooltipProvider>
   );

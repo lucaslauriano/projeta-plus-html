@@ -8,7 +8,7 @@ const PageHeader = ({
   icon?: React.ReactNode;
 }) => {
   return (
-    <div className='w-full py-4 flex-shrink-0'>
+    <div className='w-full pb-4 flex-shrink-0 sticky -top-4 z-10 bg-background border-b border-border -mt-8 pt-6'>
       <div className='flex items-center justify-between'>
         <h1 className='text-2xl font-bold text-foreground tracking-tight'>
           {title}

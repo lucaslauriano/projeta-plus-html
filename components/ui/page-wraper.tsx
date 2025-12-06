@@ -1,5 +1,5 @@
 const PageWrapper = ({ children }: { children: React.ReactNode }) => {
-  return <div className='w-full overflow-hidden'>{children}</div>;
+  return <div className='w-full h-screen '>{children}</div>;
 };
 
 export default PageWrapper;

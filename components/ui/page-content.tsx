@@ -1,5 +1,14 @@
-const PageContent = ({ children }: { children: React.ReactNode }) => {
-  return <div className='h-full overflow-y-auto pb-6'>{children}</div>;
-};
+import { cn } from '@/lib/utils';
 
-export default PageContent;
+interface PageContentProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export default function PageContent({ children, className }: PageContentProps) {
+  return (
+    <div className={cn('w-full py-8 overflow-y-auto h-screen', className)}>
+      {children}
+    </div>
+  );
+}

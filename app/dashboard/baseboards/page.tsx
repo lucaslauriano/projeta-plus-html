@@ -17,6 +17,7 @@ import {
   TooltipProvider,
 } from '@/components/ui/tooltip';
 import { useBaseboards } from '@/hooks/useBaseboards';
+import PageContent from '@/components/ui/page-content';
 
 export default function BaseboardsDashboardPage() {
   const { data, isBusy, importBlock, openBlocksFolder } = useBaseboards();
@@ -27,28 +28,25 @@ export default function BaseboardsDashboardPage() {
 
   return (
     <TooltipProvider>
-    <PageWrapper>
-      <PageHeader
-          title='Blocos Dinâmicos - Rodapés'
+      <PageWrapper>
+        <PageHeader
+          title='Rodapés'
           description='Clique no título para acessar e no bloco desejado para importá-lo'
-          icon={<Box className='h-5 w-5 text-muted-foreground' />}
         />
 
-        <div className='space-y-4'>
-          {/* Action Buttons */}
-          <div className='flex gap-2'>
+        <PageContent className='space-y-4'>
+          <div className='flex gap-2 justify-end'>
             <Button
               variant='outline'
               size='sm'
               onClick={openBlocksFolder}
-              className='flex items-center gap-2'
+              className='flex items-center gap-2 w-full'
             >
               <FolderOpen className='w-4 h-4' />
               Abrir Pasta de Blocos
             </Button>
           </div>
 
-          {/* Blocks Accordion */}
           {data.groups.length === 0 && !isBusy && (
             <div className='text-center py-8 text-muted-foreground'>
               <p>📁 Nenhum bloco encontrado.</p>
@@ -109,8 +107,8 @@ export default function BaseboardsDashboardPage() {
               ))}
             </Accordion>
           )}
-        </div>
-    </PageWrapper>
+        </PageContent>
+      </PageWrapper>
     </TooltipProvider>
   );
 }

@@ -21,6 +21,7 @@ import LayersComponent from './components/layers';
 import SectionsComponent from './components/sections';
 import PlansComponent from './components/plans';
 import ScenesComponent from '@/app/dashboard/inteli-sket/components/scenes';
+import PageContent from '@/components/ui/page-content';
 
 export default function InteliSketDashboardPage() {
   const [activeTab, setActiveTab] = useState('layers');
@@ -59,7 +60,7 @@ export default function InteliSketDashboardPage() {
         description='Organize suas camadas, seções e plantas, detalhes e mais.'
       />
 
-      <div className='mt-1'>
+      <PageContent>
         <div className='flex space-x-2 border-b mb-4 pb-2'>
           <TooltipProvider>
             {tabs.map((tab) => {
@@ -88,7 +89,7 @@ export default function InteliSketDashboardPage() {
         </div>
 
         <div className='mt-4'>{renderContent()}</div>
-      </div>
+      </PageContent>
     </PageWrapper>
   );
 }

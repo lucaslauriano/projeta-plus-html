@@ -4,7 +4,7 @@ import React from 'react';
 import { RoomAnnotation } from '@/app/dashboard/annotation/components/room';
 import AnnotationSection from '@/app/dashboard/annotation/components/sections';
 import PageHeader from '@/components/page-header';
-import { Zap, Frame, LampCeiling } from 'lucide-react';
+import { Zap, LampCeiling } from 'lucide-react';
 import { AiOutlineScan } from 'react-icons/ai';
 import AnnotationLightingCeiling from '@/app/dashboard/annotation/components/ceilling';
 import {
@@ -16,6 +16,7 @@ import {
 import { ElectricalChangeAtributes } from '@/app/dashboard/annotation/components/change-atributes';
 import { BsHouse } from 'react-icons/bs';
 import PageWrapper from '@/components/ui/page-wraper';
+import PageContent from '@/components/ui/page-content';
 
 const accordionItems = [
   {
@@ -52,7 +53,7 @@ export default function AnnotationDashboardPage() {
         description='Gerencie suas anotações diretamente no modelo 3D.'
       />
 
-      <div className='w-full pb-8 overflow-y-scroll'>
+      <PageContent>
         <Accordion type='single' collapsible className='w-full space-y-4'>
           {accordionItems.map((item) => {
             const IconComponent = item.icon;
@@ -77,7 +78,7 @@ export default function AnnotationDashboardPage() {
             );
           })}
         </Accordion>
-      </div>
+      </PageContent>
     </PageWrapper>
   );
 }

@@ -17,6 +17,7 @@ import {
   TooltipProvider,
 } from '@/components/ui/tooltip';
 import { useElectrical } from '@/hooks/useElectrical';
+import PageContent from '@/components/ui/page-content';
 
 export default function ElectricalDashboardPage() {
   const { data, isBusy, importBlock, openBlocksFolder } = useElectrical();
@@ -29,18 +30,17 @@ export default function ElectricalDashboardPage() {
     <TooltipProvider>
       <PageWrapper>
         <PageHeader
-          title='Blocos Dinâmicos - Elétrica'
+          title='Pontos Técnicos'
           description='Clique no título para acessar e no bloco desejado para importá-lo'
         />
 
-        <div className='space-y-4'>
-          {/* Action Buttons */}
-          <div className='flex gap-2'>
+        <PageContent className='space-y-4'>
+          <div className='flex gap-2 justify-end'>
             <Button
               variant='outline'
               size='sm'
               onClick={openBlocksFolder}
-              className='flex items-center gap-2'
+              className='flex items-center gap-2 w-full'
             >
               <FolderOpen className='w-4 h-4' />
               Abrir Pasta de Blocos
@@ -108,7 +108,7 @@ export default function ElectricalDashboardPage() {
               ))}
             </Accordion>
           )}
-        </div>
+        </PageContent>
       </PageWrapper>
     </TooltipProvider>
   );

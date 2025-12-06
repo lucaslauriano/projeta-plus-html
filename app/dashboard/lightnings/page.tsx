@@ -17,6 +17,7 @@ import {
   TooltipProvider,
 } from '@/components/ui/tooltip';
 import { useLightning } from '@/hooks/useLightning';
+import PageContent from '@/components/ui/page-content';
 
 export default function LightningsDashboardPage() {
   const { data, isBusy, importBlock, openBlocksFolder } = useLightning();
@@ -29,26 +30,23 @@ export default function LightningsDashboardPage() {
     <TooltipProvider>
       <PageWrapper>
         <PageHeader
-          title='Blocos Dinâmicos - Iluminação'
+          title='Iluminação'
           description='Clique no título para acessar e no bloco desejado para importá-lo'
-          icon={<Lightbulb className='h-5 w-5 text-muted-foreground' />}
         />
 
-        <div className='space-y-4'>
-          {/* Action Buttons */}
-          <div className='flex gap-2'>
+        <PageContent className='space-y-4'>
+          <div className='flex gap-2 justify-end'>
             <Button
               variant='outline'
               size='sm'
               onClick={openBlocksFolder}
-              className='flex items-center gap-2'
+              className='flex items-center gap-2 w-full'
             >
               <FolderOpen className='w-4 h-4' />
               Abrir Pasta de Blocos
             </Button>
           </div>
 
-          {/* Blocks Accordion */}
           {data.groups.length === 0 && !isBusy && (
             <div className='text-center py-8 text-muted-foreground'>
               <p>📁 Nenhum bloco encontrado.</p>
@@ -109,7 +107,7 @@ export default function LightningsDashboardPage() {
               ))}
             </Accordion>
           )}
-        </div>
+        </PageContent>
       </PageWrapper>
     </TooltipProvider>
   );
