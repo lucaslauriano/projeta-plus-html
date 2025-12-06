@@ -331,7 +331,7 @@ export default function FurnitureDashboardPage() {
                 size='lg'
                 onClick={() => captureSelectedComponent()}
                 disabled={isBusy}
-                className='w-full flex items-center justify-center gap-2'
+                className='w-full flex items-center justify-center space-2'
               >
                 <Target className='h-4 w-4' />
                 {isBusy ? 'Capturando...' : 'Selecionar Componente'}
@@ -340,9 +340,9 @@ export default function FurnitureDashboardPage() {
           )}
 
           <form onSubmit={handleSubmit} className='space-y-4'>
-            <div className='gap-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
+            <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
               <div className='flex items-center justify-between mb-3'>
-                <div className='gap-y-1'>
+                <div className='space-y-1'>
                   <h3 className='text-sm font-semibold text-foreground'>
                     Dimensões (Redimensionamento ao vivo)
                   </h3>
@@ -372,9 +372,9 @@ export default function FurnitureDashboardPage() {
                 </Tooltip>
               </div>
 
-              <div className='gap-y-3'>
-                <div className='gap-y-2'>
-                  <div className='flex items-center gap-2'>
+              <div className='space-y-3'>
+                <div className='space-y-2'>
+                  <div className='flex items-center space-2'>
                     <label
                       htmlFor='keep-width'
                       className='text-sm font-semibold text-foreground'
@@ -392,8 +392,8 @@ export default function FurnitureDashboardPage() {
                   />
                 </div>
 
-                <div className='gap-y-2'>
-                  <div className='flex items-center gap-2'>
+                <div className='space-y-2'>
+                  <div className='flex items-center space-2'>
                     <label
                       htmlFor='keep-depth'
                       className='text-sm font-semibold text-foreground'
@@ -411,8 +411,8 @@ export default function FurnitureDashboardPage() {
                   />
                 </div>
 
-                <div className='gap-y-2'>
-                  <div className='flex items-center gap-2'>
+                <div className='space-y-2'>
+                  <div className='flex items-center space-2'>
                     <label
                       htmlFor='keep-height'
                       className='text-sm font-semibold text-foreground'
@@ -473,8 +473,8 @@ export default function FurnitureDashboardPage() {
               />
             </div>
 
-            <div className='gap-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
-              <div className='gap-y-1 mb-3'>
+            <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
+              <div className='space-y-1 mb-3'>
                 <h3 className='text-sm font-semibold text-foreground'>
                   Informações básicas
                 </h3>
@@ -539,8 +539,8 @@ export default function FurnitureDashboardPage() {
               </div>
             </div>
 
-            <div className='gap-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
-              <div className='gap-y-1 mb-3'>
+            <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
+              <div className='space-y-1 mb-3'>
                 <h3 className='text-sm font-semibold text-foreground'>
                   Informações complementares
                 </h3>
@@ -582,8 +582,8 @@ export default function FurnitureDashboardPage() {
               />
             </div>
 
-            <div className='gap-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
-              <div className='gap-y-1 mb-3'>
+            <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
+              <div className='space-y-1 mb-3'>
                 <h3 className='text-sm font-semibold text-foreground'>
                   Observações
                 </h3>
@@ -592,7 +592,7 @@ export default function FurnitureDashboardPage() {
                 </p>
               </div>
 
-              <div className='gap-y-2'>
+              <div className='space-y-2'>
                 <label
                   htmlFor='observations'
                   className='block text-sm font-semibold text-foreground'
@@ -619,49 +619,17 @@ export default function FurnitureDashboardPage() {
               </div>
             </div>
 
-            <div className='flex flex-col gap-3 p-1'>
+            <div className='flex flex-col space-y-3 p-1'>
               <Button
-                type='submit'
                 size='lg'
+                type='submit'
                 disabled={isBusy || !isSelected}
-                className='flex-1 flex items-center justify-center gap-2'
+                className='w-full flex items-center justify-center space-2'
               >
                 <Save className='h-4 w-4' />
                 {isBusy ? 'Sincronizando...' : 'Salvar atributos'}
               </Button>
-              <Button
-                type='button'
-                variant='outline'
-                disabled={isBusy}
-                onClick={() => {
-                  setFurnitureForm((prev) => ({
-                    ...prev,
-                    name: '',
-                    color: '',
-                    brand: '',
-                    type: '',
-                    environment: '',
-                    value: '',
-                    link: '',
-                    observations: '',
-                    finalDimension: '',
-                  }));
-                }}
-              >
-                Limpar
-              </Button>
-            </div>
 
-            <div className='flex flex-col gap-3 p-1'>
-              <Button
-                type='submit'
-                size='lg'
-                disabled={isBusy || !isSelected}
-                className='flex-1 flex items-center justify-center gap-2'
-              >
-                <Save className='h-4 w-4' />
-                {isBusy ? 'Sincronizando...' : 'Salvar atributos'}
-              </Button>
               <Button
                 type='button'
                 variant='outline'
