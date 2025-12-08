@@ -6,6 +6,9 @@ import { PricingSection } from '@/components/pricing-section';
 import { PackageIcon, FileTextIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import PageWrapper from '@/components/ui/page-wraper';
+import PageHeader from '@/components/page-header';
+import PageContent from '@/components/ui/page-content';
 
 type TabId = 'tutoriais' | 'precos';
 
@@ -32,17 +35,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className='flex flex-col w-full mx-auto mt-4'>
-      <div className='mb-8'>
-        <h1 className='text-2xl font-bold font-sans tracking-tight'>
-          Dashboard
-        </h1>
-        <p className='text-sm text-muted-foreground mt-1'>
-          Bem-vindo de volta, {user?.firstName}
-        </p>
-      </div>
+    <PageWrapper>
+      <PageHeader
+        title={`Olá, ${user?.firstName}`}
+        description='Vamos projetar algo incrível hoje?'
+      />
 
-      <div className='mb-6'>
+      <PageContent>
         <nav
           aria-label='Tabs'
           className='flex gap-2 p-1 bg-muted/50 rounded-2xl'
@@ -68,21 +67,21 @@ export default function DashboardPage() {
             );
           })}
         </nav>
-      </div>
 
-      <div className='pb-8'>
-        {activeTab === 'tutoriais' && (
-          <VideoCarousel
-            useChannel={true}
-            channelId='@francielimadeira'
-            maxVideos={5}
-            title='Últimos Tutoriais'
-            description='Aprenda a usar todas as funcionalidades'
-          />
-        )}
+        <div className='pb-8'>
+          {activeTab === 'tutoriais' && (
+            <VideoCarousel
+              useChannel={true}
+              channelId='@francielimadeira'
+              maxVideos={5}
+              title='Últimos Tutoriais'
+              description='Aprenda a usar todas as funcionalidades'
+            />
+          )}
 
-        {activeTab === 'precos' && <PricingSection userPlan={userPlan} />}
-      </div>
-    </div>
+          {activeTab === 'precos' && <PricingSection userPlan={userPlan} />}
+        </div>
+      </PageContent>
+    </PageWrapper>
   );
 }

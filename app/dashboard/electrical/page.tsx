@@ -22,7 +22,7 @@ import PageContent from '@/components/ui/page-content';
 export default function ElectricalDashboardPage() {
   const { data, isBusy, importBlock, openBlocksFolder } = useElectrical();
 
-  const handleImportBlock = (blockPath: string, blockName: string) => {
+  const handleImportBlock = (blockPath: string) => {
     importBlock(blockPath);
   };
 
@@ -65,8 +65,9 @@ export default function ElectricalDashboardPage() {
 
           {data.groups.length > 0 && (
             <Accordion
-              type='multiple'
-              defaultValue={data.groups.map((g) => g.id)}
+              type='single'
+              collapsible
+              defaultValue={data.groups[0]?.id}
               className='w-full space-y-2'
             >
               {data.groups.map((group) => (
@@ -89,9 +90,7 @@ export default function ElectricalDashboardPage() {
                             <Button
                               size='sm'
                               className='h-auto py-2 px-3 text-xs font-medium justify-start'
-                              onClick={() =>
-                                handleImportBlock(item.path, item.name)
-                              }
+                              onClick={() => handleImportBlock(item.path)}
                               disabled={isBusy}
                             >
                               <span className='truncate'>{item.name}</span>

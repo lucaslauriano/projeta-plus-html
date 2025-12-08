@@ -7,7 +7,7 @@ interface PageContentProps {
 
 export default function PageContent({ children, className }: PageContentProps) {
   return (
-    <div className={cn('w-full py-8 overflow-y-auto h-screen', className)}>
+    <div className={cn('w-full py-8 overflow-y-auto', className)}>
       {children}
     </div>
   );

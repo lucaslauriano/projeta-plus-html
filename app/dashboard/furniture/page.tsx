@@ -291,7 +291,7 @@ export default function FurnitureDashboardPage() {
 
   return (
     <TooltipProvider>
-      <div className='flex flex-col'>
+      <PageWrapper>
         <PageHeader
           title='Mobiliário'
           description='Gerencie os atributos do componente selecionado no SketchUp'
@@ -654,7 +654,7 @@ export default function FurnitureDashboardPage() {
             </div>
           </form>
         </PageContent>
-      </div>
+      </PageWrapper>
     </TooltipProvider>
   );
 }
