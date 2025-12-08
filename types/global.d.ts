@@ -132,6 +132,11 @@ declare global {
       getBaseboardsBlocks: () => void;
       importBaseboardsBlock: (payload: string) => void;
       openBaseboardsBlocksFolder: () => void;
+      getCustomComponents: () => void;
+      uploadCustomComponent: (payload: string) => void;
+      deleteCustomComponent: (payload: string) => void;
+      openCustomComponentsFolder: () => void;
+      syncCustomComponentsFolder: () => void;
     };
     changeLanguage: (langCode: string) => void;
     loadGlobalSettings: () => void;
@@ -282,6 +287,40 @@ declare global {
     handleOpenBaseboardsFolderResult?: (result: {
       success: boolean;
       message?: string;
+    }) => void;
+    handleGetCustomComponentsResult?: (result: {
+      success: boolean;
+      message?: string;
+      groups?: Array<{
+        id: string;
+        title: string;
+        items: Array<{
+          id: string;
+          name: string;
+          path: string;
+          source: string;
+        }>;
+        source: string;
+      }>;
+    }) => void;
+    handleUploadCustomComponentResult?: (result: {
+      success: boolean;
+      message?: string;
+      filename?: string;
+      category?: string;
+    }) => void;
+    handleDeleteCustomComponentResult?: (result: {
+      success: boolean;
+      message?: string;
+    }) => void;
+    handleOpenCustomFolderResult?: (result: {
+      success: boolean;
+      message?: string;
+    }) => void;
+    handleSyncFolderResult?: (result: {
+      success: boolean;
+      message?: string;
+      count?: number;
     }) => void;
   }
 }

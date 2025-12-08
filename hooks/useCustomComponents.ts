@@ -1,0 +1,180 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'react-toastify';
+
+interface CustomComponentItem {
+  id: string;
+  name: string;
+  path: string;
+  source: 'custom';
+}
+
+interface CustomComponentGroup {
+  id: string;
+  title: string;
+  items: CustomComponentItem[];
+  source: 'custom';
+}
+
+interface CustomComponentsData {
+  groups: CustomComponentGroup[];
+}
+
+interface CustomComponentResult {
+  success: boolean;
+  message?: string;
+  groups?: CustomComponentGroup[];
+  filename?: string;
+  category?: string;
+  count?: number;
+}
+
+export function useCustomComponents() {
+  const [data, setData] = useState<CustomComponentsData>({
+    groups: [],
+  });
+  const [isBusy, setIsBusy] = useState(false);
+
+  // ========================================
+  // UTILITY FUNCTIONS
+  // ========================================
+
+  const callSketchupMethod = useCallback(
+    (method: string, params?: Record<string, unknown>) => {
+      if (window.sketchup) {
+        const sketchup = window.sketchup as Record<
+          string,
+          (payload?: string) => void
+        >;
+        sketchup[method]?.(params ? JSON.stringify(params) : undefined);
+      } else {
+        console.warn(`[MOCK MODE] ${method}:`, params);
+      }
+    },
+    []
+  );
+
+  // ========================================
+  // HANDLERS (recebem respostas do Ruby)
+  // ========================================
+
+  useEffect(() => {
+    window.handleGetCustomComponentsResult = (result: CustomComponentResult) => {
+      setIsBusy(false);
+      if (result.success) {
+        setData({
+          groups: result.groups || [],
+        });
+      } else {
+        toast.error(result.message || 'Erro ao carregar componentes customizados');
+      }
+    };
+
+    window.handleUploadCustomComponentResult = (result: CustomComponentResult) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(`Componente adicionado: ${result.filename}`);
+        getCustomComponents(); // Recarregar lista
+      } else {
+        toast.error(result.message || 'Erro ao fazer upload');
+      }
+    };
+
+    window.handleDeleteCustomComponentResult = (result: CustomComponentResult) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success('Componente removido com sucesso');
+        getCustomComponents(); // Recarregar lista
+      } else {
+        toast.error(result.message || 'Erro ao remover componente');
+      }
+    };
+
+    window.handleOpenCustomFolderResult = (result: CustomComponentResult) => {
+      if (result.success) {
+        toast.success('Pasta de componentes customizados aberta');
+      } else {
+        toast.error(result.message || 'Erro ao abrir pasta');
+      }
+    };
+
+    window.handleSyncFolderResult = (result: CustomComponentResult) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(`${result.count} componente(s) sincronizado(s)`);
+        getCustomComponents(); // Recarregar lista
+      } else {
+        toast.error(result.message || 'Erro ao sincronizar pasta');
+      }
+    };
+
+    // Cleanup
+    return () => {
+      delete window.handleGetCustomComponentsResult;
+      delete window.handleUploadCustomComponentResult;
+      delete window.handleDeleteCustomComponentResult;
+      delete window.handleOpenCustomFolderResult;
+      delete window.handleSyncFolderResult;
+    };
+  }, []);
+
+  // ========================================
+  // PUBLIC METHODS
+  // ========================================
+
+  const getCustomComponents = useCallback(() => {
+    setIsBusy(true);
+    callSketchupMethod('getCustomComponents');
+  }, [callSketchupMethod]);
+
+  const uploadComponent = useCallback(
+    (category: string = 'Geral') => {
+      setIsBusy(true);
+      callSketchupMethod('uploadCustomComponent', { category });
+    },
+    [callSketchupMethod]
+  );
+
+  const deleteComponent = useCallback(
+    (blockPath: string) => {
+      if (confirm('Deseja realmente remover este componente?')) {
+        setIsBusy(true);
+        callSketchupMethod('deleteCustomComponent', { path: blockPath });
+      }
+    },
+    [callSketchupMethod]
+  );
+
+  const openCustomFolder = useCallback(() => {
+    callSketchupMethod('openCustomComponentsFolder');
+  }, [callSketchupMethod]);
+
+  const syncFolder = useCallback(() => {
+    setIsBusy(true);
+    callSketchupMethod('syncCustomComponentsFolder');
+  }, [callSketchupMethod]);
+
+  // ========================================
+  // LIFECYCLE
+  // ========================================
+
+  useEffect(() => {
+    getCustomComponents();
+  }, [getCustomComponents]);
+
+  // ========================================
+  // RETURN
+  // ========================================
+
+  return {
+    data,
+    isBusy,
+    getCustomComponents,
+    uploadComponent,
+    deleteComponent,
+    openCustomFolder,
+    syncFolder,
+  };
+}
+
