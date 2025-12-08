@@ -344,12 +344,8 @@ export default function FurnitureDashboardPage() {
               <div className='flex items-center justify-between mb-3'>
                 <div className='space-y-1'>
                   <h3 className='text-sm font-semibold text-foreground'>
-                    Dimensões (Redimensionamento ao vivo)
+                    Dimensões
                   </h3>
-                  <p className='text-xs text-muted-foreground'>
-                    Altere os valores e o componente será redimensionado
-                    automaticamente no SketchUp
-                  </p>
                 </div>
                 <Tooltip>
                   <TooltipTrigger asChild>
