@@ -43,15 +43,16 @@ const navigation = [
     icon: LampCeiling,
   },
   {
-    name: 'Revestimentos',
-    href: '/dashboard/coatings',
-    icon: BrickWall,
-  },
-  {
     name: 'Rodapés',
     href: '/dashboard/baseboards',
     icon: PanelBottom,
   },
+  {
+    name: 'Revestimentos',
+    href: '/dashboard/coatings',
+    icon: BrickWall,
+  },
+
   {
     name: 'Relatórios',
     href: '/dashboard/generate-report',

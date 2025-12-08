@@ -72,45 +72,49 @@ export default function ElectricalDashboardPage() {
             >
               {data.groups
                 .sort((a, b) => {
-                  const aPadrao = a.title.toLowerCase().includes('padrão') ? 0 : 1;
-                  const bPadrao = b.title.toLowerCase().includes('padrão') ? 0 : 1;
+                  const aPadrao = a.title.toLowerCase().includes('padrão')
+                    ? 0
+                    : 1;
+                  const bPadrao = b.title.toLowerCase().includes('padrão')
+                    ? 0
+                    : 1;
                   return aPadrao - bPadrao;
                 })
                 .map((group) => (
-                <AccordionItem
-                  key={group.id}
-                  value={group.id}
-                  className='border border-b rounded-xl overflow-hidden bg-muted/20'
-                >
-                  <AccordionTrigger className='px-4 py-3 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70'>
-                    <div className='flex items-center gap-2 font-semibold text-sm'>
-                      <Folder className='w-4 h-4 text-gray-500' />
-                      {group.title}
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className='p-4'>
-                    <div className='grid grid-cols-1 gap-2'>
-                      {group.items.map((item) => (
-                        <Tooltip key={item.id}>
-                          <TooltipTrigger asChild>
-                            <Button
-                              size='sm'
-                              className='h-auto py-2 px-3 text-xs font-medium justify-start'
-                              onClick={() => handleImportBlock(item.path)}
-                              disabled={isBusy}
-                            >
-                              <span className='truncate'>{item.name}</span>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{item.name}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+                  <AccordionItem
+                    key={group.id}
+                    value={group.id}
+                    className='border border-b rounded-xl overflow-hidden bg-muted/20'
+                  >
+                    <AccordionTrigger className='px-4 py-3 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70'>
+                      <div className='flex items-center gap-2 font-semibold text-sm'>
+                        <Folder className='w-4 h-4 text-gray-500' />
+                        {group.title}
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className='p-4'>
+                      <div className='grid grid-cols-1 gap-2'>
+                        {group.items.map((item) => (
+                          <Tooltip key={item.id}>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size='sm'
+                                className='h-auto py-2 px-3 text-xs font-medium justify-center'
+                                onClick={() => handleImportBlock(item.path)}
+                                disabled={isBusy}
+                              >
+                                <span className='truncate'>{item.name}</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{item.name}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
             </Accordion>
           )}
         </PageContent>

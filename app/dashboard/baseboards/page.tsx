@@ -87,7 +87,7 @@ export default function BaseboardsDashboardPage() {
                           <TooltipTrigger asChild>
                             <Button
                               size='sm'
-                              className='h-auto py-2 px-3 text-xs font-medium justify-start'
+                              className='h-auto py-2 px-3 text-xs font-medium justify-center'
                               onClick={() =>
                                 handleImportBlock(item.path, item.name)
                               }
