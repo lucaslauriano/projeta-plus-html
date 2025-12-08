@@ -16,9 +16,8 @@ export default function GlobalSettingsPage() {
     isLoading,
     hasChanges,
     loadSettings,
-    updateLocalSetting,
     saveAllChanges,
-    selectFolder,
+    updateLocalSetting,
   } = useSettings();
 
   useEffect(() => {

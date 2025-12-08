@@ -26,7 +26,6 @@ import {
   PlusCircle,
   FolderPlus,
   MoreVertical,
-  Clapperboard,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import {

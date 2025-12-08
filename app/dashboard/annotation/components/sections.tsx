@@ -45,9 +45,7 @@ function AnnotationSectionInner() {
       {/* Cortes */}
       <div className='space-y-3 gap-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
         <div className='flex items-center justify-between'>
-          <h3 className='text-sm font-semibold text-foreground'>
-            Cortes
-          </h3>
+          <h3 className='text-sm font-semibold text-foreground'>Cortes</h3>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -60,8 +58,8 @@ function AnnotationSectionInner() {
               </TooltipTrigger>
               <TooltipContent className='max-w-xs'>
                 <p className='text-sm'>
-                AAnotar automaticamente todas as seções existentes no modelo, 
-                atribuindo nomes conforme o identificador do corte de seção.
+                  AAnotar automaticamente todas as seções existentes no modelo,
+                  atribuindo nomes conforme o identificador do corte de seção.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -79,9 +77,7 @@ function AnnotationSectionInner() {
         </form>
 
         <div className='flex items-center justify-between'>
-          <h3 className='text-sm font-semibold text-foreground'>
-            Vistas
-          </h3>
+          <h3 className='text-sm font-semibold text-foreground'>Vistas</h3>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -94,8 +90,9 @@ function AnnotationSectionInner() {
               </TooltipTrigger>
               <TooltipContent className='max-w-xs'>
                 <p className='text-sm'>
-                Inserir a simbologia de indicação de vistas no centro da face selecionada, 
-                permitindo a geração de cortes de seção pelo modo "Vistas".
+                  Inserir a simbologia de indicação de vistas no centro da face
+                  selecionada, permitindo a geração de cortes de seção pelo modo{' '}
+                  <strong>Vistas</strong>.
                 </p>
               </TooltipContent>
             </Tooltip>

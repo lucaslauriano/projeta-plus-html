@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Info, InfoIcon } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 export function PrintAttributes() {
   const { startHeightAnnotation, defaults, isLoading } = useHeightAnnotation();
@@ -38,26 +38,25 @@ export function PrintAttributes() {
               Anotação de Altura
             </h3>
             <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type='button'
-                  className='p-1 hover:bg-accent rounded-md transition-colors'
-                >
-                  <Info className='w-4 h-4 text-muted-foreground' />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent className='max-w-xs'>
-                <p className='text-sm'>
-                Anotar a altura (ex.: H 60) ou a altura acompanhada do uso 
-                (ex.: H 60 – PIA), aplicável somente a componentes dinâmicos de pontos técnicos.
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type='button'
+                    className='p-1 hover:bg-accent rounded-md transition-colors'
+                  >
+                    <Info className='w-4 h-4 text-muted-foreground' />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className='max-w-xs'>
+                  <p className='text-sm'>
+                    Anotar a altura (ex.: H 60) ou a altura acompanhada do uso
+                    (ex.: H 60 – PIA), aplicável somente a componentes dinâmicos
+                    de pontos técnicos.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
-
-          
         </div>
 
         <form onSubmit={handleSubmit} className='space-y-4'>

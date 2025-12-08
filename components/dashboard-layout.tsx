@@ -7,14 +7,14 @@ import { UserButton, useUser } from '@clerk/nextjs';
 import { useSubscription } from '@clerk/nextjs/experimental';
 import { cn } from '@/lib/utils';
 import {
-  HousePlus,
   Plus,
   Menu,
+  Plug,
   Settings,
   Armchair,
-  Proportions,
-  Plug,
   BrickWall,
+  HousePlus,
+  Proportions,
   FileTextIcon,
   PanelBottom,
   LampCeiling,
@@ -74,10 +74,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const { user, isLoaded: isUserLoaded } = useUser();
-  const hasPremiumPlan =
-    user?.publicMetadata?.plan === 'premium' ||
-    user?.publicMetadata?.plan === 'pro_user';
-  const userPlan: 'free' | 'premium' = hasPremiumPlan ? 'premium' : 'free';
+  // const hasPremiumPlan =
+  //   user?.publicMetadata?.plan === 'premium' ||
+  //   user?.publicMetadata?.plan === 'pro_user';
+  //const userPlan: 'free' | 'premium' = hasPremiumPlan ? 'premium' : 'free';
   const { data, isLoading: isSubscriptionLoading } = useSubscription();
   const pathname = usePathname();
 

@@ -2,27 +2,26 @@
 
 import React, { useState } from 'react';
 import {
-  Folder,
   Tag,
-  Trash2,
-  Download,
-  Upload,
   Save,
-  FileJson,
-  MoreVertical,
-  FolderPlus,
+  Trash2,
+  Upload,
+  Folder,
   TagIcon,
+  FileJson,
+  Download,
+  FolderPlus,
+  MoreVertical,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectTrigger,
+  SelectContent,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { useLayers } from '@/hooks/useLayers';
 import TagList from './TagList';
 import {
@@ -207,7 +206,10 @@ export default function LayersComponent() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className='p-1 hover:bg-accent rounded-md transition-colors'>
-                <MoreVertical className='w-4 h-4 text-muted-foreground' size={16} />
+                <MoreVertical
+                  className='w-4 h-4 text-muted-foreground'
+                  size={16}
+                />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className='w-48'>

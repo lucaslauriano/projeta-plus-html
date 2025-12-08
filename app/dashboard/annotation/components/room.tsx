@@ -5,13 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { useRoomAnnotation } from '@/hooks/useRoomAnnotation';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Info } from 'lucide-react';
 
 export function RoomAnnotation() {
   const { startRoomAnnotation, isLoading } = useRoomAnnotation();

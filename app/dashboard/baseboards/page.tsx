@@ -3,7 +3,7 @@
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import PageWrapper from '@/components/ui/page-wraper';
-import { Folder, FolderOpen, Box } from 'lucide-react';
+import { Folder, FolderOpen } from 'lucide-react';
 import {
   Accordion,
   AccordionItem,
@@ -22,7 +22,7 @@ import PageContent from '@/components/ui/page-content';
 export default function BaseboardsDashboardPage() {
   const { data, isBusy, importBlock, openBlocksFolder } = useBaseboards();
 
-  const handleImportBlock = (blockPath: string, blockName: string) => {
+  const handleImportBlock = (blockPath: string) => {
     importBlock(blockPath);
   };
 
@@ -88,9 +88,7 @@ export default function BaseboardsDashboardPage() {
                             <Button
                               size='sm'
                               className='h-auto py-2 px-3 text-xs font-medium justify-center'
-                              onClick={() =>
-                                handleImportBlock(item.path, item.name)
-                              }
+                              onClick={() => handleImportBlock(item.path)}
                               disabled={isBusy}
                             >
                               <span className='truncate'>{item.name}</span>
