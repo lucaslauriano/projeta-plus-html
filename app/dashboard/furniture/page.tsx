@@ -345,7 +345,7 @@ export default function FurnitureDashboardPage() {
                     Dimensões
                   </h3>
                   <p className='text-xs text-muted-foreground'>
-                    Redimensionamento automático. 
+                    Redimensionamento automático.
                   </p>
                 </div>
                 <Tooltip>
@@ -363,8 +363,9 @@ export default function FurnitureDashboardPage() {
                   >
                     <p className='text-xs text-muted-foreground'>
                       As dimensões são aplicadas automaticamente enquanto você
-                      digita. Não é necessário salvar. Cuidado com a posição do componente no modelo. 
-                      A largura é sempre o eixo X e a profundidade o eixo Y. A altura é o eixo Z.
+                      digita. Não é necessário salvar. Cuidado com a posição do
+                      componente no modelo. A largura é sempre o eixo X e a
+                      profundidade o eixo Y. A altura é o eixo Z.
                     </p>
                   </TooltipContent>
                 </Tooltip>

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { PlanItem } from '@/components/PlanItem';
 import {
   Accordion,
@@ -12,33 +13,35 @@ import {
 } from '@/components/ui/accordion';
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectTrigger,
 } from '@/components/ui/select';
 import {
-  FileText,
   X,
+  Upload,
+  Folder,
+  FileText,
   PlusCircle,
   FolderPlus,
-  Folder,
   MoreVertical,
+  Clapperboard,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import {
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
   Dialog,
+  DialogTitle,
+  DialogHeader,
+  DialogFooter,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
 } from '@/components/ui/dialog';
 
 interface Segment {
@@ -83,6 +86,12 @@ export default function ScenesComponent() {
   const [selectedGroup, setSelectedGroup] = useState<string>('root');
   const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
   const [isSceneDialogOpen, setIsSceneDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingScene, setEditingScene] = useState<Scene | null>(null);
+  const [editSceneName, setEditSceneName] = useState('');
+  const [editSceneStyle, setEditSceneStyle] = useState('');
+  const [editCameraType, setEditCameraType] = useState('');
+  const [editActiveLayers, setEditActiveLayers] = useState<string[]>([]);
 
   const handleAddGroup = () => {
     if (!newGroupName.trim()) {
@@ -180,9 +189,37 @@ export default function ScenesComponent() {
     }
   };
 
+  const handleEditScene = (scene: Scene) => {
+    setEditingScene(scene);
+    setEditSceneName(scene.title);
+    setEditSceneStyle('FM_PLANTAS');
+    setEditCameraType('Vista de Topo + Ortogonal');
+    setEditActiveLayers(['Layer0']);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveEditScene = () => {
+    if (!editSceneName.trim() || !editingScene) {
+      toast.error('Digite um nome para a cena');
+      return;
+    }
+
+    setGroups(
+      groups.map((g) => ({
+        ...g,
+        scenes: g.scenes.map((s) =>
+          s.id === editingScene.id ? { ...s, title: editSceneName.trim() } : s
+        ),
+      }))
+    );
+
+    setIsEditDialogOpen(false);
+    setEditingScene(null);
+    toast.success('Cena editada com sucesso!');
+  };
+
   return (
     <>
-      {/* Dialog para Criar Grupo */}
       <Dialog open={isGroupDialogOpen} onOpenChange={setIsGroupDialogOpen}>
         <DialogContent className='sm:max-w-[425px]'>
           <DialogHeader>
@@ -222,7 +259,6 @@ export default function ScenesComponent() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog para Criar Cena */}
       <Dialog open={isSceneDialogOpen} onOpenChange={setIsSceneDialogOpen}>
         <DialogContent className='sm:max-w-[425px]'>
           <DialogHeader>
@@ -280,6 +316,163 @@ export default function ScenesComponent() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className='sm:max-w-[500px]'>
+          <DialogHeader>
+            <DialogTitle className='flex items-center gap-2'>
+              Configuração da Cena: {editingScene?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <div className='flex flex-col gap-4 py-4'>
+            <div className='w-full flex items-end justify-between gap-x-4'>
+              <div className='space-y-2 w-2/3 items-center justify-center'>
+                <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
+                  Estilo:
+                </label>
+                <Select
+                  value={editSceneStyle}
+                  onValueChange={setEditSceneStyle}
+                >
+                  <SelectTrigger className='h-11 rounded-xl border-2 w-full'>
+                    <SelectValue placeholder='Selecione um estilo' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='FM_PLANTAS'>FM_PLANTAS</SelectItem>
+                    <SelectItem value='FM_CORTES'>FM_CORTES</SelectItem>
+                    <SelectItem value='FM_3D'>FM_3D</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className='w-1/3 flex items-center justify-center'>
+                <Button variant='outline' size='sm' className='w-full'>
+                  <Upload className='w-4 h-4 mr-2' />
+                  Importar
+                </Button>
+              </div>
+            </div>
+
+            <div className='space-y-2'>
+              <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
+                Tipo de Câmera:
+              </label>
+              <Select value={editCameraType} onValueChange={setEditCameraType}>
+                <SelectTrigger className='h-11 rounded-xl border-2 w-full'>
+                  <SelectValue placeholder='Selecione o tipo de câmera' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='Vista de Topo + Ortogonal'>
+                    Vista de Topo + Ortogonal
+                  </SelectItem>
+                  <SelectItem value='Perspectiva'>Perspectiva</SelectItem>
+                  <SelectItem value='Vista Frontal'>Vista Frontal</SelectItem>
+                  <SelectItem value='Vista Lateral'>Vista Lateral</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className='space-y-3'>
+              <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
+                Camadas Ativas (6 disponíveis):
+              </label>
+              {/* TODO: Adicionar button group de filtros Todos, Nenhum, Estado Atual */}
+              <div className='flex items-center gap-2'>
+                <Button variant='outline' size='sm'>
+                  Todos
+                </Button>
+                <Button variant='outline' size='sm'>
+                  Nenhum
+                </Button>
+                <Button variant='outline' size='sm'>
+                  Estado Atual
+                </Button>
+              </div>
+              <div className='space-y-2 max-h-[200px] overflow-y-auto p-4 bg-muted/30 rounded-xl border border-border/50'>
+                <div className='space-y-2'>
+                  <div className='flex items-center space-x-2 '>
+                    <Checkbox
+                      id='layer0'
+                      checked={editActiveLayers.includes('Layer0')}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setEditActiveLayers([...editActiveLayers, 'Layer0']);
+                        } else {
+                          setEditActiveLayers(
+                            editActiveLayers.filter((l) => l !== 'Layer0')
+                          );
+                        }
+                      }}
+                    />
+                    <label
+                      htmlFor='layer0'
+                      className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                    >
+                      Layer0
+                    </label>
+                  </div>
+                  <div className='flex items-center space-x-2'>
+                    <Checkbox id='arquitetura' />
+                    <label
+                      htmlFor='arquitetura'
+                      className='text-sm font-medium leading-none'
+                    >
+                      -ARQUITETURA-PISO
+                    </label>
+                  </div>
+                  <div className='flex items-center space-x-2'>
+                    <Checkbox id='iluminacao' />
+                    <label
+                      htmlFor='iluminacao'
+                      className='text-sm font-medium leading-none'
+                    >
+                      -ILUMINACAO-LEGENDA
+                    </label>
+                  </div>
+                  <div className='flex items-center space-x-2'>
+                    <Checkbox id='luminaria' />
+                    <label
+                      htmlFor='luminaria'
+                      className='text-sm font-medium leading-none'
+                    >
+                      -ILUMINACAO-LUMINARIA
+                    </label>
+                  </div>
+                  <div className='flex items-center space-x-2'>
+                    <Checkbox id='spotlight1' />
+                    <label
+                      htmlFor='spotlight1'
+                      className='text-sm font-medium leading-none'
+                    >
+                      -ILUMINACAO-SPOTLIGTH ENSCAPE
+                    </label>
+                  </div>
+                  <div className='flex items-center space-x-2'>
+                    <Checkbox id='spotlight2' />
+                    <label
+                      htmlFor='spotlight2'
+                      className='text-sm font-medium leading-none'
+                    >
+                      -ILUMINACAO-SPOTLIGTH VRAY
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={() => {
+                setIsEditDialogOpen(false);
+                setEditingScene(null);
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveEditScene}>Salvar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className='space-y-3'>
         <div className='flex items-center justify-between'>
           <h2 className='text-lg font-semibold flex items-center gap-2'>
@@ -325,11 +518,6 @@ export default function ScenesComponent() {
                       <div className='flex items-center gap-2 font-medium text-sm'>
                         <Folder className='w-4 h-4 text-gray-500' />
                         {group.name}
-                        {/* {group.scenes.length > 0 && (
-                          <span className='text-xs text-muted-foreground'>
-                            ({group.scenes.length})
-                          </span>
-                        )} */}
                       </div>
                       <button
                         onClick={(e) => {
@@ -351,25 +539,7 @@ export default function ScenesComponent() {
                             <PlanItem
                               key={scene.id}
                               title={scene.title}
-                              onEdit={() => {
-                                const newName = prompt(
-                                  'Digite o novo nome:',
-                                  scene.title
-                                );
-                                if (newName?.trim()) {
-                                  setGroups(
-                                    groups.map((g) => ({
-                                      ...g,
-                                      scenes: g.scenes.map((s) =>
-                                        s.id === scene.id
-                                          ? { ...s, title: newName.trim() }
-                                          : s
-                                      ),
-                                    }))
-                                  );
-                                  toast.success('Cena editada!');
-                                }
-                              }}
+                              onEdit={() => handleEditScene(scene)}
                               onDuplicate={() => {
                                 setGroups(
                                   groups.map((g) => {
