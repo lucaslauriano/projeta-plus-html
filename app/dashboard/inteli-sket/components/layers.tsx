@@ -207,7 +207,7 @@ export default function LayersComponent() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className='p-1 hover:bg-accent rounded-md transition-colors'>
-                <MoreVertical className='w-4 h-4 text-muted-foreground' />
+                <MoreVertical className='w-4 h-4 text-muted-foreground' size={16} />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className='w-48'>

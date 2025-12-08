@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { PrintAttributes } from '@/app/dashboard/annotation/components/print-attributes';
 import { useComponentUpdater } from '@/hooks/useComponentUpdater';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Info } from 'lucide-react';
 
 type AttributeType =
   | 'scale'
@@ -91,10 +93,24 @@ export function ElectricalChangeAtributes() {
             <h3 className='text-sm font-semibold text-foreground'>
               Modificar Atributos
             </h3>
-            <p className='text-xs text-muted-foreground'>
-              Selecione os componentes dinâmicos de pontos técnicos no modelo e
-              defina o tipo de atributo a modificar.
-            </p>
+            <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type='button'
+                  className='p-1 hover:bg-accent rounded-md transition-colors'
+                >
+                  <Info className='w-4 h-4 text-muted-foreground' />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className='max-w-xs'>
+                <p className='text-sm'>
+                Selecionar os componentes dinâmicos de pontos técnicos 
+                no modelo e definir o tipo de atributo a modificar.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           </div>
 
           <RadioGroup
@@ -163,10 +179,24 @@ export function ElectricalChangeAtributes() {
         <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
           <div className='space-y-2'>
             <h3 className='text-sm font-semibold text-foreground'>Situação</h3>
-            <p className='text-xs text-muted-foreground'>
-              Selecione os componentes dinâmicos de pontos técnicos no modelo e
-              defina o status da situação.
-            </p>
+            <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type='button'
+                  className='p-1 hover:bg-accent rounded-md transition-colors'
+                >
+                  <Info className='w-4 h-4 text-muted-foreground' />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className='max-w-xs'>
+                <p className='text-sm'>
+                Selecionar os componentes dinâmicos de pontos técnicos 
+                no modelo e definir o status da situação.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           </div>
 
           <RadioGroup

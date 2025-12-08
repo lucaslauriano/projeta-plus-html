@@ -64,11 +64,18 @@ export default function LightningsDashboardPage() {
 
           {data.groups.length > 0 && (
             <Accordion
-              type='multiple'
-              defaultValue={data.groups.map((g) => g.id)}
+              type='single'
+              collapsible
+              // defaultValue={data.groups.map((g) => g.id)}//
               className='w-full space-y-2'
             >
-              {data.groups.map((group) => (
+              {data.groups
+                .sort((a, b) => {
+                  const aPadrao = a.title.toLowerCase().includes('padrão') ? 0 : 1;
+                  const bPadrao = b.title.toLowerCase().includes('padrão') ? 0 : 1;
+                  return aPadrao - bPadrao;
+                })
+                .map((group) => (
                 <AccordionItem
                   key={group.id}
                   value={group.id}
@@ -81,7 +88,7 @@ export default function LightningsDashboardPage() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className='p-4'>
-                    <div className='grid grid-cols-2 gap-2'>
+                    <div className='grid grid-cols-1 gap-2'>
                       {group.items.map((item) => (
                         <Tooltip key={item.id}>
                           <TooltipTrigger asChild>

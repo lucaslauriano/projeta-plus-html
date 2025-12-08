@@ -65,7 +65,7 @@ export default function BaseboardsDashboardPage() {
           {data.groups.length > 0 && (
             <Accordion
               type='multiple'
-              defaultValue={data.groups.map((g) => g.id)}
+              // defaultValue={data.groups.map((g) => g.id)} //
               className='w-full space-y-2'
             >
               {data.groups.map((group) => (
@@ -81,7 +81,7 @@ export default function BaseboardsDashboardPage() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className='p-4'>
-                    <div className='grid grid-cols-2 gap-2'>
+                    <div className='grid grid-cols-1 gap-2'>
                       {group.items.map((item) => (
                         <Tooltip key={item.id}>
                           <TooltipTrigger asChild>

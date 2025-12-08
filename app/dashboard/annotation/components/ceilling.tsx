@@ -67,8 +67,10 @@ function AnnotationCeilingInner() {
       {/* Forro Section */}
       <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
         <div className='flex items-center justify-between'>
-          <h3 className='text-sm font-semibold text-foreground'>Forro</h3>
-          <TooltipProvider>
+          <h3 className='text-sm font-semibold text-foreground'>
+            Forro
+          </h3>
+           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -80,9 +82,9 @@ function AnnotationCeilingInner() {
               </TooltipTrigger>
               <TooltipContent className='max-w-xs'>
                 <p className='text-sm'>
-                  Anotação com área da face selecionada e altura do pé-direito,
-                  calculadas automaticamente. Não esquecer de informar o nível
-                  do piso caso seja diferente de 0,00.
+                Anotar a área da face selecionada e a altura do pé-direito, 
+                calculadas automaticamente de acordo com o eixo Z, 
+                lembrando de informar o nível do piso caso seja diferente de 0,00.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -92,7 +94,7 @@ function AnnotationCeilingInner() {
           <Input
             type='text'
             placeholder='Ex: 0,00'
-            label='Nível do Piso'
+            label='Nível do Piso (m)'
             value={level}
             onChange={(e) => setLevel(e.target.value)}
             required
@@ -111,7 +113,8 @@ function AnnotationCeilingInner() {
       {/* Iluminação Section */}
       <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
         <div className='flex items-center justify-between'>
-          <h3 className='text-sm font-semibold text-foreground'>Iluminação</h3>
+          <h3 className='text-sm font-semibold text-foreground'>Iluminação
+          </h3>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -124,8 +127,9 @@ function AnnotationCeilingInner() {
               </TooltipTrigger>
               <TooltipContent className='max-w-xs'>
                 <p className='text-sm'>
-                  Anotar os circuitos: digite no campo o valor do circuito,
-                  clique para anotar e selecione as faces de interruptores.
+                Anotar os circuitos digitando o valor no campo, 
+                clicando para registrar e selecionando as faces dos interruptores, 
+                utilizando as setas para alterar a direção.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -168,8 +172,8 @@ function AnnotationCeilingInner() {
                 </TooltipTrigger>
                 <TooltipContent className='max-w-xs'>
                   <p className='text-sm'>
-                    Clique no botão para ligar os circuitos e selecione os
-                    códigos dos circuitos.
+                  Ligar os circuitos clicando no botão e 
+                  selecionando os códigos correspondentes criados anteriormente.
                   </p>
                 </TooltipContent>
               </Tooltip>

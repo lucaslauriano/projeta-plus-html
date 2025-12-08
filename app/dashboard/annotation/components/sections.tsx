@@ -47,7 +47,6 @@ function AnnotationSectionInner() {
         <div className='flex items-center justify-between'>
           <h3 className='text-sm font-semibold text-foreground'>
             Cortes
-            <p className='text-xs font-extralight'>Vai ficar uma merdinha</p>
           </h3>
           <TooltipProvider>
             <Tooltip>
@@ -61,8 +60,8 @@ function AnnotationSectionInner() {
               </TooltipTrigger>
               <TooltipContent className='max-w-xs'>
                 <p className='text-sm'>
-                  Anotação de todas as seções no modelo, com o nome atribuído
-                  automaticamente.
+                AAnotar automaticamente todas as seções existentes no modelo, 
+                atribuindo nomes conforme o identificador do corte de seção.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -82,7 +81,6 @@ function AnnotationSectionInner() {
         <div className='flex items-center justify-between'>
           <h3 className='text-sm font-semibold text-foreground'>
             Vistas
-            <p className='font-extralight'>Palmeiras n tem mundial</p>
           </h3>
           <TooltipProvider>
             <Tooltip>
@@ -96,8 +94,8 @@ function AnnotationSectionInner() {
               </TooltipTrigger>
               <TooltipContent className='max-w-xs'>
                 <p className='text-sm'>
-                  Inserir bloco de indicação de vistas no centro da face
-                  selecionada.
+                Inserir a simbologia de indicação de vistas no centro da face selecionada, 
+                permitindo a geração de cortes de seção pelo modo "Vistas".
                 </p>
               </TooltipContent>
             </Tooltip>

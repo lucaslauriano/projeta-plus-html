@@ -324,31 +324,28 @@ export default function FurnitureDashboardPage() {
         <PageContent>
           <SelectionStatusAlert isSelected={isSelected} />
 
-          {!isSelected && (
-            <div className='mb-6'>
-              <Button
-                type='button'
-                size='lg'
-                onClick={() => captureSelectedComponent()}
-                disabled={isBusy}
-                className='w-full flex items-center justify-center space-2'
-              >
-                <Target className='h-4 w-4' />
-                {isBusy ? 'Capturando...' : 'Selecionar Componente'}
-              </Button>
-            </div>
-          )}
+          <div className='mb-6'>
+            <Button
+              type='button'
+              size='lg'
+              onClick={() => captureSelectedComponent()}
+              disabled={isBusy}
+              className='w-full flex items-center justify-center space-2'
+            >
+              <Target className='h-4 w-4' />
+              {isBusy ? 'Capturando...' : 'Selecionar Componente'}
+            </Button>
+          </div>
 
           <form onSubmit={handleSubmit} className='space-y-4'>
             <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
               <div className='flex items-center justify-between mb-3'>
                 <div className='space-y-1'>
                   <h3 className='text-sm font-semibold text-foreground'>
-                    Dimensões (Redimensionamento ao vivo)
+                    Dimensões
                   </h3>
                   <p className='text-xs text-muted-foreground'>
-                    Altere os valores e o componente será redimensionado
-                    automaticamente no SketchUp
+                    Redimensionamento automático. 
                   </p>
                 </div>
                 <Tooltip>
@@ -366,7 +363,8 @@ export default function FurnitureDashboardPage() {
                   >
                     <p className='text-xs text-muted-foreground'>
                       As dimensões são aplicadas automaticamente enquanto você
-                      digita. Não é necessário salvar.
+                      digita. Não é necessário salvar. Cuidado com a posição do componente no modelo. 
+                      A largura é sempre o eixo X e a profundidade o eixo Y. A altura é o eixo Z.
                     </p>
                   </TooltipContent>
                 </Tooltip>
