@@ -51,8 +51,11 @@ export default function LayersComponent() {
     deleteFolder,
     deleteLayer,
     toggleVisibility,
+    updateTagColor,
+    updateTagName,
     saveToJson,
     loadDefaultTags,
+    loadMyTags,
     importToModel,
     clearAll,
   } = useLayers();
@@ -239,13 +242,15 @@ export default function LayersComponent() {
           deleteFolder={deleteFolder}
           deleteLayer={deleteLayer}
           toggleVisibility={toggleVisibility}
+          updateTagColor={updateTagColor}
+          updateTagName={updateTagName}
         />
 
         <div className='flex justify-center w-full'>
           <span className='inline-flex rounded-md shadow-sm'>
             <button
               type='button'
-              onClick={loadLayers}
+              onClick={() => loadLayers()}
               disabled={isBusy}
               className='relative inline-flex flex-col items-center justify-center rounded-l-md bg-primary px-3 py-3 text-xs font-medium text-primary-foreground ring-1 ring-inset ring-primary-foreground/20 hover:bg-primary/90 focus:z-10 disabled:opacity-50 gap-1 '
               title='Trazer do Modelo'
@@ -259,6 +264,14 @@ export default function LayersComponent() {
               title='Redefinir (Tags Padrão)'
             >
               <FileJson className='w-5 h-5' />
+            </button>
+            <button
+              type='button'
+              onClick={loadMyTags}
+              className='relative -ml-px inline-flex flex-col items-center justify-center bg-primary px-3 py-3 text-xs font-medium text-primary-foreground ring-1 ring-inset ring-primary-foreground/20 hover:bg-primary/90 focus:z-10 gap-1'
+              title='Minhas Tags (Arquivo do Usuário)'
+            >
+              <Folder className='w-5 h-5' />
             </button>
             <button
               type='button'

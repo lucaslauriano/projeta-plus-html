@@ -20,6 +20,7 @@ interface TagListProps {
   deleteLayer: (name: string) => Promise<void>;
   toggleVisibility: (name: string, visible: boolean) => Promise<void>;
   updateTagColor?: (name: string, color: string) => Promise<void>;
+  updateTagName?: (oldName: string, newName: string) => Promise<void>;
 }
 
 export default function TagList({
@@ -29,6 +30,8 @@ export default function TagList({
   deleteFolder,
   deleteLayer,
   toggleVisibility,
+  updateTagColor,
+  updateTagName,
 }: TagListProps) {
   return (
     <div className='space-y-4'>
@@ -84,6 +87,8 @@ export default function TagList({
                           rgbToHex={rgbToHex}
                           onToggleVisibility={toggleVisibility}
                           onDelete={deleteLayer}
+                          onUpdateColor={updateTagColor}
+                          onUpdateName={updateTagName}
                         />
                       ))}
                       {folder.tags.length === 0 && (
@@ -106,6 +111,8 @@ export default function TagList({
                 rgbToHex={rgbToHex}
                 onToggleVisibility={toggleVisibility}
                 onDelete={deleteLayer}
+                onUpdateColor={updateTagColor}
+                onUpdateName={updateTagName}
               />
             ))}
 
