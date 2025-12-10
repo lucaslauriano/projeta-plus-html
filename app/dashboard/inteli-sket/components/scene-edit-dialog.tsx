@@ -10,6 +10,7 @@ import {
   SelectContent,
   SelectTrigger,
 } from '@/components/ui/select';
+
 import { Upload } from 'lucide-react';
 import {
   Dialog,
@@ -20,45 +21,45 @@ import {
 } from '@/components/ui/dialog';
 
 interface SceneEditDialogProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  sceneTitle: string;
   style: string;
-  onStyleChange: (style: string) => void;
+  isOpen: boolean;
+  onSave: () => void;
+  isBusy?: boolean;
+  onCancel: () => void;
+  sceneTitle: string;
   cameraType: string;
-  onCameraTypeChange: (type: string) => void;
   activeLayers: string[];
-  onActiveLayersChange: (layers: string[]) => void;
+  onOpenChange: (open: boolean) => void;
+  onStyleChange: (style: string) => void;
+  onImportStyle?: () => void;
   availableStyles: string[];
   availableLayers: string[];
-  isBusy?: boolean;
-  onSave: () => void;
-  onCancel: () => void;
-  onSelectAllLayers: () => void;
   onSelectNoLayers: () => void;
+  onSelectAllLayers: () => void;
+  onCameraTypeChange: (type: string) => void;
   onApplyCurrentState: () => void;
-  onImportStyle?: () => void;
+  onActiveLayersChange: (layers: string[]) => void;
 }
 
 export function SceneEditDialog({
   isOpen,
-  onOpenChange,
-  sceneTitle,
   style,
-  onStyleChange,
-  cameraType,
-  onCameraTypeChange,
-  activeLayers,
-  onActiveLayersChange,
-  availableStyles,
-  availableLayers,
-  isBusy = false,
   onSave,
+  isBusy = false,
   onCancel,
-  onSelectAllLayers,
-  onSelectNoLayers,
-  onApplyCurrentState,
+  sceneTitle,
+  cameraType,
+  activeLayers,
+  onOpenChange,
   onImportStyle,
+  onStyleChange,
+  availableLayers,
+  availableStyles,
+  onSelectNoLayers,
+  onSelectAllLayers,
+  onCameraTypeChange,
+  onActiveLayersChange,
+  onApplyCurrentState,
 }: SceneEditDialogProps) {
   const handleLayerToggle = (layer: string, checked: boolean) => {
     if (checked) {
@@ -97,12 +98,12 @@ export function SceneEditDialog({
             </div>
             {onImportStyle && (
               <Button
-                variant='outline'
                 size='sm'
-                className='w-fit'
+                variant='outline'
                 onClick={onImportStyle}
+                className='w-fit'
               >
-                <Upload className='w-4 h-4 mr-2' />
+                <Upload className='w-4 h-4' />
               </Button>
             )}
           </div>

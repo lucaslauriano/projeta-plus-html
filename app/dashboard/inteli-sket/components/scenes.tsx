@@ -197,9 +197,24 @@ export default function ScenesComponent() {
   const handleEditScene = (scene: Scene) => {
     setEditingScene(scene);
     setEditSceneName(scene.title);
-    setEditSceneStyle(availableStyles[0] || 'FM_VISTAS');
-    setEditCameraType('iso_perspectiva');
-    setEditActiveLayers(['Layer0']);
+
+    // Buscar configuração da cena no data.scenes (do JSON)
+    const sceneConfig = data.scenes.find(
+      (s) => s.id === scene.id || s.name === scene.title
+    );
+
+    if (sceneConfig) {
+      // Usar dados do JSON
+      setEditSceneStyle(sceneConfig.style || availableStyles[0] || 'FM_VISTAS');
+      setEditCameraType(sceneConfig.cameraType || 'iso_perspectiva');
+      setEditActiveLayers(sceneConfig.activeLayers || ['Layer0']);
+    } else {
+      // Fallback para valores padrão se não encontrar no JSON
+      setEditSceneStyle(availableStyles[0] || 'FM_VISTAS');
+      setEditCameraType('iso_perspectiva');
+      setEditActiveLayers(['Layer0']);
+    }
+
     setIsEditDialogOpen(true);
   };
 
@@ -227,26 +242,55 @@ export default function ScenesComponent() {
       return;
     }
 
-    // Update scene in SketchUp
-    await updateScene(editingScene.title, {
-      name: editSceneName.trim(),
-      style: editSceneStyle,
-      cameraType: editCameraType,
-      activeLayers: editActiveLayers,
+    // Atualizar configuração no data.scenes (JSON)
+    const updatedScenes = data.scenes.map((s) => {
+      if (s.id === editingScene.id || s.name === editingScene.title) {
+        return {
+          ...s,
+          name: editSceneName.trim(),
+          style: editSceneStyle,
+          cameraType: editCameraType,
+          activeLayers: editActiveLayers,
+        };
+      }
+      return s;
     });
 
-    // Update local groups
-    setGroups(
-      groups.map((g) => ({
-        ...g,
-        scenes: g.scenes.map((s) =>
-          s.id === editingScene.id ? { ...s, title: editSceneName.trim() } : s
-        ),
-      }))
+    // Se a cena não existe no data.scenes, adicionar
+    const sceneExists = data.scenes.some(
+      (s) => s.id === editingScene.id || s.name === editingScene.title
     );
+
+    if (!sceneExists) {
+      updatedScenes.push({
+        id: editingScene.id,
+        name: editSceneName.trim(),
+        style: editSceneStyle,
+        cameraType: editCameraType,
+        activeLayers: editActiveLayers,
+      });
+    }
+
+    // Atualizar groups (UI)
+    const updatedGroups = groups.map((g) => ({
+      ...g,
+      scenes: g.scenes.map((s) =>
+        s.id === editingScene.id ? { ...s, title: editSceneName.trim() } : s
+      ),
+    }));
+
+    // Atualizar estado local
+    setData({
+      groups: updatedGroups,
+      scenes: updatedScenes,
+    });
+
+    // Salvar no JSON (não mexe no modelo do SketchUp)
+    await saveToJson();
 
     setIsEditDialogOpen(false);
     setEditingScene(null);
+    toast.success('Configuração salva no JSON!');
   };
 
   return (

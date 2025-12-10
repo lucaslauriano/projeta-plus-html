@@ -98,7 +98,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className='relative h-full overflow-hidden'>
       <div
-        onClick={() => setSidebarExpanded(!sidebarExpanded)}
         onMouseLeave={() => setSidebarExpanded(false)}
         className={cn(
           'absolute left-3 top-4 bottom-4 z-50 flex flex-col bg-card shadow-2xl rounded-2xl transition-all duration-300 ease-in-out',
