@@ -63,7 +63,7 @@ export default function TagList({
                         <Folder className='w-4 h-4 text-gray-900' />
                         <p className='text-gray-900'>{folder.name}</p>
                       </div>
-                      <div className='flex items-center justify-end gap-2'>
+                      <div className='flex items-center justify-end gap-2 text-muted-foreground'>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();

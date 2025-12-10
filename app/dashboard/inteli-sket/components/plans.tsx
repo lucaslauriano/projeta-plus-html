@@ -179,6 +179,43 @@ export default function PlansComponent() {
     toast.success('Planta removida com sucesso!');
   };
 
+  const handleEditPlan = (planId: string, currentTitle: string) => {
+    const newName = prompt('Digite o novo nome:', currentTitle);
+    if (newName?.trim()) {
+      setGroups(
+        groups.map((g) => ({
+          ...g,
+          plans: g.plans.map((p) =>
+            p.id === planId ? { ...p, title: newName.trim() } : p
+          ),
+        }))
+      );
+      toast.success('Planta editada!');
+    }
+  };
+
+  const handleDuplicatePlan = (groupId: string, plan: Plan) => {
+    setGroups(
+      groups.map((g) => {
+        if (g.id === groupId) {
+          return {
+            ...g,
+            plans: [
+              ...g.plans,
+              {
+                id: Date.now().toString(),
+                title: `${plan.title} (cópia)`,
+                segments: [...plan.segments],
+              },
+            ],
+          };
+        }
+        return g;
+      })
+    );
+    toast.success('Planta duplicada!');
+  };
+
   const handleGroupDialogKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleAddGroup();
@@ -336,11 +373,6 @@ export default function PlansComponent() {
                       <div className='flex items-center gap-2 font-medium text-sm'>
                         <Folder className='w-4 h-4 text-gray-500' />
                         {group.name}
-                        {/* {group.plans.length > 0 && (
-                          <span className='text-xs text-muted-foreground'>
-                            ({group.plans.length})
-                          </span>
-                        )} */}
                       </div>
                       <button
                         onClick={(e) => {
@@ -362,46 +394,10 @@ export default function PlansComponent() {
                             <PlanItem
                               key={plan.id}
                               title={plan.title}
-                              onEdit={() => {
-                                const newName = prompt(
-                                  'Digite o novo nome:',
-                                  plan.title
-                                );
-                                if (newName?.trim()) {
-                                  setGroups(
-                                    groups.map((g) => ({
-                                      ...g,
-                                      plans: g.plans.map((p) =>
-                                        p.id === plan.id
-                                          ? { ...p, title: newName.trim() }
-                                          : p
-                                      ),
-                                    }))
-                                  );
-                                  toast.success('Planta editada!');
-                                }
-                              }}
-                              onDuplicate={() => {
-                                setGroups(
-                                  groups.map((g) => {
-                                    if (g.id === group.id) {
-                                      return {
-                                        ...g,
-                                        plans: [
-                                          ...g.plans,
-                                          {
-                                            id: Date.now().toString(),
-                                            title: `${plan.title} (cópia)`,
-                                            segments: [...plan.segments],
-                                          },
-                                        ],
-                                      };
-                                    }
-                                    return g;
-                                  })
-                                );
-                                toast.success('Planta duplicada!');
-                              }}
+                              onEdit={() => handleEditPlan(plan.id, plan.title)}
+                              onDuplicate={() =>
+                                handleDuplicatePlan(group.id, plan)
+                              }
                               onDelete={() =>
                                 handleDeletePlan(group.id, plan.id)
                               }

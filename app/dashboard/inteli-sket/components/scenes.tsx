@@ -182,6 +182,48 @@ export default function ScenesComponent() {
     toast.success('Cena removida com sucesso!');
   };
 
+  const handleDuplicateScene = (groupId: string, scene: Scene) => {
+    setGroups(
+      groups.map((g) => {
+        if (g.id === groupId) {
+          return {
+            ...g,
+            scenes: [
+              ...g.scenes,
+              {
+                id: Date.now().toString(),
+                title: `${scene.title} (cópia)`,
+                segments: [...scene.segments],
+              },
+            ],
+          };
+        }
+        return g;
+      })
+    );
+    toast.success('Cena duplicada!');
+  };
+
+  const handleApplyScene = async (scene: Scene) => {
+    // Buscar configuração da cena no data.scenes (do JSON)
+    const sceneConfig = data.scenes.find(
+      (s) => s.id === scene.id || s.name === scene.title
+    );
+
+    if (!sceneConfig) {
+      toast.error('Configuração da cena não encontrada no JSON');
+      return;
+    }
+
+    await applySceneConfig(scene.title, {
+      style: sceneConfig.style,
+      cameraType: sceneConfig.cameraType,
+      activeLayers: sceneConfig.activeLayers,
+    });
+
+    toast.success(`Cena "${scene.title}" aplicada!`);
+  };
+
   const handleGroupDialogKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleAddGroup();
@@ -204,12 +246,10 @@ export default function ScenesComponent() {
     );
 
     if (sceneConfig) {
-      // Usar dados do JSON
       setEditSceneStyle(sceneConfig.style || availableStyles[0] || 'FM_VISTAS');
       setEditCameraType(sceneConfig.cameraType || 'iso_perspectiva');
       setEditActiveLayers(sceneConfig.activeLayers || ['Layer0']);
     } else {
-      // Fallback para valores padrão se não encontrar no JSON
       setEditSceneStyle(availableStyles[0] || 'FM_VISTAS');
       setEditCameraType('iso_perspectiva');
       setEditActiveLayers(['Layer0']);
@@ -218,6 +258,7 @@ export default function ScenesComponent() {
     setIsEditDialogOpen(true);
   };
 
+  // TODO: Implement apply current state functionality
   const handleApplyCurrentState = async () => {
     await getCurrentState();
     if (currentState) {
@@ -461,27 +502,10 @@ export default function ScenesComponent() {
                               key={scene.id}
                               title={scene.title}
                               onEdit={() => handleEditScene(scene)}
-                              onDuplicate={() => {
-                                setGroups(
-                                  sortedGroups.map((g) => {
-                                    if (g.id === group.id) {
-                                      return {
-                                        ...g,
-                                        scenes: [
-                                          ...g.scenes,
-                                          {
-                                            id: Date.now().toString(),
-                                            title: `${scene.title} (cópia)`,
-                                            segments: [...scene.segments],
-                                          },
-                                        ],
-                                      };
-                                    }
-                                    return g;
-                                  })
-                                );
-                                toast.success('Cena duplicada!');
-                              }}
+                              onLoadFromJson={() => handleApplyScene(scene)}
+                              onDuplicate={() =>
+                                handleDuplicateScene(group.id, scene)
+                              }
                               onDelete={() =>
                                 handleDeleteScene(group.id, scene.id)
                               }

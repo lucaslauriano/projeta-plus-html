@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Edit, Trash2, X } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 
 interface TagProps {
   name: string;
@@ -19,8 +19,8 @@ export default function Tag({
   color,
   rgbToHex,
   onDelete,
-  onUpdateColor,
   onUpdateName,
+  onUpdateColor,
 }: TagProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(name);
@@ -73,7 +73,7 @@ export default function Tag({
 
   return (
     <div
-      className='flex items-center gap-2 p-2 rounded-lg hover:bg-accent/20 text-sm group border border-border/50'
+      className='flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-accent/20 text-sm group border border-border/50'
       onClick={(e) => e.stopPropagation()}
     >
       {/* Color picker - sempre visível */}
@@ -82,7 +82,7 @@ export default function Tag({
         value={currentColor}
         onChange={handleColorChange}
         disabled={!onUpdateColor}
-        className='w-5 h-5 rounded cursor-pointer border border-border disabled:cursor-not-allowed '
+        className='w-6 h-6 rounded cursor-pointer border border-border disabled:cursor-not-allowed '
         style={{ padding: 0, border: 'none', borderRadius: '0.375rem' }}
         title='Editar cor'
       />
@@ -96,19 +96,19 @@ export default function Tag({
           onChange={handleNameChange}
           onBlur={handleNameBlur}
           onKeyDown={handleNameKeyDown}
-          className='flex-1 px-2 py-1 text-sm border border-primary rounded focus:outline-none focus:ring-2 focus:ring-primary/50'
+          className='flex-1 px-2 py-1 text-[10px] border border-primary rounded focus:outline-none focus:ring-2 focus:ring-primary/50'
           onClick={(e) => e.stopPropagation()}
         />
       ) : (
         <span
-          className='flex-1 cursor-text text-sm'
+          className='text-left cursor-text text-[12px] truncate w-full'
           onDoubleClick={handleNameDoubleClick}
           title='Duplo clique para editar'
         >
           {name}
         </span>
       )}
-      <div className='flex  items-center justify-end gap-2'>
+      <div className='flex items-center justify-end gap-2 text-muted-foreground'>
         <button
           onClick={(e) => {
             e.stopPropagation();
