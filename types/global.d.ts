@@ -137,6 +137,19 @@ declare global {
       deleteCustomComponent: (payload: string) => void;
       openCustomComponentsFolder: () => void;
       syncCustomComponentsFolder: () => void;
+      getScenes: () => void;
+      addScene: (payload: string) => void;
+      updateScene: (payload: string) => void;
+      deleteScene: (payload: string) => void;
+      applySceneConfig: (payload: string) => void;
+      getAvailableStyles: () => void;
+      getAvailableLayers: () => void;
+      getVisibleLayers: () => void;
+      getCurrentState: () => void;
+      saveScenesToJson: (payload: string) => void;
+      loadScenesFromJson: () => void;
+      loadDefaultScenes: () => void;
+      loadScenesFromFile: () => void;
     };
     changeLanguage: (langCode: string) => void;
     loadGlobalSettings: () => void;
@@ -321,6 +334,70 @@ declare global {
       success: boolean;
       message?: string;
       count?: number;
+    }) => void;
+    handleGetScenesResult?: (result: {
+      success: boolean;
+      message?: string;
+      scenes?: any[];
+    }) => void;
+    handleAddSceneResult?: (result: {
+      success: boolean;
+      message: string;
+      scene?: any;
+    }) => void;
+    handleUpdateSceneResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleDeleteSceneResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleApplySceneConfigResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleSaveScenesToJsonResult?: (result: {
+      success: boolean;
+      message: string;
+      path?: string;
+    }) => void;
+    handleLoadScenesFromJsonResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: any;
+    }) => void;
+    handleLoadDefaultScenesResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: any;
+    }) => void;
+    handleLoadScenesFromFileResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: any;
+    }) => void;
+    handleGetAvailableStylesResult?: (result: {
+      success: boolean;
+      message?: string;
+      styles?: string[];
+    }) => void;
+    handleGetAvailableLayersResult?: (result: {
+      success: boolean;
+      message?: string;
+      layers?: string[];
+    }) => void;
+    handleGetVisibleLayersResult?: (result: {
+      success: boolean;
+      message?: string;
+      layers?: string[];
+    }) => void;
+    handleGetCurrentStateResult?: (result: {
+      success: boolean;
+      message?: string;
+      style?: string;
+      cameraType?: string;
+      activeLayers?: string[];
     }) => void;
   }
 }

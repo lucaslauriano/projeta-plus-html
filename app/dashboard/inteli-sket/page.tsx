@@ -32,8 +32,6 @@ export default function InteliSketDashboardPage() {
         return <DetailsComponent />;
       case 'layers':
         return <LayersComponent />;
-      case 'layers':
-        return <LayersComponent />;
       case 'scenes':
         return <ScenesComponent />;
       case 'plans':

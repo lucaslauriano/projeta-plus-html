@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { Edit, Trash2, X } from 'lucide-react';
 
 interface TagProps {
   name: string;
@@ -73,7 +73,7 @@ export default function Tag({
 
   return (
     <div
-      className='flex items-center gap-2 p-2 rounded hover:bg-accent/20 text-sm group border border-border/50'
+      className='flex items-center gap-2 p-2 rounded-lg hover:bg-accent/20 text-sm group border border-border/50'
       onClick={(e) => e.stopPropagation()}
     >
       {/* Color picker - sempre visível */}
@@ -82,8 +82,8 @@ export default function Tag({
         value={currentColor}
         onChange={handleColorChange}
         disabled={!onUpdateColor}
-        className='w-6 h-6 rounded cursor-pointer border border-border disabled:cursor-not-allowed p-0'
-        style={{ padding: 0 }}
+        className='w-5 h-5 rounded cursor-pointer border border-border disabled:cursor-not-allowed '
+        style={{ padding: 0, border: 'none', borderRadius: '0.375rem' }}
         title='Editar cor'
       />
 
@@ -101,23 +101,34 @@ export default function Tag({
         />
       ) : (
         <span
-          className='flex-1 cursor-text'
+          className='flex-1 cursor-text text-sm'
           onDoubleClick={handleNameDoubleClick}
           title='Duplo clique para editar'
         >
           {name}
         </span>
       )}
-      
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete(name);
-        }}
-        className='opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-600 transition-opacity'
-      >
-        <X className='w-4 h-4' />
-      </button>
+      <div className='flex  items-center justify-end gap-2'>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNameDoubleClick();
+          }}
+          className='opacity-0 group-hover:opacity-100 transition-opacity'
+        >
+          <Edit className='w-4 h-4' />
+        </button>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(name);
+          }}
+          className='opacity-0 group-hover:opacity-100 transition-opacity'
+        >
+          <Trash2 className='w-4 h-4' />
+        </button>
+      </div>
     </div>
   );
 }

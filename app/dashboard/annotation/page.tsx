@@ -50,7 +50,7 @@ export default function AnnotationDashboardPage() {
     <PageWrapper>
       <PageHeader
         title='Anotações'
-        description='Gerencie suas anotações diretamente no modelo 3D.'
+        description='Gerencie anotações diretamente no modelo 3D.'
       />
 
       <PageContent>
