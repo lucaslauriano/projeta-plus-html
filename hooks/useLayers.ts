@@ -54,10 +54,7 @@ export function useLayers() {
       clearPending();
       if (result.success) {
         toast.success(`Pasta "${result.folder?.name}" criada no modelo`);
-        // Reload layers to get updated state
-        if (isAvailable) {
-          callSketchupMethod('getLayers').catch(() => {});
-        }
+        // Não recarrega automaticamente - mantém apenas na interface
       } else {
         toast.error(result.message);
       }
@@ -71,10 +68,7 @@ export function useLayers() {
       clearPending();
       if (result.success) {
         toast.success(`Tag "${result.tag?.name}" criada no modelo`);
-        // Reload layers to get updated state
-        if (isAvailable) {
-          callSketchupMethod('getLayers').catch(() => {});
-        }
+        // Não recarrega automaticamente - mantém apenas na interface
       } else {
         toast.error(result.message);
       }
@@ -179,10 +173,7 @@ export function useLayers() {
       clearPending();
       if (result.success) {
         toast.success(result.message);
-        // Reload layers to get updated state
-        if (isAvailable) {
-          callSketchupMethod('getLayers').catch(() => {});
-        }
+        // Não recarrega automaticamente - mantém apenas na interface
       } else {
         toast.error(result.message);
       }
@@ -195,10 +186,7 @@ export function useLayers() {
       clearPending();
       if (result.success) {
         toast.success(result.message);
-        // Reload layers to get updated state
-        if (isAvailable) {
-          callSketchupMethod('getLayers').catch(() => {});
-        }
+        // Não recarrega automaticamente - mantém apenas na interface
       } else {
         toast.error(result.message);
       }
