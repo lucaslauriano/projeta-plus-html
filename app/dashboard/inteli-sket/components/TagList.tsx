@@ -29,13 +29,13 @@ export default function TagList({
   rgbToHex,
   deleteFolder,
   deleteLayer,
-  toggleVisibility,
   updateTagColor,
   updateTagName,
 }: TagListProps) {
-  const sortedFolders = data.folders.sort((a, b) =>
+  const sortedFolders = [...data.folders].sort((a, b) =>
     a.name.localeCompare(b.name)
   );
+
   return (
     <div className='space-y-4'>
       <div className='max-h-[450px] overflow-y-auto'>
@@ -101,7 +101,6 @@ export default function TagList({
                           color={tag.color}
                           visible={tag.visible}
                           rgbToHex={rgbToHex}
-                          onToggleVisibility={toggleVisibility}
                           onDelete={deleteLayer}
                           onUpdateColor={updateTagColor}
                           onUpdateName={updateTagName}
@@ -125,7 +124,6 @@ export default function TagList({
                 color={tag.color}
                 visible={tag.visible}
                 rgbToHex={rgbToHex}
-                onToggleVisibility={toggleVisibility}
                 onDelete={deleteLayer}
                 onUpdateColor={updateTagColor}
                 onUpdateName={updateTagName}

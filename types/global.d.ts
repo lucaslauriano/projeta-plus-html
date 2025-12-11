@@ -150,6 +150,19 @@ declare global {
       loadScenesFromJson: () => void;
       loadDefaultScenes: () => void;
       loadScenesFromFile: () => void;
+      getPlans: () => void;
+      addPlan: (payload: string) => void;
+      updatePlan: (payload: string) => void;
+      deletePlan: (payload: string) => void;
+      applyPlanConfig: (payload: string) => void;
+      getAvailableStylesPlans: () => void;
+      getAvailableLayersPlans: () => void;
+      getVisibleLayersPlans: () => void;
+      getCurrentStatePlans: () => void;
+      savePlansToJson: (payload: string) => void;
+      loadPlansFromJson: () => void;
+      loadDefaultPlans: () => void;
+      loadPlansFromFile: () => void;
     };
     changeLanguage: (langCode: string) => void;
     loadGlobalSettings: () => void;
@@ -219,6 +232,14 @@ declare global {
       success: boolean;
       message: string;
     }) => void;
+    handleUpdateTagColorResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleUpdateTagNameResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
     handleSaveToJsonResult?: (result: {
       success: boolean;
       message: string;
@@ -231,6 +252,12 @@ declare global {
       }
     ) => void;
     handleLoadDefaultTagsResult?: (
+      result: LayersData & {
+        success: boolean;
+        message: string;
+      }
+    ) => void;
+    handleLoadMyTagsResult?: (
       result: LayersData & {
         success: boolean;
         message: string;
@@ -393,6 +420,70 @@ declare global {
       layers?: string[];
     }) => void;
     handleGetCurrentStateResult?: (result: {
+      success: boolean;
+      message?: string;
+      style?: string;
+      cameraType?: string;
+      activeLayers?: string[];
+    }) => void;
+    handleGetPlansResult?: (result: {
+      success: boolean;
+      message?: string;
+      plans?: any[];
+    }) => void;
+    handleAddPlanResult?: (result: {
+      success: boolean;
+      message: string;
+      plan?: any;
+    }) => void;
+    handleUpdatePlanResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleDeletePlanResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleApplyPlanConfigResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleSavePlansToJsonResult?: (result: {
+      success: boolean;
+      message: string;
+      path?: string;
+    }) => void;
+    handleLoadPlansFromJsonResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: any;
+    }) => void;
+    handleLoadDefaultPlansResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: any;
+    }) => void;
+    handleLoadPlansFromFileResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: any;
+    }) => void;
+    handleGetAvailableStylesPlansResult?: (result: {
+      success: boolean;
+      message?: string;
+      styles?: string[];
+    }) => void;
+    handleGetAvailableLayersPlansResult?: (result: {
+      success: boolean;
+      message?: string;
+      layers?: string[];
+    }) => void;
+    handleGetVisibleLayersPlansResult?: (result: {
+      success: boolean;
+      message?: string;
+      layers?: string[];
+    }) => void;
+    handleGetCurrentStatePlansResult?: (result: {
       success: boolean;
       message?: string;
       style?: string;

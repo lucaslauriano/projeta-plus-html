@@ -12,7 +12,6 @@ import {
   Download,
   FolderPlus,
   MoreVertical,
-  FolderArchive,
   FolderDown,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -314,44 +313,6 @@ export default function LayersComponent() {
             </div>
           </div>
         </div>
-        {/* <div className='flex justify-center w-full'>
-          <span className='inline-flex rounded-md shadow-sm'>
-     
-            <button
-              type='button'
-              onClick={loadDefaultTags}
-              className='relative -ml-px inline-flex flex-col items-center justify-center bg-primary px-3 py-3 text-xs font-medium text-primary-foreground ring-1 ring-inset ring-primary-foreground/20 hover:bg-primary/90 focus:z-10 gap-1'
-              title='Redefinir (Tags Padrão)'
-            >
-              <FileJson className='w-5 h-5' />
-            </button>
-            <button
-              type='button'
-              onClick={loadMyTags}
-              className='relative -ml-px inline-flex flex-col items-center justify-center bg-primary px-3 py-3 text-xs font-medium text-primary-foreground ring-1 ring-inset ring-primary-foreground/20 hover:bg-primary/90 focus:z-10 gap-1'
-              title='Minhas Tags (Arquivo do Usuário)'
-            >
-              <Folder className='w-5 h-5' />
-            </button>
-            <button
-              type='button'
-              onClick={saveToJson}
-              className='relative -ml-px inline-flex flex-col items-center justify-center bg-primary px-3 py-3 text-xs font-medium text-primary-foreground ring-1 ring-inset ring-primary-foreground/20 hover:bg-primary/90 focus:z-10 gap-1'
-              title='Salvar JSON'
-            >
-              <Save className='w-5 h-5' />
-            </button>
-            <button
-              type='button'
-              onClick={importToModel}
-              className='relative -ml-px inline-flex flex-col items-center justify-center bg-primary px-3 py-3 text-xs font-medium text-primary-foreground ring-1 ring-inset ring-primary-foreground/20 hover:bg-primary/90 focus:z-10 gap-1 '
-              title='Importar no Modelo'
-            >
-              <Upload className='w-5 h-5' />
-            </button>
-     
-          </span>
-        </div> */}
       </div>
     </>
   );

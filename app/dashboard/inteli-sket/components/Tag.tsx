@@ -8,7 +8,6 @@ interface TagProps {
   color: number[];
   visible: boolean;
   rgbToHex: (r: number, g: number, b: number) => string;
-  onToggleVisibility: (name: string, visible: boolean) => Promise<void>;
   onDelete: (name: string) => Promise<void>;
   onUpdateColor?: (name: string, color: string) => Promise<void>;
   onUpdateName?: (oldName: string, newName: string) => Promise<void>;

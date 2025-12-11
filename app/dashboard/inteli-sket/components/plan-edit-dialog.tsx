@@ -3,13 +3,13 @@
 import React from 'react';
 import { ViewConfigEditDialog } from './view-config-edit-dialog';
 
-interface SceneEditDialogProps {
+interface PlanEditDialogProps {
   style: string;
   isOpen: boolean;
   onSave: () => void;
   isBusy?: boolean;
   onCancel: () => void;
-  sceneTitle: string;
+  planTitle: string;
   cameraType: string;
   activeLayers: string[];
   onOpenChange: (open: boolean) => void;
@@ -24,13 +24,18 @@ interface SceneEditDialogProps {
   onActiveLayersChange: (layers: string[]) => void;
 }
 
-export function SceneEditDialog(props: SceneEditDialogProps) {
+export function PlanEditDialog(props: PlanEditDialogProps) {
   return (
     <ViewConfigEditDialog
       {...props}
-      title='Configuração da Cena'
-      itemTitle={props.sceneTitle}
-      allowedCameraTypes={['iso_perspectiva', 'iso_ortogonal']}
+      title='Configuração da Planta'
+      itemTitle={props.planTitle}
+      allowedCameraTypes={[
+        'topo_perspectiva',
+        'topo_ortogonal',
+        'iso_invertida_perspectiva',
+        'iso_invertida_ortogonal',
+      ]}
     />
   );
 }

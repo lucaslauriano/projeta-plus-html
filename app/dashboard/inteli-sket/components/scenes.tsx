@@ -53,6 +53,7 @@ interface Group {
   id: string;
   name: string;
   scenes: Scene[];
+  [key: string]: unknown;
 }
 
 function ScenesComponent() {
@@ -77,11 +78,13 @@ function ScenesComponent() {
 
   const groups = data.groups;
   const setGroups = (newGroups: Group[] | ((prev: Group[]) => Group[])) => {
-    if (typeof newGroups === 'function') {
-      setData((prev) => ({ ...prev, groups: newGroups(prev.groups) }));
-    } else {
-      setData((prev) => ({ ...prev, groups: newGroups }));
-    }
+    const updatedGroups =
+      typeof newGroups === 'function' ? newGroups(data.groups) : newGroups;
+
+    setData({
+      ...data,
+      groups: updatedGroups,
+    });
   };
 
   const [newGroupName, setNewGroupName] = useState('');
