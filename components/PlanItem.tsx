@@ -1,8 +1,8 @@
 import React from 'react';
 import {
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuContent,
 } from '@/components/ui/dropdown-menu';
 import { FileText, Edit, Copy, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,10 @@ export function PlanItem({
   onLoadFromJson,
 }: PlanItemProps) {
   const [contextMenuOpen, setContextMenuOpen] = React.useState(false);
-  const [contextMenuPosition, setContextMenuPosition] = React.useState({ x: 0, y: 0 });
+  const [contextMenuPosition, setContextMenuPosition] = React.useState({
+    x: 0,
+    y: 0,
+  });
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -49,8 +52,8 @@ export function PlanItem({
           <p className='text-sm font-medium'>{title}</p>
         </div>
       </Button>
-      <DropdownMenuContent 
-        align='start' 
+      <DropdownMenuContent
+        align='start'
         className='min-w-[140px]'
         style={{
           position: 'fixed',

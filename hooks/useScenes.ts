@@ -95,7 +95,6 @@ export function useScenes() {
       clearPending();
       if (result.success) {
         toast.success(result.message);
-        // Reload scenes
         if (isAvailable) {
           callSketchupMethod('getScenes').catch(() => {});
         }
@@ -278,13 +277,11 @@ export function useScenes() {
       delete window.handleGetVisibleLayersResult;
       delete window.handleGetCurrentStateResult;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clearPending, callSketchupMethod, isAvailable]);
-
-  // PUBLIC METHODS
 
   const getScenes = useCallback(async () => {
     if (!isAvailable) {
-      // Mock data for development
       const mockScenes: Scene[] = [
         {
           id: 'geral',
@@ -456,37 +453,34 @@ export function useScenes() {
 
   const isBusy = isAvailable && (isLoading || Boolean(pendingAction));
 
-  // Initialize data on mount
   useEffect(() => {
     loadFromJson();
     getAvailableStyles();
     getAvailableLayers();
-
-    // Não chamar getScenes() aqui - loadFromJson() já traz os dados
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
     data,
-    setData,
-    availableStyles,
-    availableLayers,
-    currentState,
     isBusy,
     isLoading,
     isAvailable,
-    getScenes,
+    currentState,
+    availableStyles,
+    availableLayers,
+    setData,
+    clearAll,
     addScene,
-    updateScene,
-    deleteScene,
-    applySceneConfig,
+    getScenes,
     saveToJson,
-    loadFromJson,
+    updateScene,
     loadDefault,
+    deleteScene,
+    loadFromJson,
     loadFromFile,
+    getCurrentState,
+    applySceneConfig,
     getAvailableStyles,
     getAvailableLayers,
-    getCurrentState,
-    clearAll,
   };
 }

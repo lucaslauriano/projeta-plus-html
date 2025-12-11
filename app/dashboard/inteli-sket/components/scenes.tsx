@@ -1,26 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { PlanItem } from '@/components/PlanItem';
 import {
   Accordion,
-  AccordionContent,
   AccordionItem,
+  AccordionContent,
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import {
+  Edit,
+  Save,
+  Trash2,
   Folder,
+  Upload,
+  Loader2,
+  Download,
   FileText,
   PlusCircle,
   FolderPlus,
   MoreVertical,
-  Edit,
-  Trash2,
-  Save,
   FolderOpen,
-  Download,
-  Upload,
-  Loader2,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import {
@@ -55,7 +55,7 @@ interface Group {
   scenes: Scene[];
 }
 
-export default function ScenesComponent() {
+function ScenesComponent() {
   const {
     data,
     setData,
@@ -96,7 +96,10 @@ export default function ScenesComponent() {
   const [editCameraType, setEditCameraType] = useState('');
   const [editActiveLayers, setEditActiveLayers] = useState<string[]>([]);
 
-  const sortedGroups = groups.sort((a, b) => a.name.localeCompare(b.name));
+  const sortedGroups = useMemo(
+    () => [...groups].sort((a, b) => a.name.localeCompare(b.name)),
+    [groups]
+  );
 
   const handleAddGroup = () => {
     if (!newGroupName.trim()) {
@@ -532,3 +535,5 @@ export default function ScenesComponent() {
     </>
   );
 }
+
+export default React.memo(ScenesComponent);
