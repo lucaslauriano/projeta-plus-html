@@ -143,7 +143,7 @@ export function LevelsManagerDialog({
                       <TableCell className='font-medium'>
                         <span className='text-muted-foreground text-sm'>
                           {level.name}
-                          <p className='flex items-center gap-2 text-muted-foreground text-sm'>
+                          <p className='flex items-center gap-2  text-muted-foreground text-sm'>
                             Nível: {formatHeight(level.height_meters)}
                           </p>
                         </span>
