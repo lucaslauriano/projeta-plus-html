@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 import { useFurniture } from '@/hooks/useFurniture';
 import { DEFAULT_TYPES, DIMENSION_FORMAT_OPTIONS } from '@/lib/consts';
 import PageContent from '@/components/ui/page-content';
+import { Label } from '@/components/ui/label';
 
 type DimensionFormat = (typeof DIMENSION_FORMAT_OPTIONS)[number]['value'];
 
@@ -324,20 +325,18 @@ export default function FurnitureDashboardPage() {
         <PageContent>
           <SelectionStatusAlert isSelected={isSelected} />
 
-          {!isSelected && (
-            <div className='mb-6'>
-              <Button
-                type='button'
-                size='lg'
-                onClick={() => captureSelectedComponent()}
-                disabled={isBusy}
-                className='w-full flex items-center justify-center space-2'
-              >
-                <Target className='h-4 w-4' />
-                {isBusy ? 'Capturando...' : 'Selecionar Componente'}
-              </Button>
-            </div>
-          )}
+          <div className='mb-6'>
+            <Button
+              type='button'
+              size='lg'
+              onClick={() => captureSelectedComponent()}
+              disabled={isBusy}
+              className='w-full flex items-center justify-center space-2'
+            >
+              <Target className='h-4 w-4' />
+              {isBusy ? 'Capturando...' : 'Selecionar Componente'}
+            </Button>
+          </div>
 
           <form onSubmit={handleSubmit} className='space-y-4'>
             <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
@@ -346,6 +345,9 @@ export default function FurnitureDashboardPage() {
                   <h3 className='text-sm font-semibold text-foreground'>
                     Dimensões
                   </h3>
+                  <p className='text-xs text-muted-foreground'>
+                    Redimensionamento automático.
+                  </p>
                 </div>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -362,7 +364,9 @@ export default function FurnitureDashboardPage() {
                   >
                     <p className='text-xs text-muted-foreground'>
                       As dimensões são aplicadas automaticamente enquanto você
-                      digita. Não é necessário salvar.
+                      digita. Não é necessário salvar. Cuidado com a posição do
+                      componente no modelo. A largura é sempre o eixo X e a
+                      profundidade o eixo Y. A altura é o eixo Z.
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -430,9 +434,12 @@ export default function FurnitureDashboardPage() {
               </div>
 
               <div>
-                <label className='block text-sm font-semibold mb-2 text-foreground'>
+                <Label
+                  htmlFor='dimensionFormat'
+                  className='flex justify-between '
+                >
                   Formato da dimensão
-                </label>
+                </Label>
                 <Select
                   value={dimensionFormat}
                   onValueChange={(selected) =>

@@ -7,7 +7,7 @@ import React, {
   useEffect,
   ReactNode,
 } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { toastWithDebounce } from '@/lib/toast-utils';
 
 interface SketchupContextType {

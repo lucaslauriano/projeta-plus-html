@@ -1,61 +1,100 @@
 import React from 'react';
 import {
   DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuContent,
 } from '@/components/ui/dropdown-menu';
-import { FileText, MoreVertical, Edit, Copy, Trash2 } from 'lucide-react';
+import { FileText, Edit, Copy, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface PlanItemProps {
   title: string;
   onEdit: () => void;
-  onDuplicate: () => void;
   onDelete: () => void;
+  onDuplicate: () => void;
+  onLoadFromJson?: () => void;
 }
 
 export function PlanItem({
   title,
   onEdit,
-  onDuplicate,
   onDelete,
+  onDuplicate,
+  onLoadFromJson,
 }: PlanItemProps) {
+  const [contextMenuOpen, setContextMenuOpen] = React.useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = React.useState({
+    x: 0,
+    y: 0,
+  });
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenuPosition({ x: e.clientX, y: e.clientY });
+    setContextMenuOpen(true);
+  };
+
   return (
-    <div className='flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors'>
-      <div className='flex items-center gap-2 text-sm font-medium'>
-        <FileText className='w-4 h-4 text-primary' />
-        {title}
-      </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className='p-1 hover:bg-accent rounded-md transition-colors'>
-            <MoreVertical className='w-4 h-4 text-muted-foreground' />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align='end' className='min-w-[140px]'>
-          <DropdownMenuItem
-            className='cursor-pointer justify-between'
-            onClick={onEdit}
-          >
-            Editar
-            <Edit className='w-4 h-4' />
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className='cursor-pointer justify-between'
-            onClick={onDuplicate}
-          >
-            Duplicar
-            <Copy className='w-4 h-4' />
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className='text-destructive focus:text-destructive cursor-pointer justify-between'
-            onClick={onDelete}
-          >
-            Deletar
-            <Trash2 className='w-4 h-4' />
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+    <DropdownMenu open={contextMenuOpen} onOpenChange={setContextMenuOpen}>
+      <Button
+        className='flex items-center justify-between p-2 rounded-lg border transition-colors w-full bg-primary'
+        onClick={(e) => {
+          e.stopPropagation();
+          if (onLoadFromJson) {
+            onLoadFromJson();
+          }
+        }}
+        onContextMenu={handleContextMenu}
+      >
+        <div className='flex items-center gap-2 text-sm font-medium'>
+          <FileText className='w-4 h-4 text-primary-foreground' />
+          <p className='text-sm font-medium'>{title}</p>
+        </div>
+      </Button>
+      <DropdownMenuContent
+        align='start'
+        className='min-w-[140px]'
+        style={{
+          position: 'fixed',
+          left: `${contextMenuPosition.x}px`,
+          top: `${contextMenuPosition.y}px`,
+        }}
+      >
+        <DropdownMenuItem
+          className='cursor-pointer justify-between'
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit();
+            setContextMenuOpen(false);
+          }}
+        >
+          Editar
+          <Edit className='w-4 h-4' />
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className='cursor-pointer justify-between'
+          onClick={(e) => {
+            e.stopPropagation();
+            onDuplicate();
+            setContextMenuOpen(false);
+          }}
+        >
+          Duplicar
+          <Copy className='w-4 h-4' />
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className='text-destructive focus:text-destructive cursor-pointer justify-between'
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+            setContextMenuOpen(false);
+          }}
+        >
+          Deletar
+          <Trash2 className='w-4 h-4' />
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

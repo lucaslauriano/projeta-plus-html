@@ -3,7 +3,7 @@
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import PageWrapper from '@/components/ui/page-wraper';
-import { Folder, FolderOpen, Box } from 'lucide-react';
+import { Folder, FolderOpen } from 'lucide-react';
 import {
   Accordion,
   AccordionItem,
@@ -22,7 +22,7 @@ import PageContent from '@/components/ui/page-content';
 export default function BaseboardsDashboardPage() {
   const { data, isBusy, importBlock, openBlocksFolder } = useBaseboards();
 
-  const handleImportBlock = (blockPath: string, blockName: string) => {
+  const handleImportBlock = (blockPath: string) => {
     importBlock(blockPath);
   };
 
@@ -65,7 +65,7 @@ export default function BaseboardsDashboardPage() {
           {data.groups.length > 0 && (
             <Accordion
               type='multiple'
-              defaultValue={data.groups.map((g) => g.id)}
+              // defaultValue={data.groups.map((g) => g.id)} //
               className='w-full space-y-2'
             >
               {data.groups.map((group) => (
@@ -81,16 +81,14 @@ export default function BaseboardsDashboardPage() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className='p-4'>
-                    <div className='grid grid-cols-2 gap-2'>
+                    <div className='grid grid-cols-1 gap-2'>
                       {group.items.map((item) => (
                         <Tooltip key={item.id}>
                           <TooltipTrigger asChild>
                             <Button
                               size='sm'
-                              className='h-auto py-2 px-3 text-xs font-medium justify-start'
-                              onClick={() =>
-                                handleImportBlock(item.path, item.name)
-                              }
+                              className='h-auto py-2 px-3 text-xs font-medium justify-center'
+                              onClick={() => handleImportBlock(item.path)}
                               disabled={isBusy}
                             >
                               <span className='truncate'>{item.name}</span>

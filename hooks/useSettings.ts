@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { toastWithDebounce } from '@/lib/toast-utils';
 import { useSketchup } from '@/contexts/SketchupContext';
 import { GlobalSettings } from '@/types/global';

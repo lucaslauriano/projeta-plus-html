@@ -7,7 +7,7 @@ export default function DashboardLayoutPage({
 }>) {
   return (
     <DashboardLayout>
-      <div className='relative pl-2 pr-4'>{children}</div>
+      <div className='relative pl-2 pr-2'>{children}</div>
     </DashboardLayout>
   );
 }

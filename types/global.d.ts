@@ -137,6 +137,32 @@ declare global {
       deleteCustomComponent: (payload: string) => void;
       openCustomComponentsFolder: () => void;
       syncCustomComponentsFolder: () => void;
+      getScenes: () => void;
+      addScene: (payload: string) => void;
+      updateScene: (payload: string) => void;
+      deleteScene: (payload: string) => void;
+      applySceneConfig: (payload: string) => void;
+      getAvailableStyles: () => void;
+      getAvailableLayers: () => void;
+      getVisibleLayers: () => void;
+      getCurrentState: () => void;
+      saveScenesToJson: (payload: string) => void;
+      loadScenesFromJson: () => void;
+      loadDefaultScenes: () => void;
+      loadScenesFromFile: () => void;
+      getPlans: () => void;
+      addPlan: (payload: string) => void;
+      updatePlan: (payload: string) => void;
+      deletePlan: (payload: string) => void;
+      applyPlanConfig: (payload: string) => void;
+      getAvailableStylesPlans: () => void;
+      getAvailableLayersPlans: () => void;
+      getVisibleLayersPlans: () => void;
+      getCurrentStatePlans: () => void;
+      savePlansToJson: (payload: string) => void;
+      loadPlansFromJson: () => void;
+      loadDefaultPlans: () => void;
+      loadPlansFromFile: () => void;
     };
     changeLanguage: (langCode: string) => void;
     loadGlobalSettings: () => void;
@@ -206,6 +232,14 @@ declare global {
       success: boolean;
       message: string;
     }) => void;
+    handleUpdateTagColorResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleUpdateTagNameResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
     handleSaveToJsonResult?: (result: {
       success: boolean;
       message: string;
@@ -218,6 +252,12 @@ declare global {
       }
     ) => void;
     handleLoadDefaultTagsResult?: (
+      result: LayersData & {
+        success: boolean;
+        message: string;
+      }
+    ) => void;
+    handleLoadMyTagsResult?: (
       result: LayersData & {
         success: boolean;
         message: string;
@@ -321,6 +361,172 @@ declare global {
       success: boolean;
       message?: string;
       count?: number;
+    }) => void;
+    handleGetScenesResult?: (result: {
+      success: boolean;
+      message?: string;
+      scenes?: any[];
+    }) => void;
+    handleAddSceneResult?: (result: {
+      success: boolean;
+      message: string;
+      scene?: any;
+    }) => void;
+    handleUpdateSceneResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleDeleteSceneResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleApplySceneConfigResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleSaveScenesToJsonResult?: (result: {
+      success: boolean;
+      message: string;
+      path?: string;
+    }) => void;
+    handleLoadScenesFromJsonResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: any;
+    }) => void;
+    handleLoadDefaultScenesResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: any;
+    }) => void;
+    handleLoadScenesFromFileResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: any;
+    }) => void;
+    handleGetAvailableStylesResult?: (result: {
+      success: boolean;
+      message?: string;
+      styles?: string[];
+    }) => void;
+    handleGetAvailableLayersResult?: (result: {
+      success: boolean;
+      message?: string;
+      layers?: string[];
+    }) => void;
+    handleGetVisibleLayersResult?: (result: {
+      success: boolean;
+      message?: string;
+      layers?: string[];
+    }) => void;
+    handleGetCurrentStateResult?: (result: {
+      success: boolean;
+      message?: string;
+      style?: string;
+      cameraType?: string;
+      activeLayers?: string[];
+    }) => void;
+    handleGetPlansResult?: (result: {
+      success: boolean;
+      message?: string;
+      plans?: any[];
+    }) => void;
+    handleAddPlanResult?: (result: {
+      success: boolean;
+      message: string;
+      plan?: any;
+    }) => void;
+    handleUpdatePlanResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleDeletePlanResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleApplyPlanConfigResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleSavePlansToJsonResult?: (result: {
+      success: boolean;
+      message: string;
+      path?: string;
+    }) => void;
+    handleLoadPlansFromJsonResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: any;
+    }) => void;
+    handleLoadDefaultPlansResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: any;
+    }) => void;
+    handleLoadPlansFromFileResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: any;
+    }) => void;
+    handleGetAvailableStylesPlansResult?: (result: {
+      success: boolean;
+      message?: string;
+      styles?: string[];
+    }) => void;
+    handleGetAvailableLayersPlansResult?: (result: {
+      success: boolean;
+      message?: string;
+      layers?: string[];
+    }) => void;
+    handleGetVisibleLayersPlansResult?: (result: {
+      success: boolean;
+      message?: string;
+      layers?: string[];
+    }) => void;
+    handleGetCurrentStatePlansResult?: (result: {
+      success: boolean;
+      message?: string;
+      style?: string;
+      cameraType?: string;
+      activeLayers?: string[];
+    }) => void;
+    handleGetLevelsResult?: (result: {
+      success: boolean;
+      message?: string;
+      levels?: Array<{
+        number: number;
+        height_meters: number;
+        has_base: boolean;
+        has_ceiling: boolean;
+        name: string;
+        base_cut_height: number;
+        ceiling_cut_height: number;
+      }>;
+    }) => void;
+    handleAddLevelResult?: (result: {
+      success: boolean;
+      message: string;
+      level?: {
+        number: number;
+        height_meters: number;
+        has_base: boolean;
+        has_ceiling: boolean;
+        name: string;
+        base_cut_height: number;
+        ceiling_cut_height: number;
+      };
+    }) => void;
+    handleRemoveLevelResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleCreateBaseSceneResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleCreateCeilingSceneResult?: (result: {
+      success: boolean;
+      message: string;
     }) => void;
   }
 }

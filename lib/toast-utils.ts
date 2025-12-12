@@ -1,7 +1,10 @@
-import { toast, type ToastOptions, type Id } from 'react-toastify';
+import { toast } from 'sonner';
 
 // Armazena os últimos toasts exibidos com timestamp
-const toastCache = new Map<string, { id: Id; timestamp: number }>();
+const toastCache = new Map<
+  string,
+  { id: string | number; timestamp: number }
+>();
 
 // Tempo mínimo entre toasts duplicados (em ms)
 const TOAST_DEBOUNCE_TIME = 3000; // 3 segundos
@@ -96,4 +99,3 @@ export const toastWithDebounce = {
 export const clearToastCache = () => {
   toastCache.clear();
 };
-

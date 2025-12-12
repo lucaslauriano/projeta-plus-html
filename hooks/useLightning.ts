@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 interface LightningItem {
   id: string;
@@ -38,35 +38,41 @@ export function useLightning() {
   // UTILITY FUNCTIONS
   // ========================================
 
-  const callSketchupMethod = useCallback((method: string, params?: Record<string, unknown>) => {
-    if (window.sketchup) {
-      const sketchup = window.sketchup as Record<string, (payload?: string) => void>;
-      sketchup[method]?.(params ? JSON.stringify(params) : undefined);
-    } else {
-      console.warn(`[MOCK MODE] ${method}:`, params);
-      // Mock response para desenvolvimento
-      if (method === 'getLightningBlocks') {
-        setTimeout(() => {
-          window.handleGetLightningBlocksResult?.({
-            success: true,
-            groups: [
-              {
-                id: 'geral',
-                title: 'Geral',
-                items: [
-                  {
-                    id: '1',
-                    name: 'Trilho Eletrificado de Sobrepor',
-                    path: 'Geral/Trilho Eletrificado de Sobrepor.skp',
-                  },
-                ],
-              },
-            ],
-          });
-        }, 500);
+  const callSketchupMethod = useCallback(
+    (method: string, params?: Record<string, unknown>) => {
+      if (window.sketchup) {
+        const sketchup = window.sketchup as Record<
+          string,
+          (payload?: string) => void
+        >;
+        sketchup[method]?.(params ? JSON.stringify(params) : undefined);
+      } else {
+        console.warn(`[MOCK MODE] ${method}:`, params);
+        // Mock response para desenvolvimento
+        if (method === 'getLightningBlocks') {
+          setTimeout(() => {
+            window.handleGetLightningBlocksResult?.({
+              success: true,
+              groups: [
+                {
+                  id: 'geral',
+                  title: 'Geral',
+                  items: [
+                    {
+                      id: '1',
+                      name: 'Trilho Eletrificado de Sobrepor',
+                      path: 'Geral/Trilho Eletrificado de Sobrepor.skp',
+                    },
+                  ],
+                },
+              ],
+            });
+          }, 500);
+        }
       }
-    }
-  }, []);
+    },
+    []
+  );
 
   // ========================================
   // HANDLERS (recebem respostas do Ruby)
@@ -119,10 +125,13 @@ export function useLightning() {
     callSketchupMethod('getLightningBlocks');
   }, [callSketchupMethod]);
 
-  const importBlock = useCallback((blockPath: string) => {
-    setIsBusy(true);
-    callSketchupMethod('importLightningBlock', { path: blockPath });
-  }, [callSketchupMethod]);
+  const importBlock = useCallback(
+    (blockPath: string) => {
+      setIsBusy(true);
+      callSketchupMethod('importLightningBlock', { path: blockPath });
+    },
+    [callSketchupMethod]
+  );
 
   const openBlocksFolder = useCallback(() => {
     callSketchupMethod('openLightningBlocksFolder');
@@ -148,4 +157,3 @@ export function useLightning() {
     openBlocksFolder,
   };
 }
-

@@ -6,7 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { ContrastProvider } from '@/contexts/ContrastContext';
 import { SketchupProvider } from '@/contexts/SketchupContext';
 import './globals.css';
-import { ToastContainer } from 'react-toastify';
+import { Toaster } from '@/components/ui/toast';
 
 const manrope = Manrope({
   subsets: ['latin'],
@@ -43,18 +43,7 @@ export default function RootLayout({
                 <div className=' bg-background h-full overflow-hidden '>
                   {children}
                 </div>
-                <ToastContainer
-                  position='bottom-right'
-                  autoClose={3000}
-                  hideProgressBar={false}
-                  newestOnTop
-                  closeOnClick
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-                  className='!bottom-6 !right-6'
-                />
+                <Toaster />
               </SketchupProvider>
             </ContrastProvider>
           </ThemeProvider>
