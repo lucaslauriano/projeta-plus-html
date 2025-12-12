@@ -101,8 +101,8 @@ function AnnotationSectionInner() {
         <form onSubmit={handleViewSubmit} className='w-full'>
           <Button
             type='submit'
-            disabled={viewLoading}
             size='sm'
+            disabled={viewLoading}
             className='w-full'
           >
             {viewLoading ? 'Ativando...' : 'Inserir Anotação'}

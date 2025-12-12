@@ -8,27 +8,8 @@ import {
   AccordionContent,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import {
-  Edit,
-  Save,
-  Trash2,
-  Folder,
-  Upload,
-  Loader2,
-  Download,
-  FileText,
-  PlusCircle,
-  FolderPlus,
-  MoreVertical,
-  FolderOpen,
-} from 'lucide-react';
-import { toast } from 'react-toastify';
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Edit, Trash2, Folder, Loader2, FileText, Plus } from 'lucide-react';
+import { toast } from 'sonner';
 import { usePlans, PlanGroup } from '@/hooks/usePlans';
 import { PlanEditDialog } from './plan-edit-dialog';
 import { AddGroupDialog, AddSceneDialog } from './scene-group-dialogs';
@@ -37,6 +18,9 @@ import {
   ScenesEmptyState,
   ScenesLoadingState,
 } from './scenes-skeleton';
+import { ViewConfigMenu } from './view-config-menu';
+import { LevelsManagerDialog } from './levels-manager-dialog';
+import { Button } from '@/components/ui/button';
 
 interface Segment {
   id: string;
@@ -52,18 +36,18 @@ interface Plan {
 function PlansComponent() {
   const {
     data,
-    setData,
-    availableStyles,
-    availableLayers,
-    currentState,
     isBusy,
     isLoading,
-    applyPlanConfig,
+    currentState,
+    availableStyles,
+    availableLayers,
+    setData,
     saveToJson,
-    loadFromJson,
     loadDefault,
     loadFromFile,
+    loadFromJson,
     getCurrentState,
+    applyPlanConfig,
   } = usePlans();
 
   const groups = data.groups;
@@ -85,6 +69,7 @@ function PlansComponent() {
   const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
   const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isLevelsDialogOpen, setIsLevelsDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [editPlanName, setEditPlanName] = useState('');
   const [editPlanStyle, setEditPlanStyle] = useState('');
@@ -370,65 +355,41 @@ function PlansComponent() {
         onApplyCurrentState={handleApplyCurrentState}
       />
 
-      <div className='flex flex-col gap-4 h-full'>
+      <div className='space-y-3'>
         <div className='flex items-center justify-between'>
           <h2 className='text-lg font-semibold flex items-center gap-2'>
-            {isLoading ? (
-              <Loader2 className='w-4 h-4 animate-spin' />
-            ) : (
-              <FileText className='w-4 h-4' />
-            )}
-            Plantas
+            Plantas {isLoading && <Loader2 className='w-4 h-4 animate-spin' />}
           </h2>
           <div className='flex items-center gap-2'>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className='p-2 hover:bg-accent rounded-md transition-colors'>
-                  <Download className='w-4 h-4' />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align='end'>
-                <DropdownMenuItem onClick={loadFromJson}>
-                  <FolderOpen className='w-4 h-4 mr-2' />
-                  Carregar Salvo
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={loadDefault}>
-                  <Download className='w-4 h-4 mr-2' />
-                  Carregar Padrão
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={loadFromFile}>
-                  <Upload className='w-4 h-4 mr-2' />
-                  Importar Arquivo
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <button
-              onClick={saveToJson}
-              className='p-2 hover:bg-accent rounded-md transition-colors'
-            >
-              <Save className='w-4 h-4' />
-            </button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className='p-2 hover:bg-accent rounded-md transition-colors'>
-                  <PlusCircle className='w-4 h-4' />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align='end'>
-                <DropdownMenuItem onClick={() => setIsGroupDialogOpen(true)}>
-                  <FolderPlus className='w-4 h-4 mr-2' />
-                  Adicionar Grupo
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsPlanDialogOpen(true)}>
-                  <FileText className='w-4 h-4 mr-2' />
-                  Adicionar Planta
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ViewConfigMenu
+              isBusy={isBusy}
+              entityLabel='Planta'
+              onAddGroup={() => setIsGroupDialogOpen(true)}
+              onAddItem={() => setIsPlanDialogOpen(true)}
+              onLoadFromJson={loadFromJson}
+              onLoadDefault={loadDefault}
+              onLoadFromFile={loadFromFile}
+              onSaveToJson={saveToJson}
+            />
           </div>
         </div>
+
+        <div className='flex flex-col gap-3 w-full'>
+          <Button
+            size='sm'
+            className='w-full flex items-center gap-3 justify-center text-base'
+            variant='default'
+            onClick={() => setIsLevelsDialogOpen(true)}
+          >
+            <Plus className='w-5 h-5' />
+            <span>Gerenciar Níveis</span>
+          </Button>
+        </div>
+
+        <LevelsManagerDialog
+          isOpen={isLevelsDialogOpen}
+          onOpenChange={setIsLevelsDialogOpen}
+        />
 
         {isLoading && sortedGroups.length === 0 && <ScenesLoadingState />}
 
@@ -437,84 +398,67 @@ function PlansComponent() {
         {!isLoading && sortedGroups.length === 0 && <ScenesEmptyState />}
 
         {!isLoading && sortedGroups.length > 0 && (
-          <Accordion
-            type='multiple'
-            defaultValue={sortedGroups.map((g) => g.id)}
-            className='w-full space-y-2'
-          >
+          <Accordion type='single' collapsible className='w-full space-y-2'>
             {sortedGroups.map((group) => (
               <AccordionItem
                 key={group.id}
                 value={group.id}
-                className='border rounded-lg overflow-hidden bg-card'
+                className='border rounded-xl overflow-hidden bg-muted/20 px-0'
               >
-                <AccordionTrigger className='px-4 py-3 hover:bg-accent/5 transition-colors hover:no-underline'>
+                <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 group data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none'>
                   <div className='flex items-center justify-between w-full pr-2'>
-                    <div className='flex items-center gap-2'>
-                      <Folder className='w-4 h-4 text-primary' />
-                      <span className='font-medium'>{group.name}</span>
-                      <span className='text-xs text-muted-foreground'>
-                        ({group.plans.length})
-                      </span>
+                    <div className='flex items-center gap-2 font-medium text-sm'>
+                      <Folder className='w-4 h-4 text-muted-foreground' />
+                      {group.name}
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button
-                          onClick={(e) => e.stopPropagation()}
-                          className='p-1 hover:bg-accent rounded-md transition-colors'
-                        >
-                          <MoreVertical className='w-4 h-4 text-muted-foreground' />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align='end'>
-                        <DropdownMenuItem
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const newName = prompt(
-                              'Digite o novo nome:',
-                              group.name
-                            );
-                            if (newName?.trim()) {
-                              setGroups(
-                                groups.map((g) =>
-                                  g.id === group.id
-                                    ? { ...g, name: newName.trim() }
-                                    : g
-                                )
-                              );
-                              toast.success('Grupo renomeado!');
-                            }
-                          }}
-                        >
-                          <Edit className='w-4 h-4 mr-2' />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className='text-destructive focus:text-destructive'
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteGroup(group.id);
-                          }}
-                        >
-                          <Trash2 className='w-4 h-4 mr-2' />
-                          Deletar
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className='flex  items-center justify-end gap-2 text-muted-foreground'>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          //TODO: Implement edit folder method
+                          //editFolderName(group.name);
+                        }}
+                        className='opacity-0 group-hover:opacity-100 transition-opacity'
+                        title='Editar'
+                      >
+                        <Edit className='w-4 h-4' />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          //TODO: Implement delete folder method
+                          //deleteFolder(group.name);
+                        }}
+                        className='opacity-0 group-hover:opacity-100 transition-opacity'
+                        title='Excluir pasta'
+                      >
+                        <Trash2 className='w-4 h-4' />
+                      </button>
+                    </div>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className='px-4 pb-3 pt-1'>
-                  <div className='space-y-2'>
-                    {group.plans.map((plan) => (
-                      <PlanItem
-                        key={plan.id}
-                        title={plan.title}
-                        onEdit={() => handleEditPlan(plan)}
-                        onLoadFromJson={() => handleApplyPlan(plan)}
-                        onDuplicate={() => handleDuplicatePlan(group.id, plan)}
-                        onDelete={() => handleDeletePlan(group.id, plan.id)}
-                      />
-                    ))}
+                <AccordionContent className='p-4'>
+                  <div className='space-y-3'>
+                    {group.plans.length > 0 ? (
+                      <div className='space-y-2'>
+                        {group.plans.map((plan) => (
+                          <PlanItem
+                            key={plan.id}
+                            title={plan.title}
+                            onEdit={() => handleEditPlan(plan)}
+                            onLoadFromJson={() => handleApplyPlan(plan)}
+                            onDuplicate={() =>
+                              handleDuplicatePlan(group.id, plan)
+                            }
+                            onDelete={() => handleDeletePlan(group.id, plan.id)}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className='text-center py-4 text-sm text-muted-foreground italic'>
+                        Nenhuma cena neste grupo
+                      </div>
+                    )}
                   </div>
                 </AccordionContent>
               </AccordionItem>

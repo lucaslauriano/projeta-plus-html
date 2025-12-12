@@ -490,6 +490,44 @@ declare global {
       cameraType?: string;
       activeLayers?: string[];
     }) => void;
+    handleGetLevelsResult?: (result: {
+      success: boolean;
+      message?: string;
+      levels?: Array<{
+        number: number;
+        height_meters: number;
+        has_base: boolean;
+        has_ceiling: boolean;
+        name: string;
+        base_cut_height: number;
+        ceiling_cut_height: number;
+      }>;
+    }) => void;
+    handleAddLevelResult?: (result: {
+      success: boolean;
+      message: string;
+      level?: {
+        number: number;
+        height_meters: number;
+        has_base: boolean;
+        has_ceiling: boolean;
+        name: string;
+        base_cut_height: number;
+        ceiling_cut_height: number;
+      };
+    }) => void;
+    handleRemoveLevelResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleCreateBaseSceneResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleCreateCeilingSceneResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
   }
 }
 

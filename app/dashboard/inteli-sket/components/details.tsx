@@ -45,31 +45,23 @@ export default function DetailsComponent() {
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-2'>
             <h2 className='text-lg font-semibold flex items-center gap-2'>
-              <LayoutGrid className='w-4 h-4' />
               Detalhamento
             </h2>
           </div>
         </div>
 
         <div className='flex flex-col gap-3 w-full'>
-          <Button
-            className='w-full flex items-center gap-3 justify-center text-base'
-            variant='default'
-          >
+          <Button variant='default'>
             <LayoutGrid className='w-5 h-5' />
             Detalhamento Marcenaria
           </Button>
 
-          <Button
-            className='w-full flex items-center gap-3 justify-center text-base'
-            variant='default'
-          >
+          <Button variant='default'>
             <Grid3x3 className='w-5 h-5' />
             Detalhamento Geral
           </Button>
 
           <Button
-            className='w-full flex items-center gap-3 justify-center text-base'
             variant='default'
             onClick={() => setIsDuplicateDialogOpen(true)}
           >
@@ -77,10 +69,7 @@ export default function DetailsComponent() {
             Duplicar Cenas
           </Button>
 
-          <Button
-            className='w-full flex items-center gap-3 justify-center text-base'
-            variant='default'
-          >
+          <Button variant='default'>
             <RotateCcw className='w-5 h-5' />
             Alternar Vista
           </Button>

@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 import { useFurniture } from '@/hooks/useFurniture';
 import { DEFAULT_TYPES, DIMENSION_FORMAT_OPTIONS } from '@/lib/consts';
 import PageContent from '@/components/ui/page-content';
+import { Label } from '@/components/ui/label';
 
 type DimensionFormat = (typeof DIMENSION_FORMAT_OPTIONS)[number]['value'];
 
@@ -433,9 +434,12 @@ export default function FurnitureDashboardPage() {
               </div>
 
               <div>
-                <label className='block text-sm font-semibold mb-2 text-foreground'>
+                <Label
+                  htmlFor='dimensionFormat'
+                  className='flex justify-between '
+                >
                   Formato da dimensão
-                </label>
+                </Label>
                 <Select
                   value={dimensionFormat}
                   onValueChange={(selected) =>

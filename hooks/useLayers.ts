@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { useSketchup } from '@/contexts/SketchupContext';
 import type { LayersData, SketchUpFolder, SketchUpTag } from '@/types/global';
 
@@ -82,7 +82,7 @@ export function useLayers() {
         toast.error(`Erro ao carregar camadas: ${result.message}`);
       } else {
         const newData = result as LayersData;
-        
+
         // Merge: manter tags existentes e adicionar apenas as novas do modelo
         setData((prev) => {
           const mergedData: LayersData = {
@@ -99,7 +99,7 @@ export function useLayers() {
 
           // Merge folders
           const folderMap = new Map<string, SketchUpFolder>();
-          
+
           // Adicionar folders existentes
           prev.folders.forEach((folder) => {
             folderMap.set(folder.name, { ...folder });
@@ -112,14 +112,14 @@ export function useLayers() {
               // Folder existe, fazer merge das tags
               const tagMap = new Map<string, SketchUpTag>();
               existing.tags.forEach((tag) => tagMap.set(tag.name, tag));
-              
+
               // Adicionar apenas tags novas do modelo
               newFolder.tags.forEach((newTag) => {
                 if (!tagMap.has(newTag.name)) {
                   tagMap.set(newTag.name, newTag);
                 }
               });
-              
+
               existing.tags = Array.from(tagMap.values());
             } else {
               // Folder novo do modelo
@@ -131,10 +131,10 @@ export function useLayers() {
 
           // Merge root tags
           const rootTagMap = new Map<string, SketchUpTag>();
-          
+
           // Manter todas as tags existentes
           prev.tags.forEach((tag) => rootTagMap.set(tag.name, tag));
-          
+
           // Adicionar apenas novas tags do modelo
           newData.tags.forEach((newTag) => {
             if (!rootTagMap.has(newTag.name)) {
@@ -320,58 +320,65 @@ export function useLayers() {
     isAvailable,
   ]);
 
-  const loadLayers = useCallback(async (silent: boolean = false) => {
-    // Define se deve silenciar toasts
-    setSilentLoad(silent);
-    
-    if (!isAvailable) {
-      // Mock data for development
-      setTimeout(() => {
-        const mockData: LayersData = {
-          folders: [
-            {
-              name: '2D',
-              tags: [
-                { name: '-2D-AMBIENTE', visible: true, color: [244, 244, 244] },
-                {
-                  name: '-2D-ESQUADRIA',
-                  visible: true,
-                  color: [244, 244, 244],
-                },
-                {
-                  name: '-2D-ETIQUETAS',
-                  visible: true,
-                  color: [244, 244, 244],
-                },
-                {
-                  name: '-2D-MOBILIARIO',
-                  visible: true,
-                  color: [244, 244, 244],
-                },
-                {
-                  name: '-2D-PROJECOES',
-                  visible: true,
-                  color: [244, 244, 244],
-                },
-                {
-                  name: '-2D-SIMBOLOGIAS',
-                  visible: true,
-                  color: [244, 244, 244],
-                },
-              ],
-            },
-          ],
-          tags: [],
-        };
-        if (window.handleGetLayersResult)
-          window.handleGetLayersResult(mockData);
-      }, 500);
-      return;
-    }
+  const loadLayers = useCallback(
+    async (silent: boolean = false) => {
+      // Define se deve silenciar toasts
+      setSilentLoad(silent);
 
-    setPendingAction('load');
-    await callSketchupMethod('getLayers');
-  }, [callSketchupMethod, isAvailable]);
+      if (!isAvailable) {
+        // Mock data for development
+        setTimeout(() => {
+          const mockData: LayersData = {
+            folders: [
+              {
+                name: '2D',
+                tags: [
+                  {
+                    name: '-2D-AMBIENTE',
+                    visible: true,
+                    color: [244, 244, 244],
+                  },
+                  {
+                    name: '-2D-ESQUADRIA',
+                    visible: true,
+                    color: [244, 244, 244],
+                  },
+                  {
+                    name: '-2D-ETIQUETAS',
+                    visible: true,
+                    color: [244, 244, 244],
+                  },
+                  {
+                    name: '-2D-MOBILIARIO',
+                    visible: true,
+                    color: [244, 244, 244],
+                  },
+                  {
+                    name: '-2D-PROJECOES',
+                    visible: true,
+                    color: [244, 244, 244],
+                  },
+                  {
+                    name: '-2D-SIMBOLOGIAS',
+                    visible: true,
+                    color: [244, 244, 244],
+                  },
+                ],
+              },
+            ],
+            tags: [],
+          };
+          if (window.handleGetLayersResult)
+            window.handleGetLayersResult(mockData);
+        }, 500);
+        return;
+      }
+
+      setPendingAction('load');
+      await callSketchupMethod('getLayers');
+    },
+    [callSketchupMethod, isAvailable]
+  );
 
   const getJsonPath = useCallback(async () => {
     if (!isAvailable) {
@@ -667,7 +674,9 @@ export function useLayers() {
             ],
           },
         ],
-        tags: [{ name: 'Tag Customizada', visible: true, color: [150, 200, 100] }],
+        tags: [
+          { name: 'Tag Customizada', visible: true, color: [150, 200, 100] },
+        ],
       };
       setData(mockData);
       toast.info('Minhas tags carregadas (simulação)');

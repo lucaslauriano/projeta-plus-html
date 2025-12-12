@@ -8,27 +8,8 @@ import {
   AccordionContent,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import {
-  Edit,
-  Save,
-  Trash2,
-  Folder,
-  Upload,
-  Loader2,
-  Download,
-  FileText,
-  PlusCircle,
-  FolderPlus,
-  MoreVertical,
-  FolderOpen,
-} from 'lucide-react';
-import { toast } from 'react-toastify';
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Edit, Trash2, Folder, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useScenes } from '@/hooks/useScenes';
 import { SceneEditDialog } from './scene-edit-dialog';
 import { AddGroupDialog, AddSceneDialog } from './scene-group-dialogs';
@@ -37,6 +18,7 @@ import {
   ScenesEmptyState,
   ScenesLoadingState,
 } from './scenes-skeleton';
+import { ViewConfigMenu } from './view-config-menu';
 
 interface Segment {
   id: string;
@@ -289,7 +271,6 @@ function ScenesComponent() {
       return;
     }
 
-    // Atualizar configuração no data.scenes (JSON)
     const updatedScenes = data.scenes.map((s) => {
       if (s.id === editingScene.id || s.name === editingScene.title) {
         return {
@@ -303,7 +284,6 @@ function ScenesComponent() {
       return s;
     });
 
-    // Se a cena não existe no data.scenes, adicionar
     const sceneExists = data.scenes.some(
       (s) => s.id === editingScene.id || s.name === editingScene.title
     );
@@ -318,7 +298,6 @@ function ScenesComponent() {
       });
     }
 
-    // Atualizar groups (UI)
     const updatedGroups = groups.map((g) => ({
       ...g,
       scenes: g.scenes.map((s) =>
@@ -364,19 +343,19 @@ function ScenesComponent() {
       />
 
       <SceneEditDialog
-        isOpen={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        sceneTitle={editingScene?.title || ''}
         style={editSceneStyle}
-        onStyleChange={setEditSceneStyle}
-        cameraType={editCameraType}
-        onCameraTypeChange={setEditCameraType}
-        activeLayers={editActiveLayers}
-        onActiveLayersChange={setEditActiveLayers}
-        availableStyles={availableStyles}
-        availableLayers={availableLayers}
         isBusy={isBusy}
+        isOpen={isEditDialogOpen}
         onSave={handleSaveEditScene}
+        sceneTitle={editingScene?.title || ''}
+        cameraType={editCameraType}
+        onOpenChange={setIsEditDialogOpen}
+        activeLayers={editActiveLayers}
+        onStyleChange={setEditSceneStyle}
+        availableLayers={availableLayers}
+        availableStyles={availableStyles}
+        onCameraTypeChange={setEditCameraType}
+        onActiveLayersChange={setEditActiveLayers}
         onCancel={() => {
           setIsEditDialogOpen(false);
           setEditingScene(null);
@@ -393,70 +372,28 @@ function ScenesComponent() {
       <div className='space-y-3'>
         <div className='flex items-center justify-between'>
           <h2 className='text-lg font-semibold flex items-center gap-2'>
-            {isLoading ? (
-              <Loader2 className='w-4 h-4 animate-spin' />
-            ) : (
-              <FileText className='w-4 h-4' />
-            )}
             Cenas
+            {isLoading && <Loader2 className='w-4 h-4 animate-spin' />}
           </h2>
           <div className='flex items-center gap-2'>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className='p-1 hover:bg-accent rounded-md transition-colors'>
-                  <MoreVertical className='w-4 h-4 text-muted-foreground' />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align='end' className='w-48'>
-                <DropdownMenuItem
-                  className='cursor-pointer'
-                  onClick={() => setIsGroupDialogOpen(true)}
-                >
-                  <FolderPlus className='w-4 h-4 mr-2 ' />
-                  Adicionar Grupo
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className='cursor-pointer'
-                  onClick={() => setIsSceneDialogOpen(true)}
-                >
-                  <PlusCircle className='w-4 h-4 mr-2' />
-                  Adicionar Cena
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className='cursor-pointer'
-                  onClick={loadFromJson}
-                >
-                  <FolderOpen className='w-4 h-4 mr-2' />
-                  Carregar Salvo
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className='cursor-pointer'
-                  onClick={loadDefault}
-                >
-                  <Download className='w-4 h-4 mr-2' />
-                  Carregar Padrão
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className='cursor-pointer'
-                  onClick={loadFromFile}
-                >
-                  <Upload className='w-4 h-4 mr-2' />
-                  Importar Arquivo
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className='cursor-pointer'
-                  onClick={saveToJson}
-                  disabled={isBusy}
-                >
-                  <Save className='w-4 h-4 mr-2' />
-                  Salvar
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ViewConfigMenu
+              isBusy={isBusy}
+              entityLabel='Cena'
+              onAddGroup={() => setIsGroupDialogOpen(true)}
+              onAddItem={() => setIsSceneDialogOpen(true)}
+              onLoadFromJson={loadFromJson}
+              onLoadDefault={loadDefault}
+              onLoadFromFile={loadFromFile}
+              onSaveToJson={saveToJson}
+            />
           </div>
         </div>
 
+        {isLoading && sortedGroups.length === 0 && <ScenesLoadingState />}
+
         {isLoading && sortedGroups.length > 0 && <ScenesSkeleton />}
+
+        {!isLoading && sortedGroups.length === 0 && <ScenesEmptyState />}
 
         {!isLoading && sortedGroups.length > 0 && (
           <div className='space-y-4'>
@@ -473,7 +410,7 @@ function ScenesComponent() {
                         <Folder className='w-4 h-4 text-gray-500' />
                         {group.name}
                       </div>
-                      <div className='flex  items-center justify-end gap-2'>
+                      <div className='flex  items-center justify-end gap-2 text-muted-foreground'>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();

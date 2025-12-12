@@ -203,38 +203,75 @@ export default function LayersComponent() {
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-2'>
             <h2 className='text-lg font-semibold flex items-center gap-2'>
-              <Tag className='w-4 h-4' />
               Etiquetas
             </h2>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className='p-1 hover:bg-accent rounded-md transition-colors'>
+              <div className='p-1 hover:bg-accent rounded-md transition-colors cursor-pointer'>
                 <MoreVertical
                   className='w-4 h-4 text-muted-foreground'
                   size={16}
                 />
-              </button>
+              </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className='w-48'>
               <DropdownMenuItem
                 className='cursor-pointer'
                 onClick={() => setIsFolderDialogOpen(true)}
               >
-                <FolderPlus className='w-4 h-4 mr-2 text-blue-600' />
+                <FolderPlus className='w-4 h-4 mr-2 ' />
                 Adicionar Pasta
               </DropdownMenuItem>
               <DropdownMenuItem
                 className='cursor-pointer'
                 onClick={() => setIsTagDialogOpen(true)}
               >
-                <TagIcon className='w-4 h-4 mr-2 text-green-600' />
+                <TagIcon className='w-4 h-4 mr-2' />
                 Adicionar Tag
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                onClick={loadDefaultTags}
+              >
+                <FileJson className='w-4 h-4 mr-2' />
+                Redefinir (Tags Padrão)
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className='cursor-pointer'
+                disabled={isBusy}
+                onClick={() => loadLayers()}
+              >
+                <Download className='w-4 h-4 mr-2' />
+                Trazer do Modelo
+              </DropdownMenuItem>
+              <DropdownMenuItem className='cursor-pointer' onClick={loadMyTags}>
+                <FolderDown className='w-4 h-4 mr-2' />
+                Minhas Tags
+              </DropdownMenuItem>
+              <DropdownMenuItem className='cursor-pointer' onClick={saveToJson}>
+                <Save className='w-4 h-4 mr-2' />
+                Salvar JSON
+              </DropdownMenuItem>
+              <DropdownMenuItem className='cursor-pointer' onClick={clearAll}>
+                <Trash2 className='w-4 h-4 mr-2 text-red-600' />
+                Limpar
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
+        <div className='flex items-center justify-center w-full'>
+          <Button
+            type='button'
+            size='sm'
+            title='Importar no Modelo'
+            onClick={importToModel}
+            className='w-full'
+          >
+            <Upload className='w-5 h-5' />
+            Importar no Modelo
+          </Button>
+        </div>
         <TagList
           data={data}
           isBusy={isBusy}
@@ -246,73 +283,6 @@ export default function LayersComponent() {
           updateTagColor={updateTagColor}
           toggleVisibility={toggleVisibility}
         />
-      </div>
-
-      <div className='absolute bottom-0 -left-2 right-0 z-40 flex items-center justify-center bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60  mt-auto'>
-        <div className='w-full max-w-2xl mx-auto px-4'>
-          <div className='flex items-center justify-center h-12 bg-card rounded-xl shadow-lg'>
-            <div className='grid grid-cols-6 w-full'>
-              <button
-                type='button'
-                title='Redefinir (Tags Padrão)'
-                onClick={loadDefaultTags}
-                className='inline-flex flex-col items-center justify-center rounded-l-xl hover:bg-accent transition-colors group'
-              >
-                <FileJson className='w-5 h-5 text-muted-foreground group-hover:text-foreground' />
-                <span className='sr-only'>JSON</span>
-              </button>
-              <button
-                type='button'
-                title='Trazer do Modelo'
-                disabled={isBusy}
-                onClick={() => loadLayers()}
-                className='inline-flex flex-col items-center justify-center hover:bg-accent transition-colors group'
-              >
-                <Download className='w-5 h-5 text-muted-foreground group-hover:text-foreground' />
-                <span className='sr-only'>Download</span>
-              </button>
-              <div className='flex items-center justify-center'>
-                <button
-                  type='button'
-                  title='Minhas Tags (Arquivo do Usuário)'
-                  onClick={loadMyTags}
-                  className='inline-flex flex-col items-center justify-center hover:bg-accent transition-colors group p-4'
-                >
-                  <FolderDown className='w-5 h-5' />
-                  <span className='sr-only'>New item</span>
-                </button>
-              </div>
-              <button
-                type='button'
-                title='Salvar JSON'
-                onClick={saveToJson}
-                className='inline-flex flex-col items-center justify-center hover:bg-accent transition-colors group'
-              >
-                <Save className='w-5 h-5' />
-                <span className='sr-only'>Save</span>
-              </button>
-              <button
-                type='button'
-                title='Importar no Modelo'
-                onClick={importToModel}
-                className='inline-flex flex-col items-center justify-center  hover:bg-accent transition-colors group'
-              >
-                <Upload className='w-5 h-5 text-muted-foreground group-hover:text-foreground' />
-                <span className='sr-only'>Upload</span>
-              </button>
-
-              <button
-                type='button'
-                title='Limpar'
-                onClick={clearAll}
-                className='inline-flex flex-col items-center justify-center rounded-r-xl hover:bg-accent transition-colors group'
-              >
-                <Trash2 className='w-5 h-5 text-muted-foreground group-hover:text-destructive' />
-                <span className='sr-only'>Delete</span>
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </>
   );

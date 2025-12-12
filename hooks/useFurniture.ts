@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { useSketchup } from '@/contexts/SketchupContext';
 import type { FurnitureReportItem } from '@/types/global';
 
@@ -97,7 +97,9 @@ export function useFurniture() {
       clearPending();
       // Limpa atributos se não tiver sucesso OU se não tiver nada selecionado
       if (!response.success || !response.selected) {
-        console.log('[useFurniture] ❌ Failed or not selected - clearing attributes');
+        console.log(
+          '[useFurniture] ❌ Failed or not selected - clearing attributes'
+        );
 
         setAttributes(null);
         setDimensions(null);
