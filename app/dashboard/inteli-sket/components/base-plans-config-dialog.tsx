@@ -20,12 +20,7 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface BasePlansConfigDialogProps {
   isOpen: boolean;
@@ -33,6 +28,7 @@ interface BasePlansConfigDialogProps {
   availableStyles: string[];
   availableLayers: string[];
   onImportStyle?: () => void;
+  onSave: () => void;
   baseStyle: string;
   baseLayers: string[];
   ceilingStyle: string;
@@ -52,6 +48,7 @@ export function BasePlansConfigDialog({
   availableLayers,
   onImportStyle,
   baseStyle,
+  onSave,
   baseLayers,
   ceilingStyle,
   ceilingLayers,
@@ -87,7 +84,8 @@ export function BasePlansConfigDialog({
   };
 
   const handleLayerToggle = (layer: string, checked: boolean) => {
-    const updateLayers = activeTab === 'base' ? onBaseLayersChange : onCeilingLayersChange;
+    const updateLayers =
+      activeTab === 'base' ? onBaseLayersChange : onCeilingLayersChange;
     const layers = activeTab === 'base' ? baseLayers : ceilingLayers;
 
     if (checked) {
@@ -98,14 +96,16 @@ export function BasePlansConfigDialog({
   };
 
   const handleSelectAllFiltered = () => {
-    const updateLayers = activeTab === 'base' ? onBaseLayersChange : onCeilingLayersChange;
+    const updateLayers =
+      activeTab === 'base' ? onBaseLayersChange : onCeilingLayersChange;
     const layers = activeTab === 'base' ? baseLayers : ceilingLayers;
     const newActiveLayers = [...new Set([...layers, ...filteredLayers])];
     updateLayers(newActiveLayers);
   };
 
   const handleSelectNoneFiltered = () => {
-    const updateLayers = activeTab === 'base' ? onBaseLayersChange : onCeilingLayersChange;
+    const updateLayers =
+      activeTab === 'base' ? onBaseLayersChange : onCeilingLayersChange;
     const layers = activeTab === 'base' ? baseLayers : ceilingLayers;
     const newActiveLayers = layers.filter(
       (layer) => !filteredLayers.includes(layer)
@@ -121,7 +121,8 @@ export function BasePlansConfigDialog({
             Configurações das Plantas Base e Forro
           </DialogTitle>
           <DialogDescription className='text-start text-sm text-muted-foreground'>
-            Configure os estilos e camadas que serão usados nas plantas de base e forro
+            Configure os estilos e camadas que serão usados nas plantas de base
+            e forro
           </DialogDescription>
         </DialogHeader>
 
@@ -131,7 +132,10 @@ export function BasePlansConfigDialog({
             <TabsTrigger value='ceiling'>Planta de Forro</TabsTrigger>
           </TabsList>
 
-          <TabsContent value={activeTab} className='flex flex-col gap-3 py-2 overflow-y-auto flex-1'>
+          <TabsContent
+            value={activeTab}
+            className='flex flex-col gap-3 py-2 overflow-y-auto flex-1'
+          >
             <div className='w-full flex items-end justify-between gap-x-3'>
               <div className='space-y-1.5 w-2/3 items-center justify-center'>
                 <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
@@ -236,7 +240,7 @@ export function BasePlansConfigDialog({
             </div>
           </TabsContent>
         </Tabs>
-
+        <Button onClick={onSave}>Salvar Configurações</Button>
         <DialogFooter>
           <Button variant='outline' onClick={() => onOpenChange(false)}>
             Fechar
@@ -246,4 +250,3 @@ export function BasePlansConfigDialog({
     </Dialog>
   );
 }
-

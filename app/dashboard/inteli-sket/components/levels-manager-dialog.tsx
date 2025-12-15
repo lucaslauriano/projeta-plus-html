@@ -150,7 +150,7 @@ export function LevelsManagerDialog({
         setCeilingStyle(ceilingPlan.style);
         setCeilingLayers(ceilingPlan.activeLayers);
       }
-      
+
       setIsInitialized(true);
     }
   }, [basePlansData, isInitialized]);
@@ -304,6 +304,7 @@ export function LevelsManagerDialog({
       </DialogContent>
 
       <BasePlansConfigDialog
+        onSave={saveConfig}
         isOpen={isConfigDialogOpen}
         onOpenChange={setIsConfigDialogOpen}
         availableStyles={availableStyles}
