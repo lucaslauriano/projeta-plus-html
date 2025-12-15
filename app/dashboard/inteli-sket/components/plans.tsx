@@ -93,9 +93,17 @@ function PlansComponent() {
       plans: [],
     };
 
-    setGroups([...groups, newGroup]);
+    const updatedGroups = [...groups, newGroup];
+    setGroups(updatedGroups);
     setNewGroupName('');
     setIsGroupDialogOpen(false);
+    
+    // Salvar no JSON após adicionar
+    setTimeout(() => {
+      console.log('[Plans] Salvando após adicionar grupo. Total de grupos:', updatedGroups.length);
+      saveToJson();
+    }, 100);
+    
     toast.success('Grupo adicionado com sucesso!');
   };
 
@@ -111,40 +119,83 @@ function PlansComponent() {
       segments: [],
     };
 
+    let updatedGroups: PlanGroup[];
     if (selectedGroup === 'root') {
       const newGroup: PlanGroup = {
         id: Date.now().toString(),
         name: newPlanTitle.trim(),
         plans: [],
       };
-      setGroups([...groups, newGroup]);
+      updatedGroups = [...groups, newGroup];
+      setGroups(updatedGroups);
     } else {
-      setGroups(
-        groups.map((group) => {
-          if (group.id === selectedGroup) {
-            return {
-              ...group,
-              plans: [...group.plans, newPlan],
-            };
-          }
-          return group;
-        })
-      );
+      updatedGroups = groups.map((group) => {
+        if (group.id === selectedGroup) {
+          return {
+            ...group,
+            plans: [...group.plans, newPlan],
+          };
+        }
+        return group;
+      });
+      setGroups(updatedGroups);
     }
 
     setNewPlanTitle('');
     setIsPlanDialogOpen(false);
+    
+    // Salvar no JSON após adicionar
+    setTimeout(() => {
+      console.log('[Plans] Salvando após adicionar planta. Total de grupos:', updatedGroups.length);
+      saveToJson();
+    }, 100);
+    
     toast.success('Planta adicionada com sucesso!');
   };
 
   const handleDeleteGroup = (groupId: string) => {
+    const group = groups.find((g) => g.id === groupId);
     const confirmed = confirm(
-      'Deseja realmente remover este grupo e todas as suas plantas?'
+      `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${group?.plans.length || 0} planta(s)?`
     );
     if (!confirmed) return;
 
     setGroups(groups.filter((group) => group.id !== groupId));
+    
+    // Salvar no JSON após deletar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+    
     toast.success('Grupo removido com sucesso!');
+  };
+
+  const handleEditGroup = (groupId: string) => {
+    const group = groups.find((g) => g.id === groupId);
+    if (!group) return;
+
+    const newName = prompt('Digite o novo nome do grupo:', group.name);
+    if (!newName || newName.trim() === '') {
+      toast.error('Nome inválido');
+      return;
+    }
+
+    if (newName.trim() === group.name) {
+      return; // Nenhuma mudança
+    }
+
+    setGroups(
+      groups.map((g) =>
+        g.id === groupId ? { ...g, name: newName.trim() } : g
+      )
+    );
+    
+    // Salvar no JSON após editar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+    
+    toast.success('Grupo renomeado com sucesso!');
   };
 
   const handleDeletePlan = (groupId: string, planId: string) => {
@@ -162,6 +213,12 @@ function PlansComponent() {
         return group;
       })
     );
+    
+    // Salvar no JSON após deletar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+    
     toast.success('Planta removida com sucesso!');
   };
 
@@ -184,6 +241,12 @@ function PlansComponent() {
         return g;
       })
     );
+    
+    // Salvar no JSON após duplicar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+    
     toast.success('Planta duplicada!');
   };
 
@@ -346,6 +409,7 @@ function PlansComponent() {
         availableLayers={availableLayers}
         isBusy={isBusy}
         onSave={handleSaveEditPlan}
+        onPlanTitleChange={setEditPlanName}
         onCancel={() => {
           setIsEditDialogOpen(false);
           setEditingPlan(null);
@@ -415,8 +479,7 @@ function PlansComponent() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          //TODO: Implement edit folder method
-                          //editFolderName(group.name);
+                          handleEditGroup(group.id);
                         }}
                         className='opacity-0 group-hover:opacity-100 transition-opacity'
                         title='Editar'
@@ -426,8 +489,7 @@ function PlansComponent() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          //TODO: Implement delete folder method
-                          //deleteFolder(group.name);
+                          handleDeleteGroup(group.id);
                         }}
                         className='opacity-0 group-hover:opacity-100 transition-opacity'
                         title='Excluir pasta'

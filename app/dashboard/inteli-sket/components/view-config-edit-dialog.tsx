@@ -41,6 +41,7 @@ interface ViewConfigEditDialogProps {
   onApplyCurrentState: () => void;
   onActiveLayersChange: (layers: string[]) => void;
   allowedCameraTypes: string[];
+  onItemTitleChange?: (title: string) => void; // Nova prop para editar nome
 }
 
 const CAMERA_TYPE_LABELS: Record<string, string> = {
@@ -73,6 +74,7 @@ export function ViewConfigEditDialog({
   onCameraTypeChange,
   onActiveLayersChange,
   onApplyCurrentState,
+  onItemTitleChange, // Nova prop
 }: ViewConfigEditDialogProps) {
   const [layerFilter, setLayerFilter] = useState('');
 
@@ -110,11 +112,25 @@ export function ViewConfigEditDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-[500px] max-h-[90vh] flex flex-col'>
         <DialogHeader>
-          <DialogTitle className='flex items-center gap-2'>
-            {title}: {itemTitle}
-          </DialogTitle>
+          <DialogTitle className='flex items-center gap-2'>{title}</DialogTitle>
         </DialogHeader>
         <div className='flex flex-col gap-3 py-2 overflow-y-auto flex-1'>
+          {/* Campo para editar o nome */}
+          {onItemTitleChange && (
+            <div className='space-y-1.5'>
+              <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
+                Nome:
+              </label>
+              <Input
+                type='text'
+                placeholder='Nome da configuração'
+                value={itemTitle}
+                onChange={(e) => onItemTitleChange(e.target.value)}
+                className='h-9 rounded-xl border-2'
+              />
+            </div>
+          )}
+
           <div className='w-full flex items-end justify-between gap-x-3'>
             <div className='space-y-1.5 w-2/3 items-center justify-center'>
               <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>

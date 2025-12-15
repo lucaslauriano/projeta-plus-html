@@ -422,6 +422,9 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
       return;
     }
 
+    console.log(`[useViewConfigs] Salvando ${options.entityName}. Grupos:`, data.groups?.length || 0);
+    console.log(`[useViewConfigs] Data completo:`, JSON.stringify(data, null, 2));
+
     setPendingAction('save');
     await callSketchupMethod(
       options.rubyMethods.saveToJson,

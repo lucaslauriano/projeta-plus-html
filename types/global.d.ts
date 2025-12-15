@@ -528,6 +528,30 @@ declare global {
       success: boolean;
       message: string;
     }) => void;
+    handleGetBasePlansResult?: (result: {
+      success: boolean;
+      message?: string;
+      plans?: Array<{
+        id: string;
+        name: string;
+        style: string;
+        activeLayers: string[];
+      }>;
+    }) => void;
+    handleSaveBasePlansResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleGetAvailableStylesForBasePlansResult?: (result: {
+      success: boolean;
+      message?: string;
+      styles?: string[];
+    }) => void;
+    handleGetAvailableLayersForBasePlansResult?: (result: {
+      success: boolean;
+      message?: string;
+      layers?: string[];
+    }) => void;
   }
 }
 

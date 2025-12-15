@@ -22,6 +22,7 @@ interface PlanEditDialogProps {
   onCameraTypeChange: (type: string) => void;
   onApplyCurrentState: () => void;
   onActiveLayersChange: (layers: string[]) => void;
+  onPlanTitleChange?: (title: string) => void; // Nova prop
 }
 
 export function PlanEditDialog(props: PlanEditDialogProps) {
@@ -30,6 +31,7 @@ export function PlanEditDialog(props: PlanEditDialogProps) {
       {...props}
       title='Configuração da Planta'
       itemTitle={props.planTitle}
+      onItemTitleChange={props.onPlanTitleChange}
       allowedCameraTypes={[
         'topo_perspectiva',
         'topo_ortogonal',

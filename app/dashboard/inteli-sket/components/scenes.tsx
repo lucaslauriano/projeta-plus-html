@@ -87,6 +87,8 @@ function ScenesComponent() {
   );
 
   const handleAddGroup = () => {
+    console.log('[Scenes] handleAddGroup chamado! Nome:', newGroupName);
+    
     if (!newGroupName.trim()) {
       toast.error('Digite um nome para o grupo');
       return;
@@ -98,9 +100,20 @@ function ScenesComponent() {
       scenes: [],
     };
 
-    setGroups([...groups, newGroup]);
+    const updatedGroups = [...groups, newGroup];
+    console.log('[Scenes] Novo grupo criado:', newGroup);
+    console.log('[Scenes] Total de grupos após adicionar:', updatedGroups.length);
+    
+    setGroups(updatedGroups);
     setNewGroupName('');
     setIsGroupDialogOpen(false);
+    
+    // Salvar no JSON após adicionar
+    setTimeout(() => {
+      console.log('[Scenes] Salvando após adicionar grupo. Total de grupos:', updatedGroups.length);
+      saveToJson();
+    }, 100);
+    
     toast.success('Grupo adicionado com sucesso!');
   };
 
@@ -116,40 +129,83 @@ function ScenesComponent() {
       segments: [],
     };
 
+    let updatedGroups: Group[];
     if (selectedGroup === 'root') {
       const newGroup: Group = {
         id: Date.now().toString(),
         name: newSceneTitle.trim(),
         scenes: [],
       };
-      setGroups([...groups, newGroup]);
+      updatedGroups = [...groups, newGroup];
+      setGroups(updatedGroups);
     } else {
-      setGroups(
-        groups.map((group) => {
-          if (group.id === selectedGroup) {
-            return {
-              ...group,
-              scenes: [...group.scenes, newScene],
-            };
-          }
-          return group;
-        })
-      );
+      updatedGroups = groups.map((group) => {
+        if (group.id === selectedGroup) {
+          return {
+            ...group,
+            scenes: [...group.scenes, newScene],
+          };
+        }
+        return group;
+      });
+      setGroups(updatedGroups);
     }
 
     setNewSceneTitle('');
     setIsSceneDialogOpen(false);
+    
+    // Salvar no JSON após adicionar
+    setTimeout(() => {
+      console.log('[Scenes] Salvando após adicionar cena. Total de grupos:', updatedGroups.length);
+      saveToJson();
+    }, 100);
+    
     toast.success('Cena adicionada com sucesso!');
   };
 
   const handleDeleteGroup = (groupId: string) => {
+    const group = groups.find((g) => g.id === groupId);
     const confirmed = confirm(
-      'Deseja realmente remover este grupo e todas as suas cenas?'
+      `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${group?.scenes.length || 0} cena(s)?`
     );
     if (!confirmed) return;
 
     setGroups(groups.filter((group) => group.id !== groupId));
+    
+    // Salvar no JSON após deletar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+    
     toast.success('Grupo removido com sucesso!');
+  };
+
+  const handleEditGroup = (groupId: string) => {
+    const group = groups.find((g) => g.id === groupId);
+    if (!group) return;
+
+    const newName = prompt('Digite o novo nome do grupo:', group.name);
+    if (!newName || newName.trim() === '') {
+      toast.error('Nome inválido');
+      return;
+    }
+
+    if (newName.trim() === group.name) {
+      return; // Nenhuma mudança
+    }
+
+    setGroups(
+      groups.map((g) =>
+        g.id === groupId ? { ...g, name: newName.trim() } : g
+      )
+    );
+    
+    // Salvar no JSON após editar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+    
+    toast.success('Grupo renomeado com sucesso!');
   };
 
   const handleDeleteScene = (groupId: string, sceneId: string) => {
@@ -167,6 +223,12 @@ function ScenesComponent() {
         return group;
       })
     );
+    
+    // Salvar no JSON após deletar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+    
     toast.success('Cena removida com sucesso!');
   };
 
@@ -189,6 +251,12 @@ function ScenesComponent() {
         return g;
       })
     );
+    
+    // Salvar no JSON após duplicar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+    
     toast.success('Cena duplicada!');
   };
 
@@ -347,7 +415,7 @@ function ScenesComponent() {
         isBusy={isBusy}
         isOpen={isEditDialogOpen}
         onSave={handleSaveEditScene}
-        sceneTitle={editingScene?.title || ''}
+        sceneTitle={editSceneName}
         cameraType={editCameraType}
         onOpenChange={setIsEditDialogOpen}
         activeLayers={editActiveLayers}
@@ -356,6 +424,7 @@ function ScenesComponent() {
         availableStyles={availableStyles}
         onCameraTypeChange={setEditCameraType}
         onActiveLayersChange={setEditActiveLayers}
+        onSceneTitleChange={setEditSceneName}
         onCancel={() => {
           setIsEditDialogOpen(false);
           setEditingScene(null);
@@ -414,8 +483,7 @@ function ScenesComponent() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            //TODO: Implement edit folder method
-                            //editFolderName(group.name);
+                            handleEditGroup(group.id);
                           }}
                           className='opacity-0 group-hover:opacity-100 transition-opacity'
                           title='Editar'
@@ -425,8 +493,7 @@ function ScenesComponent() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            //TODO: Implement delete folder method
-                            //deleteFolder(group.name);
+                            handleDeleteGroup(group.id);
                           }}
                           className='opacity-0 group-hover:opacity-100 transition-opacity'
                           title='Excluir pasta'

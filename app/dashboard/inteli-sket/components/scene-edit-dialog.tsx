@@ -22,6 +22,7 @@ interface SceneEditDialogProps {
   onCameraTypeChange: (type: string) => void;
   onApplyCurrentState: () => void;
   onActiveLayersChange: (layers: string[]) => void;
+  onSceneTitleChange?: (title: string) => void; // Nova prop
 }
 
 export function SceneEditDialog(props: SceneEditDialogProps) {
@@ -30,6 +31,7 @@ export function SceneEditDialog(props: SceneEditDialogProps) {
       {...props}
       title='Configuração da Cena'
       itemTitle={props.sceneTitle}
+      onItemTitleChange={props.onSceneTitleChange}
       allowedCameraTypes={['iso_perspectiva', 'iso_ortogonal']}
     />
   );

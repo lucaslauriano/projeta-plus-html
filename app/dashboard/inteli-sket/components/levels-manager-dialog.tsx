@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -14,12 +14,14 @@ import {
   Plus,
   Loader2,
   Building2,
-  MoreVertical,
   Check,
   Trash2,
+  Settings2,
 } from 'lucide-react';
 import { useLevels } from '@/hooks/useLevels';
 import { toast } from 'sonner';
+import { BasePlansConfigDialog } from './base-plans-config-dialog';
+import { useBasePlans } from '@/hooks/useBasePlans';
 
 import {
   Table,
@@ -29,12 +31,6 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table';
-import {
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSubTrigger,
-} from '@/components/ui/dropdown-menu';
 
 interface LevelsManagerDialogProps {
   isOpen: boolean;
@@ -54,7 +50,79 @@ export function LevelsManagerDialog({
     createCeilingScene,
   } = useLevels();
 
+  const {
+    data: basePlansData,
+    availableStyles,
+    availableLayers,
+    savePlans,
+    isBusy: isBusyPlans,
+  } = useBasePlans();
+
   const [heightInput, setHeightInput] = useState('0.00');
+  const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false);
+  const [baseStyle, setBaseStyle] = useState('FM_VISTAS');
+  const [baseLayers, setBaseLayers] = useState<string[]>(['Layer0']);
+  const [ceilingStyle, setCeilingStyle] = useState('FM_VISTAS');
+  const [ceilingLayers, setCeilingLayers] = useState<string[]>(['Layer0']);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Função para salvar as configurações
+  const saveConfig = async (showToast: boolean = false) => {
+    const plans = [
+      {
+        id: 'base',
+        name: 'Base',
+        style: baseStyle,
+        activeLayers: baseLayers,
+      },
+      {
+        id: 'forro',
+        name: 'Forro',
+        style: ceilingStyle,
+        activeLayers: ceilingLayers,
+      },
+    ];
+
+    console.log('[LevelsManagerDialog] Salvando configurações:', plans);
+    await savePlans(plans, showToast);
+  };
+
+  // Funções que salvam após alteração
+  const handleBaseStyleChange = (style: string) => {
+    setBaseStyle(style);
+    if (isInitialized) {
+      setTimeout(() => {
+        saveConfig(false); // Não mostrar toast no salvamento automático
+      }, 100);
+    }
+  };
+
+  const handleBaseLayersChange = (layers: string[]) => {
+    setBaseLayers(layers);
+    if (isInitialized) {
+      setTimeout(() => {
+        saveConfig(false); // Não mostrar toast no salvamento automático
+      }, 100);
+    }
+  };
+
+  const handleCeilingStyleChange = (style: string) => {
+    setCeilingStyle(style);
+    if (isInitialized) {
+      setTimeout(() => {
+        saveConfig(false); // Não mostrar toast no salvamento automático
+      }, 100);
+    }
+  };
+
+  const handleCeilingLayersChange = (layers: string[]) => {
+    setCeilingLayers(layers);
+    if (isInitialized) {
+      setTimeout(() => {
+        saveConfig(false); // Não mostrar toast no salvamento automático
+      }, 100);
+    }
+  };
 
   function handleAddLevel() {
     const height = parseFloat(heightInput.replace(',', '.'));
@@ -68,21 +136,58 @@ export function LevelsManagerDialog({
     setHeightInput('0.00');
   }
 
+  // Load initial data from JSON
+  useEffect(() => {
+    if (basePlansData.plans.length > 0 && !isInitialized) {
+      const basePlan = basePlansData.plans.find((p) => p.id === 'base');
+      const ceilingPlan = basePlansData.plans.find((p) => p.id === 'forro');
+
+      if (basePlan) {
+        setBaseStyle(basePlan.style);
+        setBaseLayers(basePlan.activeLayers);
+      }
+      if (ceilingPlan) {
+        setCeilingStyle(ceilingPlan.style);
+        setCeilingLayers(ceilingPlan.activeLayers);
+      }
+      
+      setIsInitialized(true);
+    }
+  }, [basePlansData, isInitialized]);
+
   function formatHeight(meters: number): string {
     return meters.toFixed(2) + 'm';
   }
+
+  const handleApplyCurrentState = () => {
+    // TODO: Implementar lógica para aplicar o estado atual do modelo
+    toast.info('Aplicando estado atual...');
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className='w-full max-h-[900px] overflow-y-auto'>
         <DialogHeader>
-          <DialogTitle className='flex text-start gap-2 text-xl'>
-            Gerenciador de Níveis
-          </DialogTitle>
-          <DialogDescription className='text-start text-sm text-muted-foreground'>
-            Configure os níveis do projeto e crie as cenas de planta baixa e
-            forro
-          </DialogDescription>
+          <div className='flex items-center justify-between'>
+            <div>
+              <DialogTitle className='flex text-start gap-2 text-xl'>
+                Gerenciador de Níveis
+              </DialogTitle>
+              <DialogDescription className='text-start text-sm text-muted-foreground'>
+                Configure os níveis do projeto e crie as cenas de planta baixa e
+                forro
+              </DialogDescription>
+            </div>
+            <Button
+              size='sm'
+              variant='outline'
+              onClick={() => setIsConfigDialogOpen(true)}
+              className='flex items-center gap-2'
+            >
+              <Settings2 className='w-4 h-4' />
+              Configurar Plantas
+            </Button>
+          </div>
         </DialogHeader>
 
         <div className='space-y-3 w-full'>
@@ -154,7 +259,7 @@ export function LevelsManagerDialog({
                           size='sm'
                           className='cursor-pointer justify-between w-fit'
                           onClick={() => createBaseScene(level.number)}
-                          disabled={isBusy || level.has_base}
+                          disabled={isBusy}
                         >
                           {level.has_base ? (
                             <Check className='w-3 h-3 mr-2' />
@@ -168,7 +273,7 @@ export function LevelsManagerDialog({
                           size='sm'
                           className='cursor-pointer justify-between w-fit'
                           onClick={() => createCeilingScene(level.number)}
-                          disabled={isBusy || level.has_ceiling}
+                          disabled={isBusy}
                         >
                           {level.has_ceiling ? (
                             <Check className='w-3 h-3 mr-2' />
@@ -176,6 +281,17 @@ export function LevelsManagerDialog({
                             <Plus className='w-3 h-3 mr-2' />
                           )}
                           Forro
+                        </Button>
+
+                        <Button
+                          size='sm'
+                          variant='destructive'
+                          className='cursor-pointer justify-between w-fit'
+                          onClick={() => removeLevel(level.number)}
+                          disabled={isBusy}
+                        >
+                          <Trash2 className='w-3 h-3 mr-2' />
+                          Excluir
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -186,6 +302,23 @@ export function LevelsManagerDialog({
           )}
         </div>
       </DialogContent>
+
+      <BasePlansConfigDialog
+        isOpen={isConfigDialogOpen}
+        onOpenChange={setIsConfigDialogOpen}
+        availableStyles={availableStyles}
+        availableLayers={availableLayers}
+        baseStyle={baseStyle}
+        baseLayers={baseLayers}
+        ceilingStyle={ceilingStyle}
+        ceilingLayers={ceilingLayers}
+        onBaseStyleChange={handleBaseStyleChange}
+        onBaseLayersChange={handleBaseLayersChange}
+        onCeilingStyleChange={handleCeilingStyleChange}
+        onCeilingLayersChange={handleCeilingLayersChange}
+        onApplyCurrentState={handleApplyCurrentState}
+        isBusy={isBusy || isBusyPlans}
+      />
     </Dialog>
   );
 }
