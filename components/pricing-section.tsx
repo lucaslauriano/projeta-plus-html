@@ -219,7 +219,7 @@ export function PricingSection({ userPlan }: PricingSectionProps) {
           <Card>
             <CardHeader>
               <CardTitle className='font-sans'>Projetos Recentes</CardTitle>
-              <CardDescription className='font-serif'>
+              <CardDescription>
                 Seus últimos projetos do SketchUp
               </CardDescription>
             </CardHeader>

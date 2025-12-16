@@ -424,7 +424,7 @@ function PlansComponent() {
         <div className='flex flex-col gap-3 w-full'>
           <Button
             size='sm'
-            className='w-full flex items-center gap-3 justify-center text-base'
+            className='w-full flex items-center gap-3 justify-center'
             variant='default'
             onClick={() => setIsLevelsDialogOpen(true)}
           >
