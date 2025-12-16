@@ -8,7 +8,6 @@ import React, {
   ReactNode,
 } from 'react';
 import { toast } from 'sonner';
-import { toastWithDebounce } from '@/lib/toast-utils';
 
 interface SketchupContextType {
   sketchup: Window['sketchup'] | undefined;
@@ -69,7 +68,7 @@ export function SketchupProvider({ children }: SketchupProviderProps) {
   ) => {
     console.log('callSketchupMethod', method, args);
     if (!isAvailable) {
-      toastWithDebounce.error('SketchUp API não disponível');
+      toast.error('SketchUp API não disponível');
       return;
     }
 

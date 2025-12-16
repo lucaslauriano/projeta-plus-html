@@ -312,7 +312,7 @@ export function useFurniture() {
   const isolateSelection = useCallback(
     async (entityId?: number) => {
       if (!entityId) {
-        toast.warn('Nenhum componente selecionado.');
+        toast.warning('Nenhum componente selecionado.');
         return;
       }
       if (!isAvailable) return;
