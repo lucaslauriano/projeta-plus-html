@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { useSketchup } from '@/contexts/SketchupContext';
 import type { LayersData, SketchUpFolder, SketchUpTag } from '@/types/global';
 

@@ -322,6 +322,32 @@ declare global {
       message?: string;
       count?: number;
     }) => void;
+    // Details Module
+    handleCreateCarpentryDetailResult?: (result: {
+      success: boolean;
+      message: string;
+      layer_name?: string;
+    }) => void;
+    handleCreateGeneralDetailsResult?: (result: {
+      success: boolean;
+      message: string;
+      count?: number;
+    }) => void;
+    handleGetStylesResult?: (result: {
+      success: boolean;
+      message: string;
+      styles?: string[];
+    }) => void;
+    handleDuplicateSceneResult?: (result: {
+      success: boolean;
+      message: string;
+      scene_name?: string;
+    }) => void;
+    handleTogglePerspectiveResult?: (result: {
+      success: boolean;
+      message: string;
+      angle_index?: number;
+    }) => void;
   }
 }
 

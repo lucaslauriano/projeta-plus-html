@@ -26,9 +26,8 @@ import {
   PlusCircle,
   FolderPlus,
   MoreVertical,
-  Clapperboard,
 } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuItem,

@@ -19,23 +19,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useDetails } from '@/hooks/useDetails';
 
 export default function DetailsComponent() {
+  const {
+    styles,
+    isProcessing,
+    createCarpentryDetail,
+    createGeneralDetails,
+    getStyles,
+    duplicateScene,
+    togglePerspective,
+  } = useDetails();
+
   const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] = useState(false);
-  const [prefix, setPrefix] = useState('');
+  const [selectedStyle, setSelectedStyle] = useState('');
   const [suffix, setSuffix] = useState('');
 
-  function handleDuplicateScenes() {
-    // TODO: Implement scene duplication logic
-    console.log('Duplicating scenes with:', { prefix, suffix });
-    setIsDuplicateDialogOpen(false);
-    setPrefix('');
-    setSuffix('');
+  async function handleCreateCarpentryDetail() {
+    await createCarpentryDetail();
+  }
+
+  async function handleCreateGeneralDetails() {
+    await createGeneralDetails();
+  }
+
+  async function handleOpenDuplicateDialog() {
+    setIsDuplicateDialogOpen(true);
+    await getStyles();
+  }
+
+  async function handleDuplicateScene() {
+    const success = await duplicateScene(selectedStyle, suffix);
+    if (success) {
+      setIsDuplicateDialogOpen(false);
+      setSelectedStyle('');
+      setSuffix('');
+    }
+  }
+
+  async function handleTogglePerspective() {
+    await togglePerspective();
   }
 
   function handleDialogKeyPress(e: React.KeyboardEvent) {
     if (e.key === 'Enter') {
-      handleDuplicateScenes();
+      handleDuplicateScene();
     }
   }
 
@@ -55,6 +84,8 @@ export default function DetailsComponent() {
           <Button
             className='w-full flex items-center gap-3 justify-center text-base'
             variant='default'
+            onClick={handleCreateCarpentryDetail}
+            disabled={isProcessing}
           >
             <LayoutGrid className='w-5 h-5' />
             Detalhamento Marcenaria
@@ -63,6 +94,8 @@ export default function DetailsComponent() {
           <Button
             className='w-full flex items-center gap-3 justify-center text-base'
             variant='default'
+            onClick={handleCreateGeneralDetails}
+            disabled={isProcessing}
           >
             <Grid3x3 className='w-5 h-5' />
             Detalhamento Geral
@@ -71,7 +104,8 @@ export default function DetailsComponent() {
           <Button
             className='w-full flex items-center gap-3 justify-center text-base'
             variant='default'
-            onClick={() => setIsDuplicateDialogOpen(true)}
+            onClick={handleOpenDuplicateDialog}
+            disabled={isProcessing}
           >
             <Copy className='w-5 h-5' />
             Duplicar Cenas
@@ -80,6 +114,8 @@ export default function DetailsComponent() {
           <Button
             className='w-full flex items-center gap-3 justify-center text-base'
             variant='default'
+            onClick={handleTogglePerspective}
+            disabled={isProcessing}
           >
             <RotateCcw className='w-5 h-5' />
             Alternar Vista
@@ -94,34 +130,35 @@ export default function DetailsComponent() {
       >
         <DialogContent className='sm:max-w-[425px] flex flex-col gap-4'>
           <DialogHeader>
-            <DialogTitle>Duplicar Cenas</DialogTitle>
+            <DialogTitle>Duplicar Cena</DialogTitle>
             <DialogDescription>
-              Adicione prefixo ou sufixo para duplicar as cenas selecionadas.
+              Selecione um estilo e adicione um sufixo para duplicar a cena
+              atual.
             </DialogDescription>
           </DialogHeader>
           <div className='grid gap-4 py-4'>
             <div className='space-y-2'>
               <label className='block text-sm font-semibold mb-2 text-foreground'>
-                Estilos
+                Estilo
               </label>
-              <Select value={prefix} onValueChange={setPrefix}>
+              <Select value={selectedStyle} onValueChange={setSelectedStyle}>
                 <SelectTrigger className='h-11 rounded-xl border-2'>
-                  <SelectValue placeholder='Selecione o prefixo' />
+                  <SelectValue placeholder='Selecione o estilo' />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='Novo_'>Novo_</SelectItem>
-                  <SelectItem value='Copy_'>Copy_</SelectItem>
-                  <SelectItem value='Duplicado_'>Duplicado_</SelectItem>
-                  <SelectItem value='V2_'>V2_</SelectItem>
-                  <SelectItem value='Alt_'>Alt_</SelectItem>
+                  {styles.map((style) => (
+                    <SelectItem key={style} value={style}>
+                      {style}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div className='space-y-2'>
               <Input
                 id='suffix'
-                label='Sufixo'
-                placeholder='Ex: _Copia'
+                label='Sufixo da cena'
+                placeholder='Ex: planta, corte-aa...'
                 value={suffix}
                 onChange={(e) => setSuffix(e.target.value)}
                 onKeyPress={handleDialogKeyPress}
@@ -131,20 +168,19 @@ export default function DetailsComponent() {
           <DialogFooter className='flex gap-2'>
             <div className='w-full flex gap-2'>
               <Button
-                className=''
                 variant='outline'
                 onClick={() => {
                   setIsDuplicateDialogOpen(false);
-                  setPrefix('');
+                  setSelectedStyle('');
                   setSuffix('');
                 }}
+                disabled={isProcessing}
               >
-                <Copy className='w-4 h-4 mr-2' />
                 Cancelar
               </Button>
-              <Button onClick={handleDuplicateScenes}>
+              <Button onClick={handleDuplicateScene} disabled={isProcessing}>
                 <Copy className='w-4 h-4 mr-2' />
-                Duplicar
+                Criar
               </Button>
             </div>
           </DialogFooter>

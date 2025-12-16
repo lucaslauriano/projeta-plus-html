@@ -25,7 +25,7 @@ import {
   Folder,
   MoreVertical,
 } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,

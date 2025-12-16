@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 interface CustomComponentItem {
   id: string;
@@ -60,18 +60,24 @@ export function useCustomComponents() {
   // ========================================
 
   useEffect(() => {
-    window.handleGetCustomComponentsResult = (result: CustomComponentResult) => {
+    window.handleGetCustomComponentsResult = (
+      result: CustomComponentResult
+    ) => {
       setIsBusy(false);
       if (result.success) {
         setData({
           groups: result.groups || [],
         });
       } else {
-        toast.error(result.message || 'Erro ao carregar componentes customizados');
+        toast.error(
+          result.message || 'Erro ao carregar componentes customizados'
+        );
       }
     };
 
-    window.handleUploadCustomComponentResult = (result: CustomComponentResult) => {
+    window.handleUploadCustomComponentResult = (
+      result: CustomComponentResult
+    ) => {
       setIsBusy(false);
       if (result.success) {
         toast.success(`Componente adicionado: ${result.filename}`);
@@ -81,7 +87,9 @@ export function useCustomComponents() {
       }
     };
 
-    window.handleDeleteCustomComponentResult = (result: CustomComponentResult) => {
+    window.handleDeleteCustomComponentResult = (
+      result: CustomComponentResult
+    ) => {
       setIsBusy(false);
       if (result.success) {
         toast.success('Componente removido com sucesso');
@@ -177,4 +185,3 @@ export function useCustomComponents() {
     syncFolder,
   };
 }
-
