@@ -80,7 +80,7 @@ function MyComponent() {
 ```tsx
 // hooks/useMyModule.ts
 import { useEffect } from 'react';
-import { toast } from 'sooner';
+import { toast } from 'sonner';
 import { useSketchup } from '@/contexts/SketchupContext';
 
 export function useMyModule() {

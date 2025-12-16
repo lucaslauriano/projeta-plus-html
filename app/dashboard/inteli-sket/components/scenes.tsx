@@ -88,7 +88,7 @@ function ScenesComponent() {
 
   const handleAddGroup = () => {
     console.log('[Scenes] handleAddGroup chamado! Nome:', newGroupName);
-    
+
     if (!newGroupName.trim()) {
       toast.error('Digite um nome para o grupo');
       return;
@@ -102,18 +102,24 @@ function ScenesComponent() {
 
     const updatedGroups = [...groups, newGroup];
     console.log('[Scenes] Novo grupo criado:', newGroup);
-    console.log('[Scenes] Total de grupos após adicionar:', updatedGroups.length);
-    
+    console.log(
+      '[Scenes] Total de grupos após adicionar:',
+      updatedGroups.length
+    );
+
     setGroups(updatedGroups);
     setNewGroupName('');
     setIsGroupDialogOpen(false);
-    
+
     // Salvar no JSON após adicionar
     setTimeout(() => {
-      console.log('[Scenes] Salvando após adicionar grupo. Total de grupos:', updatedGroups.length);
+      console.log(
+        '[Scenes] Salvando após adicionar grupo. Total de grupos:',
+        updatedGroups.length
+      );
       saveToJson();
     }, 100);
-    
+
     toast.success('Grupo adicionado com sucesso!');
   };
 
@@ -153,30 +159,35 @@ function ScenesComponent() {
 
     setNewSceneTitle('');
     setIsSceneDialogOpen(false);
-    
+
     // Salvar no JSON após adicionar
     setTimeout(() => {
-      console.log('[Scenes] Salvando após adicionar cena. Total de grupos:', updatedGroups.length);
+      console.log(
+        '[Scenes] Salvando após adicionar cena. Total de grupos:',
+        updatedGroups.length
+      );
       saveToJson();
     }, 100);
-    
+
     toast.success('Cena adicionada com sucesso!');
   };
 
   const handleDeleteGroup = (groupId: string) => {
     const group = groups.find((g) => g.id === groupId);
     const confirmed = confirm(
-      `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${group?.scenes.length || 0} cena(s)?`
+      `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${
+        group?.scenes.length || 0
+      } cena(s)?`
     );
     if (!confirmed) return;
 
     setGroups(groups.filter((group) => group.id !== groupId));
-    
+
     // Salvar no JSON após deletar
     setTimeout(() => {
       saveToJson();
     }, 100);
-    
+
     toast.success('Grupo removido com sucesso!');
   };
 
@@ -195,16 +206,14 @@ function ScenesComponent() {
     }
 
     setGroups(
-      groups.map((g) =>
-        g.id === groupId ? { ...g, name: newName.trim() } : g
-      )
+      groups.map((g) => (g.id === groupId ? { ...g, name: newName.trim() } : g))
     );
-    
+
     // Salvar no JSON após editar
     setTimeout(() => {
       saveToJson();
     }, 100);
-    
+
     toast.success('Grupo renomeado com sucesso!');
   };
 
@@ -223,12 +232,12 @@ function ScenesComponent() {
         return group;
       })
     );
-    
+
     // Salvar no JSON após deletar
     setTimeout(() => {
       saveToJson();
     }, 100);
-    
+
     toast.success('Cena removida com sucesso!');
   };
 
@@ -251,12 +260,12 @@ function ScenesComponent() {
         return g;
       })
     );
-    
+
     // Salvar no JSON após duplicar
     setTimeout(() => {
       saveToJson();
     }, 100);
-    
+
     toast.success('Cena duplicada!');
   };
 

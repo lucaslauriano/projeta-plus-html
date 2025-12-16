@@ -89,7 +89,26 @@ export interface LayersData {
   tags: SketchUpTag[];
 }
 
-export {};
+export interface ViewConfig {
+  id: string;
+  name: string;
+  style: string;
+  cameraType: string;
+  activeLayers: string[];
+}
+
+export interface BasePlan {
+  id: string;
+  name: string;
+  style: string;
+  activeLayers: string[];
+}
+
+export interface ViewConfigsData {
+  groups?: unknown[];
+  scenes?: ViewConfig[];
+  plans?: ViewConfig[];
+}
 
 declare global {
   interface CustomJwtSessionClaims {
@@ -365,12 +384,12 @@ declare global {
     handleGetScenesResult?: (result: {
       success: boolean;
       message?: string;
-      scenes?: any[];
+      scenes?: ViewConfig[];
     }) => void;
     handleAddSceneResult?: (result: {
       success: boolean;
       message: string;
-      scene?: any;
+      scene?: ViewConfig;
     }) => void;
     handleUpdateSceneResult?: (result: {
       success: boolean;
@@ -392,17 +411,17 @@ declare global {
     handleLoadScenesFromJsonResult?: (result: {
       success: boolean;
       message: string;
-      data?: any;
+      data?: ViewConfigsData;
     }) => void;
     handleLoadDefaultScenesResult?: (result: {
       success: boolean;
       message: string;
-      data?: any;
+      data?: ViewConfigsData;
     }) => void;
     handleLoadScenesFromFileResult?: (result: {
       success: boolean;
       message: string;
-      data?: any;
+      data?: ViewConfigsData;
     }) => void;
     handleGetAvailableStylesResult?: (result: {
       success: boolean;
@@ -429,12 +448,12 @@ declare global {
     handleGetPlansResult?: (result: {
       success: boolean;
       message?: string;
-      plans?: any[];
+      plans?: ViewConfig[];
     }) => void;
     handleAddPlanResult?: (result: {
       success: boolean;
       message: string;
-      plan?: any;
+      plan?: ViewConfig;
     }) => void;
     handleUpdatePlanResult?: (result: {
       success: boolean;
@@ -456,17 +475,17 @@ declare global {
     handleLoadPlansFromJsonResult?: (result: {
       success: boolean;
       message: string;
-      data?: any;
+      data?: ViewConfigsData;
     }) => void;
     handleLoadDefaultPlansResult?: (result: {
       success: boolean;
       message: string;
-      data?: any;
+      data?: ViewConfigsData;
     }) => void;
     handleLoadPlansFromFileResult?: (result: {
       success: boolean;
       message: string;
-      data?: any;
+      data?: ViewConfigsData;
     }) => void;
     handleGetAvailableStylesPlansResult?: (result: {
       success: boolean;
@@ -552,12 +571,34 @@ declare global {
       message?: string;
       layers?: string[];
     }) => void;
+    handleCreateCarpentryDetailResult?: (result: {
+      success: boolean;
+      message: string;
+      layer_name?: string;
+    }) => void;
+    handleCreateGeneralDetailsResult?: (result: {
+      success: boolean;
+      message: string;
+      count?: number;
+    }) => void;
+    handleGetStylesResult?: (result: {
+      success: boolean;
+      message: string;
+      styles?: string[];
+    }) => void;
+    handleDuplicateSceneResult?: (result: {
+      success: boolean;
+      message: string;
+      scene_name?: string;
+    }) => void;
+    handleTogglePerspectiveResult?: (result: {
+      success: boolean;
+      message: string;
+      angle_index?: number;
+    }) => void;
   }
 }
 
-export {};
-
-// types.d.ts
 export interface RubyResponse {
   success: boolean;
   message: string;
@@ -620,3 +661,5 @@ export interface GlobalSettings {
     languages: LanguageOption[]; // NOVO: opções de idioma
   };
 }
+
+export {};

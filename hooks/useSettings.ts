@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useSketchup } from '@/contexts/SketchupContext';
-import { GlobalSettings } from '@/types/global';
+import type { GlobalSettings, RubyResponse } from '@/types/global';
 
 export function useSettings() {
   const {
@@ -16,7 +16,6 @@ export function useSettings() {
     useState<GlobalSettings | null>(null);
 
   useEffect(() => {
-    // Handler para receber configurações do backend
     window.handleGlobalSettings = (loadedSettings: GlobalSettings) => {
       console.log('Received global settings from Ruby:', loadedSettings);
       setSettings(loadedSettings);
@@ -25,14 +24,12 @@ export function useSettings() {
       setHasChanges(false);
     };
 
-    // Handler para resposta de atualização de configuração individual
-    window.handleSettingUpdate = (response) => {
+    window.handleSettingUpdate = (response: RubyResponse) => {
       setIsLoading(false);
       if (response.success) {
         toast.success(response.message);
         console.log('Setting update success:', response.message);
 
-        // Atualizar configuração específica se fornecida
         if (response.setting_key && response.updated_value !== undefined) {
           setSettings((prev) =>
             prev
@@ -54,7 +51,6 @@ export function useSettings() {
           );
         }
 
-        // Se foi mudança de idioma, pode precisar recarregar
         if (response.setting_key === 'language') {
           console.log(`Language changed to: ${response.updated_value}`);
         }
@@ -64,14 +60,12 @@ export function useSettings() {
       }
     };
 
-    // Handler para resposta de seleção de pasta
-    window.handleFolderSelection = (response) => {
+    window.handleFolderSelection = (response: RubyResponse) => {
       setIsLoading(false);
       if (response.success) {
         toast.success(response.message);
         console.log('Folder selection success:', response.message);
 
-        // Atualizar pasta selecionada
         if (response.setting_key && response.path) {
           setSettings((prev) =>
             prev
@@ -219,13 +213,13 @@ export function useSettings() {
   return {
     settings,
     isLoading: isLoading || contextLoading,
-    isAvailable,
     hasChanges,
-    loadSettings,
-    updateLocalSetting,
+    isAvailable,
     saveSetting,
-    saveAllChanges,
+    loadSettings,
     selectFolder,
     discardChanges,
+    saveAllChanges,
+    updateLocalSetting,
   };
 }

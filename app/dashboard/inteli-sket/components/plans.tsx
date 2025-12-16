@@ -8,7 +8,7 @@ import {
   AccordionContent,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Edit, Trash2, Folder, Loader2, FileText, Plus } from 'lucide-react';
+import { Edit, Trash2, Folder, Loader2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePlans, PlanGroup } from '@/hooks/usePlans';
 import { PlanEditDialog } from './plan-edit-dialog';
@@ -97,13 +97,16 @@ function PlansComponent() {
     setGroups(updatedGroups);
     setNewGroupName('');
     setIsGroupDialogOpen(false);
-    
+
     // Salvar no JSON após adicionar
     setTimeout(() => {
-      console.log('[Plans] Salvando após adicionar grupo. Total de grupos:', updatedGroups.length);
+      console.log(
+        '[Plans] Salvando após adicionar grupo. Total de grupos:',
+        updatedGroups.length
+      );
       saveToJson();
     }, 100);
-    
+
     toast.success('Grupo adicionado com sucesso!');
   };
 
@@ -143,30 +146,35 @@ function PlansComponent() {
 
     setNewPlanTitle('');
     setIsPlanDialogOpen(false);
-    
+
     // Salvar no JSON após adicionar
     setTimeout(() => {
-      console.log('[Plans] Salvando após adicionar planta. Total de grupos:', updatedGroups.length);
+      console.log(
+        '[Plans] Salvando após adicionar planta. Total de grupos:',
+        updatedGroups.length
+      );
       saveToJson();
     }, 100);
-    
+
     toast.success('Planta adicionada com sucesso!');
   };
 
   const handleDeleteGroup = (groupId: string) => {
     const group = groups.find((g) => g.id === groupId);
     const confirmed = confirm(
-      `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${group?.plans.length || 0} planta(s)?`
+      `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${
+        group?.plans.length || 0
+      } planta(s)?`
     );
     if (!confirmed) return;
 
     setGroups(groups.filter((group) => group.id !== groupId));
-    
+
     // Salvar no JSON após deletar
     setTimeout(() => {
       saveToJson();
     }, 100);
-    
+
     toast.success('Grupo removido com sucesso!');
   };
 
@@ -185,16 +193,14 @@ function PlansComponent() {
     }
 
     setGroups(
-      groups.map((g) =>
-        g.id === groupId ? { ...g, name: newName.trim() } : g
-      )
+      groups.map((g) => (g.id === groupId ? { ...g, name: newName.trim() } : g))
     );
-    
+
     // Salvar no JSON após editar
     setTimeout(() => {
       saveToJson();
     }, 100);
-    
+
     toast.success('Grupo renomeado com sucesso!');
   };
 
@@ -213,12 +219,12 @@ function PlansComponent() {
         return group;
       })
     );
-    
+
     // Salvar no JSON após deletar
     setTimeout(() => {
       saveToJson();
     }, 100);
-    
+
     toast.success('Planta removida com sucesso!');
   };
 
@@ -241,12 +247,12 @@ function PlansComponent() {
         return g;
       })
     );
-    
+
     // Salvar no JSON após duplicar
     setTimeout(() => {
       saveToJson();
     }, 100);
-    
+
     toast.success('Planta duplicada!');
   };
 
