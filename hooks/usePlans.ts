@@ -1,7 +1,6 @@
 'use client';
 
 import { useViewConfigs, ViewConfig } from './useViewConfigs';
-import { Segment } from 'next/dist/server/app-render/types';
 
 export type Plan = ViewConfig;
 
@@ -11,7 +10,7 @@ export interface PlanGroup {
   plans: Array<{
     id: string;
     title: string;
-    segments: Segment[];
+    segments: unknown[];
   }>;
   [key: string]: unknown;
 }

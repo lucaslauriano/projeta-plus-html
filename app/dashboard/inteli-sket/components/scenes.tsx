@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/accordion';
 import { Edit, Trash2, Folder, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useScenes } from '@/hooks/useScenes';
+import { SceneGroup, useScenes } from '@/hooks/useScenes';
 import { SceneEditDialog } from './scene-edit-dialog';
 import { AddGroupDialog, AddSceneDialog } from './scene-group-dialogs';
 import {
@@ -20,23 +20,7 @@ import {
 } from './scenes-skeleton';
 import { ViewConfigMenu } from './view-config-menu';
 
-interface Segment {
-  id: string;
-  name: string;
-}
-
-interface Scene {
-  id: string;
-  title: string;
-  segments: Segment[];
-}
-
-interface Group {
-  id: string;
-  name: string;
-  scenes: Scene[];
-  [key: string]: unknown;
-}
+type Scene = SceneGroup['scenes'][number];
 
 function ScenesComponent() {
   const {
@@ -59,7 +43,9 @@ function ScenesComponent() {
   } = useScenes();
 
   const groups = data.groups;
-  const setGroups = (newGroups: Group[] | ((prev: Group[]) => Group[])) => {
+  const setGroups = (
+    newGroups: SceneGroup[] | ((prev: SceneGroup[]) => SceneGroup[])
+  ) => {
     const updatedGroups =
       typeof newGroups === 'function' ? newGroups(data.groups) : newGroups;
 
@@ -92,7 +78,7 @@ function ScenesComponent() {
       return;
     }
 
-    const newGroup: Group = {
+    const newGroup: SceneGroup = {
       id: Date.now().toString(),
       name: newGroupName.trim(),
       scenes: [],
@@ -117,15 +103,15 @@ function ScenesComponent() {
       return;
     }
 
-    const newScene: Scene = {
+    const newScene = {
       id: Date.now().toString(),
       title: newSceneTitle.trim(),
       segments: [],
     };
 
-    let updatedGroups: Group[];
+    let updatedGroups: SceneGroup[];
     if (selectedGroup === 'root') {
-      const newGroup: Group = {
+      const newGroup: SceneGroup = {
         id: Date.now().toString(),
         name: newSceneTitle.trim(),
         scenes: [],
@@ -504,10 +490,12 @@ function ScenesComponent() {
                             <PlanItem
                               key={scene.id}
                               title={scene.title}
-                              onEdit={() => handleEditScene(scene)}
-                              onLoadFromJson={() => handleApplyScene(scene)}
+                              onEdit={() => handleEditScene(scene as Scene)}
+                              onLoadFromJson={() =>
+                                handleApplyScene(scene as Scene)
+                              }
                               onDuplicate={() =>
-                                handleDuplicateScene(group.id, scene)
+                                handleDuplicateScene(group.id, scene as Scene)
                               }
                               onDelete={() =>
                                 handleDeleteScene(group.id, scene.id)

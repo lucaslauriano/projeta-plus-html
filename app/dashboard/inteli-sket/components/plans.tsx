@@ -407,13 +407,13 @@ function PlansComponent() {
           <div className='flex items-center gap-2'>
             <ViewConfigMenu
               isBusy={isBusy}
-              entityLabel='Planta'
-              onAddGroup={() => setIsGroupDialogOpen(true)}
               onAddItem={() => setIsPlanDialogOpen(true)}
-              onLoadFromJson={loadFromJson}
-              onLoadDefault={loadDefault}
-              onLoadFromFile={loadFromFile}
+              onAddGroup={() => setIsGroupDialogOpen(true)}
+              entityLabel='Planta'
               onSaveToJson={saveToJson}
+              onLoadDefault={loadDefault}
+              onLoadFromJson={loadFromJson}
+              onLoadFromFile={loadFromFile}
             />
           </div>
         </div>
@@ -487,10 +487,10 @@ function PlansComponent() {
                           <PlanItem
                             key={plan.id}
                             title={plan.title}
-                            onEdit={() => handleEditPlan(plan)}
-                            onLoadFromJson={() => handleApplyPlan(plan)}
+                            onEdit={() => handleEditPlan(plan as Plan)}
+                            onLoadFromJson={() => handleApplyPlan(plan as Plan)}
                             onDuplicate={() =>
-                              handleDuplicatePlan(group.id, plan)
+                              handleDuplicatePlan(group.id, plan as Plan)
                             }
                             onDelete={() => handleDeletePlan(group.id, plan.id)}
                           />
@@ -498,7 +498,7 @@ function PlansComponent() {
                       </div>
                     ) : (
                       <div className='text-center py-4 text-sm text-muted-foreground italic'>
-                        Nenhuma cena neste grupo
+                        Nenhuma planta neste grupo
                       </div>
                     )}
                   </div>
