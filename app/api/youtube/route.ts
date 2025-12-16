@@ -61,13 +61,9 @@ export async function GET(request: NextRequest) {
   try {
     const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoIds}&key=${apiKey}`;
 
-    console.log('🚀 Fetching YouTube data from server...');
-
     const response = await fetch(url, {
       next: { revalidate: 3600 }, // Cache for 1 hour
     });
-
-    console.log('📡 YouTube API Response status:', response.status);
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -82,7 +78,6 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
-    console.log('✅ YouTube data received:', data.items?.length, 'videos');
 
     interface YouTubeItem {
       id: string;

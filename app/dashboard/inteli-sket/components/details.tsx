@@ -5,19 +5,19 @@ import { LayoutGrid, Grid3x3, Copy, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
+  DialogTitle,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogContent,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import {
   Select,
-  SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectTrigger,
 } from '@/components/ui/select';
 import { useDetails } from '@/hooks/useDetails';
 
@@ -74,7 +74,6 @@ export default function DetailsComponent() {
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-2'>
             <h2 className='text-lg font-semibold flex items-center gap-2'>
-              <LayoutGrid className='w-4 h-4' />
               Detalhamento
             </h2>
           </div>
@@ -102,7 +101,6 @@ export default function DetailsComponent() {
           </Button>
 
           <Button
-            className='w-full flex items-center gap-3 justify-center text-base'
             variant='default'
             onClick={handleOpenDuplicateDialog}
             disabled={isProcessing}

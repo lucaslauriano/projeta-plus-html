@@ -1,85 +1,60 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
+import React, { useState, useMemo } from 'react';
 import { PlanItem } from '@/components/PlanItem';
 import {
   Accordion,
-  AccordionContent,
   AccordionItem,
+  AccordionContent,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import {
-  Select,
-  SelectItem,
-  SelectValue,
-  SelectContent,
-  SelectTrigger,
-} from '@/components/ui/select';
-import {
-  X,
-  Upload,
-  Folder,
-  FileText,
-  PlusCircle,
-  FolderPlus,
-  MoreVertical,
-} from 'lucide-react';
+import { Edit, Trash2, Folder, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { SceneGroup, useScenes } from '@/hooks/useScenes';
+import { SceneEditDialog } from './scene-edit-dialog';
+import { AddGroupDialog, AddSceneDialog } from './scene-group-dialogs';
 import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogTitle,
-  DialogHeader,
-  DialogFooter,
-  DialogContent,
-  DialogDescription,
-} from '@/components/ui/dialog';
+  ScenesSkeleton,
+  ScenesEmptyState,
+  ScenesLoadingState,
+} from './scenes-skeleton';
+import { ViewConfigMenu } from './view-config-menu';
 
-interface Segment {
-  id: string;
-  name: string;
-}
+type Scene = SceneGroup['scenes'][number];
 
-interface Scene {
-  id: string;
-  title: string;
-  segments: Segment[];
-}
+function ScenesComponent() {
+  const {
+    data,
+    setData,
+    availableStyles,
+    availableLayers,
+    currentState,
+    isBusy,
+    isLoading,
+    // addScene,
+    // updateScene,
+    // deleteScene,
+    applySceneConfig,
+    saveToJson,
+    loadFromJson,
+    loadDefault,
+    loadFromFile,
+    getCurrentState,
+  } = useScenes();
 
-interface Group {
-  id: string;
-  name: string;
-  scenes: Scene[];
-}
+  const groups = data.groups;
+  const setGroups = (
+    newGroups: SceneGroup[] | ((prev: SceneGroup[]) => SceneGroup[])
+  ) => {
+    const updatedGroups =
+      typeof newGroups === 'function' ? newGroups(data.groups) : newGroups;
 
-const DEFAULT_GROUPS: Group[] = [
-  {
-    id: '1',
-    name: 'Cenas básicas',
-    scenes: [
-      { id: '1-1', title: 'Geral', segments: [] },
-      { id: '1-2', title: 'Desenhar', segments: [] },
-      { id: '1-3', title: 'Etiquetar', segments: [] },
-      { id: '1-3', title: 'Planos de Seção', segments: [] },
-    ],
-  },
-  {
-    id: '2',
-    name: 'Isométricas',
-    scenes: [{ id: '2-1', title: 'Isométrica', segments: [] }],
-  },
-];
+    setData({
+      ...data,
+      groups: updatedGroups,
+    });
+  };
 
-export default function ScenesComponent() {
-  const [groups, setGroups] = useState<Group[]>(DEFAULT_GROUPS);
   const [newGroupName, setNewGroupName] = useState('');
   const [newSceneTitle, setNewSceneTitle] = useState('');
   const [selectedGroup, setSelectedGroup] = useState<string>('root');
@@ -92,21 +67,33 @@ export default function ScenesComponent() {
   const [editCameraType, setEditCameraType] = useState('');
   const [editActiveLayers, setEditActiveLayers] = useState<string[]>([]);
 
+  const sortedGroups = useMemo(
+    () => [...groups].sort((a, b) => a.name.localeCompare(b.name)),
+    [groups]
+  );
+
   const handleAddGroup = () => {
     if (!newGroupName.trim()) {
       toast.error('Digite um nome para o grupo');
       return;
     }
 
-    const newGroup: Group = {
+    const newGroup: SceneGroup = {
       id: Date.now().toString(),
       name: newGroupName.trim(),
       scenes: [],
     };
 
-    setGroups([...groups, newGroup]);
+    const updatedGroups = [...groups, newGroup];
+
+    setGroups(updatedGroups);
     setNewGroupName('');
     setIsGroupDialogOpen(false);
+
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+
     toast.success('Grupo adicionado com sucesso!');
   };
 
@@ -116,46 +103,88 @@ export default function ScenesComponent() {
       return;
     }
 
-    const newScene: Scene = {
+    const newScene = {
       id: Date.now().toString(),
       title: newSceneTitle.trim(),
       segments: [],
     };
 
+    let updatedGroups: SceneGroup[];
     if (selectedGroup === 'root') {
-      const newGroup: Group = {
+      const newGroup: SceneGroup = {
         id: Date.now().toString(),
         name: newSceneTitle.trim(),
         scenes: [],
       };
-      setGroups([...groups, newGroup]);
+      updatedGroups = [...groups, newGroup];
+      setGroups(updatedGroups);
     } else {
-      setGroups(
-        groups.map((group) => {
-          if (group.id === selectedGroup) {
-            return {
-              ...group,
-              scenes: [...group.scenes, newScene],
-            };
-          }
-          return group;
-        })
-      );
+      updatedGroups = groups.map((group) => {
+        if (group.id === selectedGroup) {
+          return {
+            ...group,
+            scenes: [...group.scenes, newScene],
+          };
+        }
+        return group;
+      });
+      setGroups(updatedGroups);
     }
 
     setNewSceneTitle('');
     setIsSceneDialogOpen(false);
+
+    // Salvar no JSON após adicionar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+
     toast.success('Cena adicionada com sucesso!');
   };
 
   const handleDeleteGroup = (groupId: string) => {
+    const group = groups.find((g) => g.id === groupId);
     const confirmed = confirm(
-      'Deseja realmente remover este grupo e todas as suas cenas?'
+      `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${
+        group?.scenes.length || 0
+      } cena(s)?`
     );
     if (!confirmed) return;
 
     setGroups(groups.filter((group) => group.id !== groupId));
+
+    // Salvar no JSON após deletar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+
     toast.success('Grupo removido com sucesso!');
+  };
+
+  const handleEditGroup = (groupId: string) => {
+    const group = groups.find((g) => g.id === groupId);
+    if (!group) return;
+
+    const newName = prompt('Digite o novo nome do grupo:', group.name);
+    if (!newName || newName.trim() === '') {
+      toast.error('Nome inválido');
+      return;
+    }
+
+    if (newName.trim() === group.name) {
+      return; // Nenhuma mudança
+    }
+
+    setGroups(
+      groups.map((g) => (g.id === groupId ? { ...g, name: newName.trim() } : g))
+    );
+
+    // Salvar no JSON após editar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+
+    toast.success('Grupo renomeado com sucesso!');
   };
 
   const handleDeleteScene = (groupId: string, sceneId: string) => {
@@ -173,7 +202,61 @@ export default function ScenesComponent() {
         return group;
       })
     );
+
+    // Salvar no JSON após deletar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+
     toast.success('Cena removida com sucesso!');
+  };
+
+  const handleDuplicateScene = (groupId: string, scene: Scene) => {
+    setGroups(
+      groups.map((g) => {
+        if (g.id === groupId) {
+          return {
+            ...g,
+            scenes: [
+              ...g.scenes,
+              {
+                id: Date.now().toString(),
+                title: `${scene.title} (cópia)`,
+                segments: [...scene.segments],
+              },
+            ],
+          };
+        }
+        return g;
+      })
+    );
+
+    // Salvar no JSON após duplicar
+    setTimeout(() => {
+      saveToJson();
+    }, 100);
+
+    toast.success('Cena duplicada!');
+  };
+
+  const handleApplyScene = async (scene: Scene) => {
+    // Buscar configuração da cena no data.scenes (do JSON)
+    const sceneConfig = data.scenes.find(
+      (s) => s.id === scene.id || s.name === scene.title
+    );
+
+    if (!sceneConfig) {
+      toast.error('Configuração da cena não encontrada no JSON');
+      return;
+    }
+
+    await applySceneConfig(scene.title, {
+      style: sceneConfig.style,
+      cameraType: sceneConfig.cameraType,
+      activeLayers: sceneConfig.activeLayers,
+    });
+
+    toast.success(`Cena "${scene.title}" aplicada!`);
   };
 
   const handleGroupDialogKeyPress = (e: React.KeyboardEvent) => {
@@ -191,343 +274,212 @@ export default function ScenesComponent() {
   const handleEditScene = (scene: Scene) => {
     setEditingScene(scene);
     setEditSceneName(scene.title);
-    setEditSceneStyle('FM_PLANTAS');
-    setEditCameraType('Vista de Topo + Ortogonal');
-    setEditActiveLayers(['Layer0']);
+
+    // Buscar configuração da cena no data.scenes (do JSON)
+    const sceneConfig = data.scenes.find(
+      (s) => s.id === scene.id || s.name === scene.title
+    );
+
+    if (sceneConfig) {
+      setEditSceneStyle(sceneConfig.style || availableStyles[0] || 'FM_VISTAS');
+      setEditCameraType(sceneConfig.cameraType || 'iso_perspectiva');
+      setEditActiveLayers(sceneConfig.activeLayers || ['Layer0']);
+    } else {
+      setEditSceneStyle(availableStyles[0] || 'FM_VISTAS');
+      setEditCameraType('iso_perspectiva');
+      setEditActiveLayers(['Layer0']);
+    }
+
     setIsEditDialogOpen(true);
   };
 
-  const handleSaveEditScene = () => {
+  // TODO: Implement apply current state functionality
+  const handleApplyCurrentState = async () => {
+    await getCurrentState();
+    if (currentState) {
+      setEditSceneStyle(currentState.style);
+      setEditCameraType(currentState.cameraType);
+      setEditActiveLayers(currentState.activeLayers);
+      toast.success('Estado atual aplicado!');
+    }
+  };
+
+  const handleSelectAllLayers = () => {
+    setEditActiveLayers(availableLayers);
+  };
+
+  const handleSelectNoLayers = () => {
+    setEditActiveLayers([]);
+  };
+
+  const handleSaveEditScene = async () => {
     if (!editSceneName.trim() || !editingScene) {
       toast.error('Digite um nome para a cena');
       return;
     }
 
-    setGroups(
-      groups.map((g) => ({
-        ...g,
-        scenes: g.scenes.map((s) =>
-          s.id === editingScene.id ? { ...s, title: editSceneName.trim() } : s
-        ),
-      }))
+    const updatedScenes = data.scenes.map((s) => {
+      if (s.id === editingScene.id || s.name === editingScene.title) {
+        return {
+          ...s,
+          name: editSceneName.trim(),
+          style: editSceneStyle,
+          cameraType: editCameraType,
+          activeLayers: editActiveLayers,
+        };
+      }
+      return s;
+    });
+
+    const sceneExists = data.scenes.some(
+      (s) => s.id === editingScene.id || s.name === editingScene.title
     );
+
+    if (!sceneExists) {
+      updatedScenes.push({
+        id: editingScene.id,
+        name: editSceneName.trim(),
+        style: editSceneStyle,
+        cameraType: editCameraType,
+        activeLayers: editActiveLayers,
+      });
+    }
+
+    const updatedGroups = groups.map((g) => ({
+      ...g,
+      scenes: g.scenes.map((s) =>
+        s.id === editingScene.id ? { ...s, title: editSceneName.trim() } : s
+      ),
+    }));
+
+    // Atualizar estado local
+    setData({
+      groups: updatedGroups,
+      scenes: updatedScenes,
+    });
+
+    // Salvar no JSON (não mexe no modelo do SketchUp)
+    await saveToJson();
 
     setIsEditDialogOpen(false);
     setEditingScene(null);
-    toast.success('Cena editada com sucesso!');
+    toast.success('Configuração salva no JSON!');
   };
 
   return (
     <>
-      <Dialog open={isGroupDialogOpen} onOpenChange={setIsGroupDialogOpen}>
-        <DialogContent className='sm:max-w-[425px]'>
-          <DialogHeader>
-            <DialogTitle>Adicionar Novo Grupo</DialogTitle>
-            <DialogDescription>
-              Organize suas cenas em grupos personalizados.
-            </DialogDescription>
-          </DialogHeader>
-          <div className='grid gap-4 py-4'>
-            <div className='space-y-2'>
-              <Input
-                id='group-name'
-                label='Nome do Grupo'
-                placeholder='Ex: Arquitetônico'
-                value={newGroupName}
-                onChange={(e) => setNewGroupName(e.target.value)}
-                onKeyPress={handleGroupDialogKeyPress}
-                autoFocus
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant='outline'
-              onClick={() => {
-                setIsGroupDialogOpen(false);
-                setNewGroupName('');
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button onClick={handleAddGroup}>
-              <Folder className='w-4 h-4 mr-2' />
-              Criar Grupo
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AddGroupDialog
+        isOpen={isGroupDialogOpen}
+        onOpenChange={setIsGroupDialogOpen}
+        groupName={newGroupName}
+        onGroupNameChange={setNewGroupName}
+        onAdd={handleAddGroup}
+        onKeyPress={handleGroupDialogKeyPress}
+      />
 
-      <Dialog open={isSceneDialogOpen} onOpenChange={setIsSceneDialogOpen}>
-        <DialogContent className='sm:max-w-[425px]'>
-          <DialogHeader>
-            <DialogTitle>Adicionar Nova Cena</DialogTitle>
-            <DialogDescription>
-              Crie uma nova cena e escolha em qual grupo ela ficará.
-            </DialogDescription>
-          </DialogHeader>
-          <div className='grid gap-4 py-4'>
-            <div className='space-y-2'>
-              <Input
-                id='scene-title'
-                label='Nome da Cena'
-                placeholder='Ex: Vista Frontal'
-                value={newSceneTitle}
-                onChange={(e) => setNewSceneTitle(e.target.value)}
-                onKeyPress={handleSceneDialogKeyPress}
-                autoFocus
-              />
-            </div>
-            <div className='space-y-2'>
-              <label className='block text-sm font-semibold text-foreground'>
-                Grupo (Opcional)
-              </label>
-              <Select value={selectedGroup} onValueChange={setSelectedGroup}>
-                <SelectTrigger className='h-11 rounded-xl border-2 w-full'>
-                  <SelectValue placeholder='Sem Grupo' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='root'>Sem Grupo</SelectItem>
-                  {groups.map((g) => (
-                    <SelectItem key={g.id} value={g.id}>
-                      {g.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant='outline'
-              onClick={() => {
-                setIsSceneDialogOpen(false);
-                setNewSceneTitle('');
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button onClick={handleAddScene}>
-              <FileText className='w-4 h-4 mr-2' />
-              Criar Cena
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AddSceneDialog
+        isOpen={isSceneDialogOpen}
+        onOpenChange={setIsSceneDialogOpen}
+        sceneTitle={newSceneTitle}
+        onSceneTitleChange={setNewSceneTitle}
+        selectedGroup={selectedGroup}
+        onSelectedGroupChange={setSelectedGroup}
+        groups={groups}
+        onAdd={handleAddScene}
+        onKeyPress={handleSceneDialogKeyPress}
+      />
 
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className='sm:max-w-[500px]'>
-          <DialogHeader>
-            <DialogTitle className='flex items-center gap-2'>
-              Configuração da Cena: {editingScene?.title}
-            </DialogTitle>
-          </DialogHeader>
-          <div className='flex flex-col gap-4 py-4'>
-            <div className='w-full flex items-end justify-between gap-x-4'>
-              <div className='space-y-2 w-2/3 items-center justify-center'>
-                <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
-                  Estilo:
-                </label>
-                <Select
-                  value={editSceneStyle}
-                  onValueChange={setEditSceneStyle}
-                >
-                  <SelectTrigger className='h-11 rounded-xl border-2 w-full'>
-                    <SelectValue placeholder='Selecione um estilo' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='FM_PLANTAS'>FM_PLANTAS</SelectItem>
-                    <SelectItem value='FM_CORTES'>FM_CORTES</SelectItem>
-                    <SelectItem value='FM_3D'>FM_3D</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className='w-1/3 flex items-center justify-center'>
-                <Button variant='outline' size='sm' className='w-full'>
-                  <Upload className='w-4 h-4 mr-2' />
-                  Importar
-                </Button>
-              </div>
-            </div>
-
-            <div className='space-y-2'>
-              <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
-                Tipo de Câmera:
-              </label>
-              <Select value={editCameraType} onValueChange={setEditCameraType}>
-                <SelectTrigger className='h-11 rounded-xl border-2 w-full'>
-                  <SelectValue placeholder='Selecione o tipo de câmera' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='Vista de Topo + Ortogonal'>
-                    Vista de Topo + Ortogonal
-                  </SelectItem>
-                  <SelectItem value='Perspectiva'>Perspectiva</SelectItem>
-                  <SelectItem value='Vista Frontal'>Vista Frontal</SelectItem>
-                  <SelectItem value='Vista Lateral'>Vista Lateral</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className='space-y-3'>
-              <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
-                Camadas Ativas (6 disponíveis):
-              </label>
-              {/* TODO: Adicionar button group de filtros Todos, Nenhum, Estado Atual */}
-              <div className='flex items-center gap-2'>
-                <Button variant='outline' size='sm'>
-                  Todos
-                </Button>
-                <Button variant='outline' size='sm'>
-                  Nenhum
-                </Button>
-                <Button variant='outline' size='sm'>
-                  Estado Atual
-                </Button>
-              </div>
-              <div className='space-y-2 max-h-[200px] overflow-y-auto p-4 bg-muted/30 rounded-xl border border-border/50'>
-                <div className='space-y-2'>
-                  <div className='flex items-center space-x-2 '>
-                    <Checkbox
-                      id='layer0'
-                      checked={editActiveLayers.includes('Layer0')}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setEditActiveLayers([...editActiveLayers, 'Layer0']);
-                        } else {
-                          setEditActiveLayers(
-                            editActiveLayers.filter((l) => l !== 'Layer0')
-                          );
-                        }
-                      }}
-                    />
-                    <label
-                      htmlFor='layer0'
-                      className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                    >
-                      Layer0
-                    </label>
-                  </div>
-                  <div className='flex items-center space-x-2'>
-                    <Checkbox id='arquitetura' />
-                    <label
-                      htmlFor='arquitetura'
-                      className='text-sm font-medium leading-none'
-                    >
-                      -ARQUITETURA-PISO
-                    </label>
-                  </div>
-                  <div className='flex items-center space-x-2'>
-                    <Checkbox id='iluminacao' />
-                    <label
-                      htmlFor='iluminacao'
-                      className='text-sm font-medium leading-none'
-                    >
-                      -ILUMINACAO-LEGENDA
-                    </label>
-                  </div>
-                  <div className='flex items-center space-x-2'>
-                    <Checkbox id='luminaria' />
-                    <label
-                      htmlFor='luminaria'
-                      className='text-sm font-medium leading-none'
-                    >
-                      -ILUMINACAO-LUMINARIA
-                    </label>
-                  </div>
-                  <div className='flex items-center space-x-2'>
-                    <Checkbox id='spotlight1' />
-                    <label
-                      htmlFor='spotlight1'
-                      className='text-sm font-medium leading-none'
-                    >
-                      -ILUMINACAO-SPOTLIGTH ENSCAPE
-                    </label>
-                  </div>
-                  <div className='flex items-center space-x-2'>
-                    <Checkbox id='spotlight2' />
-                    <label
-                      htmlFor='spotlight2'
-                      className='text-sm font-medium leading-none'
-                    >
-                      -ILUMINACAO-SPOTLIGTH VRAY
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant='outline'
-              onClick={() => {
-                setIsEditDialogOpen(false);
-                setEditingScene(null);
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button onClick={handleSaveEditScene}>Salvar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <SceneEditDialog
+        style={editSceneStyle}
+        isBusy={isBusy}
+        isOpen={isEditDialogOpen}
+        onSave={handleSaveEditScene}
+        sceneTitle={editSceneName}
+        cameraType={editCameraType}
+        onOpenChange={setIsEditDialogOpen}
+        activeLayers={editActiveLayers}
+        onStyleChange={setEditSceneStyle}
+        availableLayers={availableLayers}
+        availableStyles={availableStyles}
+        onCameraTypeChange={setEditCameraType}
+        onActiveLayersChange={setEditActiveLayers}
+        onSceneTitleChange={setEditSceneName}
+        onCancel={() => {
+          setIsEditDialogOpen(false);
+          setEditingScene(null);
+        }}
+        onSelectAllLayers={handleSelectAllLayers}
+        onSelectNoLayers={handleSelectNoLayers}
+        onApplyCurrentState={handleApplyCurrentState}
+        onImportStyle={() => {
+          // TODO: Implement import style functionality
+          toast.info('Funcionalidade de importar estilo em desenvolvimento');
+        }}
+      />
 
       <div className='space-y-3'>
         <div className='flex items-center justify-between'>
           <h2 className='text-lg font-semibold flex items-center gap-2'>
-            <FileText className='w-4 h-4' />
             Cenas
+            {isLoading && <Loader2 className='w-4 h-4 animate-spin' />}
           </h2>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className='p-1 hover:bg-accent rounded-md transition-colors'>
-                <MoreVertical className='w-4 h-4 text-muted-foreground' />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end' className='w-48'>
-              <DropdownMenuItem
-                className='cursor-pointer'
-                onClick={() => setIsGroupDialogOpen(true)}
-              >
-                <FolderPlus className='w-4 h-4 mr-2 text-blue-600' />
-                Adicionar Grupo
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className='cursor-pointer'
-                onClick={() => setIsSceneDialogOpen(true)}
-              >
-                <PlusCircle className='w-4 h-4 mr-2 text-green-600' />
-                Adicionar Cena
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className='flex items-center gap-2'>
+            <ViewConfigMenu
+              isBusy={isBusy}
+              entityLabel='Cena'
+              onAddGroup={() => setIsGroupDialogOpen(true)}
+              onAddItem={() => setIsSceneDialogOpen(true)}
+              onLoadFromJson={loadFromJson}
+              onLoadDefault={loadDefault}
+              onLoadFromFile={loadFromFile}
+              onSaveToJson={saveToJson}
+            />
+          </div>
         </div>
 
-        {groups.length > 0 && (
+        {isLoading && sortedGroups.length === 0 && <ScenesLoadingState />}
+
+        {isLoading && sortedGroups.length > 0 && <ScenesSkeleton />}
+
+        {!isLoading && sortedGroups.length === 0 && <ScenesEmptyState />}
+
+        {!isLoading && sortedGroups.length > 0 && (
           <div className='space-y-4'>
             <Accordion type='single' collapsible className='w-full space-y-2'>
-              {groups.map((group) => (
+              {sortedGroups.map((group) => (
                 <AccordionItem
                   key={group.id}
                   value={group.id}
                   className='border rounded-xl overflow-hidden bg-muted/20 px-0'
                 >
-                  <AccordionTrigger className='px-4 py-3 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 group'>
+                  <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 group data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none'>
                     <div className='flex items-center justify-between w-full pr-2'>
                       <div className='flex items-center gap-2 font-medium text-sm'>
                         <Folder className='w-4 h-4 text-gray-500' />
                         {group.name}
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteGroup(group.id);
-                        }}
-                        className='opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 transition-opacity'
-                        title='Excluir grupo'
-                      >
-                        <X className='w-4 h-4' />
-                      </button>
+                      <div className='flex  items-center justify-end gap-2 text-muted-foreground'>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditGroup(group.id);
+                          }}
+                          className='opacity-0 group-hover:opacity-100 transition-opacity'
+                          title='Editar'
+                        >
+                          <Edit className='w-4 h-4' />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteGroup(group.id);
+                          }}
+                          className='opacity-0 group-hover:opacity-100 transition-opacity'
+                          title='Excluir pasta'
+                        >
+                          <Trash2 className='w-4 h-4' />
+                        </button>
+                      </div>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className='p-4'>
@@ -538,28 +490,13 @@ export default function ScenesComponent() {
                             <PlanItem
                               key={scene.id}
                               title={scene.title}
-                              onEdit={() => handleEditScene(scene)}
-                              onDuplicate={() => {
-                                setGroups(
-                                  groups.map((g) => {
-                                    if (g.id === group.id) {
-                                      return {
-                                        ...g,
-                                        scenes: [
-                                          ...g.scenes,
-                                          {
-                                            id: Date.now().toString(),
-                                            title: `${scene.title} (cópia)`,
-                                            segments: [...scene.segments],
-                                          },
-                                        ],
-                                      };
-                                    }
-                                    return g;
-                                  })
-                                );
-                                toast.success('Cena duplicada!');
-                              }}
+                              onEdit={() => handleEditScene(scene as Scene)}
+                              onLoadFromJson={() =>
+                                handleApplyScene(scene as Scene)
+                              }
+                              onDuplicate={() =>
+                                handleDuplicateScene(group.id, scene as Scene)
+                              }
                               onDelete={() =>
                                 handleDeleteScene(group.id, scene.id)
                               }
@@ -579,18 +516,12 @@ export default function ScenesComponent() {
           </div>
         )}
 
-        {groups.length === 0 && (
-          <div className='p-8 text-center border-2 border-dashed rounded-xl bg-muted/10'>
-            <FileText className='w-12 h-12 mx-auto mb-3 text-muted-foreground/50' />
-            <p className='text-sm text-muted-foreground'>
-              Nenhum grupo cadastrado
-            </p>
-            <p className='text-xs text-muted-foreground mt-1'>
-              Adicione um grupo para começar
-            </p>
-          </div>
-        )}
+        {isLoading && sortedGroups.length === 0 && <ScenesLoadingState />}
+
+        {!isLoading && sortedGroups.length === 0 && <ScenesEmptyState />}
       </div>
     </>
   );
 }
+
+export default React.memo(ScenesComponent);

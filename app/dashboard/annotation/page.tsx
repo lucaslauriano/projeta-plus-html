@@ -6,7 +6,6 @@ import AnnotationSection from '@/app/dashboard/annotation/components/sections';
 import PageHeader from '@/components/page-header';
 import { Zap, LampCeiling } from 'lucide-react';
 import { AiOutlineScan } from 'react-icons/ai';
-import AnnotationLightingCeiling from '@/app/dashboard/annotation/components/ceilling';
 import {
   Accordion,
   AccordionItem,
@@ -17,6 +16,8 @@ import { ElectricalChangeAtributes } from '@/app/dashboard/annotation/components
 import { BsHouse } from 'react-icons/bs';
 import PageWrapper from '@/components/ui/page-wraper';
 import PageContent from '@/components/ui/page-content';
+import AnnotationLighting from '@/app/dashboard/annotation/components/lighting';
+import AnnotationCeiling from '@/app/dashboard/annotation/components/ceilling';
 
 const accordionItems = [
   {
@@ -34,8 +35,14 @@ const accordionItems = [
   {
     icon: LampCeiling,
     value: 'ceiling',
-    label: 'Forro e Iluminação',
-    content: <AnnotationLightingCeiling />,
+    label: 'Forro',
+    content: <AnnotationCeiling />,
+  },
+  {
+    icon: LampCeiling,
+    value: 'lighting',
+    label: 'Iluminação',
+    content: <AnnotationLighting />,
   },
   {
     icon: Zap,
@@ -50,7 +57,7 @@ export default function AnnotationDashboardPage() {
     <PageWrapper>
       <PageHeader
         title='Anotações'
-        description='Gerencie suas anotações diretamente no modelo 3D.'
+        description='Gerencie anotações diretamente no modelo 3D.'
       />
 
       <PageContent>
@@ -61,7 +68,7 @@ export default function AnnotationDashboardPage() {
               <AccordionItem
                 key={item.value}
                 value={item.value}
-                className='border-0 bg-card rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow'
+                className='border bg-card rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow'
               >
                 <AccordionTrigger className='px-5 py-3 hover:no-underline'>
                   <div className='flex items-center gap-3 text-base font-semibold '>

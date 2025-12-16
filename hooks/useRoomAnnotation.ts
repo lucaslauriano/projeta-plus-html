@@ -18,10 +18,8 @@ export function useRoomAnnotation() {
     window.handleRoomAnnotationResult = (response) => {
       if (response.success) {
         toast.success(response.message);
-        console.log('Room annotation success:', response.message);
       } else {
         toast.error(response.message);
-        console.error('Room annotation error:', response.message);
       }
     };
 

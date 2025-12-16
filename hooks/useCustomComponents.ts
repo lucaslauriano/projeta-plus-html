@@ -7,14 +7,14 @@ interface CustomComponentItem {
   id: string;
   name: string;
   path: string;
-  source: 'custom';
+  source: string;
 }
 
 interface CustomComponentGroup {
   id: string;
   title: string;
   items: CustomComponentItem[];
-  source: 'custom';
+  source: string;
 }
 
 interface CustomComponentsData {
@@ -36,10 +36,6 @@ export function useCustomComponents() {
   });
   const [isBusy, setIsBusy] = useState(false);
 
-  // ========================================
-  // UTILITY FUNCTIONS
-  // ========================================
-
   const callSketchupMethod = useCallback(
     (method: string, params?: Record<string, unknown>) => {
       if (window.sketchup) {
@@ -55,9 +51,10 @@ export function useCustomComponents() {
     []
   );
 
-  // ========================================
-  // HANDLERS (recebem respostas do Ruby)
-  // ========================================
+  const getCustomComponents = useCallback(() => {
+    setIsBusy(true);
+    callSketchupMethod('getCustomComponents');
+  }, [callSketchupMethod]);
 
   useEffect(() => {
     window.handleGetCustomComponentsResult = (
@@ -81,7 +78,7 @@ export function useCustomComponents() {
       setIsBusy(false);
       if (result.success) {
         toast.success(`Componente adicionado: ${result.filename}`);
-        getCustomComponents(); // Recarregar lista
+        getCustomComponents();
       } else {
         toast.error(result.message || 'Erro ao fazer upload');
       }
@@ -93,7 +90,7 @@ export function useCustomComponents() {
       setIsBusy(false);
       if (result.success) {
         toast.success('Componente removido com sucesso');
-        getCustomComponents(); // Recarregar lista
+        getCustomComponents();
       } else {
         toast.error(result.message || 'Erro ao remover componente');
       }
@@ -111,7 +108,7 @@ export function useCustomComponents() {
       setIsBusy(false);
       if (result.success) {
         toast.success(`${result.count} componente(s) sincronizado(s)`);
-        getCustomComponents(); // Recarregar lista
+        getCustomComponents();
       } else {
         toast.error(result.message || 'Erro ao sincronizar pasta');
       }
@@ -125,16 +122,7 @@ export function useCustomComponents() {
       delete window.handleOpenCustomFolderResult;
       delete window.handleSyncFolderResult;
     };
-  }, []);
-
-  // ========================================
-  // PUBLIC METHODS
-  // ========================================
-
-  const getCustomComponents = useCallback(() => {
-    setIsBusy(true);
-    callSketchupMethod('getCustomComponents');
-  }, [callSketchupMethod]);
+  }, [getCustomComponents]);
 
   const uploadComponent = useCallback(
     (category: string = 'Geral') => {

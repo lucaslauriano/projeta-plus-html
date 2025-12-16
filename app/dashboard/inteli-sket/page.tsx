@@ -4,9 +4,9 @@ import { useState } from 'react';
 import {
   Layers,
   ScanLine,
-  LayoutDashboard,
   BoxesIcon,
   FileSearch,
+  LayoutDashboard,
 } from 'lucide-react';
 import PageHeader from '@/components/page-header';
 import PageWrapper from '@/components/ui/page-wraper';
@@ -30,8 +30,6 @@ export default function InteliSketDashboardPage() {
     switch (activeTab) {
       case 'details':
         return <DetailsComponent />;
-      case 'layers':
-        return <LayersComponent />;
       case 'layers':
         return <LayersComponent />;
       case 'scenes':

@@ -5,13 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { useRoomAnnotation } from '@/hooks/useRoomAnnotation';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Info } from 'lucide-react';
 
 export function RoomAnnotation() {
   const { startRoomAnnotation, isLoading } = useRoomAnnotation();
@@ -47,9 +40,8 @@ export function RoomAnnotation() {
             id='environmentName'
             type='text'
             label='Nome do Ambiente'
-            tooltip=' Inserir nome do ambiente + área, de acordo com a face
-                selecionada. Selecione os campos para anotar pé direito e nível
-                do piso.'
+            tooltip=' Inserir o nome do ambiente e sua área em m² conforme a face selecionada.
+Depois, selecione os campos abaixo para anotar o pé-direito e o nível do piso — lembrando que o nível pode ser definido de forma manual ou automática, a partir do eixo Z do modelo.'
             value={environmentName}
             onChange={(e) => setEnvironmentName(e.target.value)}
             required
@@ -80,7 +72,7 @@ export function RoomAnnotation() {
               onChange={(e) => setCeillingHeight(e.target.value)}
               required={showCeillingHeight}
               disabled={isLoading}
-              placeholder='2,50'
+              placeholder='2,60'
               label='Altura (m)'
             />
           )}
@@ -120,7 +112,7 @@ export function RoomAnnotation() {
                   required
                   disabled={isLoading}
                   placeholder='0,00'
-                  label='Nível do Piso Manual'
+                  label='Nível do Piso Manual (m)'
                 />
               )}
             </div>

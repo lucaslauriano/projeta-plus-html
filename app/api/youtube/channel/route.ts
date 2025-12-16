@@ -63,8 +63,6 @@ export async function GET(request: NextRequest) {
     // Step 1: Search for latest videos from the channel
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&channelId=${channelId}&part=snippet,id&order=date&maxResults=${maxResults}&type=video`;
 
-    console.log('🔍 Searching latest videos from channel:', channelId);
-
     const searchResponse = await fetch(searchUrl, {
       next: { revalidate: 3600 }, // Cache for 1 hour
     });
@@ -93,14 +91,10 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    console.log('📹 Found video IDs:', videoIds);
-
     // Step 2: Get video details (duration, statistics, etc.)
     const detailsUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoIds.join(
       ','
     )}&key=${apiKey}`;
-
-    console.log('📊 Fetching video details...');
 
     const detailsResponse = await fetch(detailsUrl, {
       next: { revalidate: 3600 },
@@ -119,7 +113,6 @@ export async function GET(request: NextRequest) {
     }
 
     const detailsData = await detailsResponse.json();
-    console.log('✅ Videos loaded:', detailsData.items?.length);
 
     interface YouTubeItem {
       id: string;

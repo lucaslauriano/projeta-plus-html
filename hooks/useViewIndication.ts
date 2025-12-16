@@ -9,10 +9,8 @@ export function useViewIndication() {
     window.handleViewIndicationResult = (response) => {
       if (response.success) {
         toast.success(response.message);
-        console.log('View indication success:', response.message);
       } else {
         toast.error(response.message);
-        console.error('View indication error:', response.message);
       }
     };
 

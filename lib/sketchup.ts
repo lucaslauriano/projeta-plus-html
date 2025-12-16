@@ -19,7 +19,7 @@ export class SketchUpAPI {
     if (this.isInSketchUp()) {
       window.skp.call('showMessageBox', message);
     } else {
-      console.log('Not in SketchUp:', message);
+      console.error('Not in SketchUp:', message);
     }
   }
 

@@ -16,14 +16,12 @@ export function useCeilingAnnotation() {
     window.handleCeilingDefaults = (response) => {
       if (response) {
         setDefaults(response);
-        console.log('Ceiling annotation defaults loaded:', response);
       }
     };
 
     window.handleCeilingAnnotationResult = (response) => {
       if (response.success) {
         toast.success(response.message);
-        console.log('Ceiling annotation success:', response.message);
       } else {
         toast.error(response.message);
         console.error('Ceiling annotation error:', response.message);
