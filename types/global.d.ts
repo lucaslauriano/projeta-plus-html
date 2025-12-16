@@ -183,6 +183,18 @@ declare global {
       loadPlansFromJson: () => void;
       loadDefaultPlans: () => void;
       loadPlansFromFile: () => void;
+      getSections: () => void;
+      addSection: (payload: string) => void;
+      updateSection: (payload: string) => void;
+      deleteSection: (payload: string) => void;
+      createStandardSections: () => void;
+      createAutoViews: () => void;
+      createIndividualSection: (payload: string) => void;
+      saveSectionsToJson: (payload: string) => void;
+      loadSectionsFromJson: () => void;
+      loadDefaultSections: () => void;
+      loadSectionsFromFile: () => void;
+      importSectionsToModel: (payload: string) => void;
     };
     changeLanguage: (langCode: string) => void;
     loadGlobalSettings: () => void;
@@ -596,6 +608,107 @@ declare global {
       success: boolean;
       message: string;
       angle_index?: number;
+    }) => void;
+    // Sections Module
+    handleGetSectionsResult?: (result: {
+      success: boolean;
+      message?: string;
+      sections?: Array<{
+        id: string;
+        name: string;
+        position: [number, number, number];
+        direction: [number, number, number];
+        active: boolean;
+      }>;
+    }) => void;
+    handleAddSectionResult?: (result: {
+      success: boolean;
+      message: string;
+      section?: {
+        id: string;
+        name: string;
+        position: [number, number, number];
+        direction: [number, number, number];
+        active: boolean;
+      };
+    }) => void;
+    handleUpdateSectionResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleDeleteSectionResult?: (result: {
+      success: boolean;
+      message: string;
+    }) => void;
+    handleCreateStandardSectionsResult?: (result: {
+      success: boolean;
+      message: string;
+      count?: number;
+    }) => void;
+    handleCreateAutoViewsResult?: (result: {
+      success: boolean;
+      message: string;
+      count?: number;
+    }) => void;
+    handleCreateIndividualSectionResult?: (result: {
+      success: boolean;
+      message: string;
+      section?: {
+        id: string;
+        name: string;
+        position: [number, number, number];
+        direction: [number, number, number];
+        active: boolean;
+      };
+    }) => void;
+    handleSaveSectionsToJsonResult?: (result: {
+      success: boolean;
+      message: string;
+      path?: string;
+    }) => void;
+    handleLoadSectionsFromJsonResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: {
+        sections: Array<{
+          id: string;
+          name: string;
+          position: [number, number, number];
+          direction: [number, number, number];
+          active: boolean;
+        }>;
+      };
+    }) => void;
+    handleLoadDefaultSectionsResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: {
+        sections: Array<{
+          id: string;
+          name: string;
+          position: [number, number, number];
+          direction: [number, number, number];
+          active: boolean;
+        }>;
+      };
+    }) => void;
+    handleLoadSectionsFromFileResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: {
+        sections: Array<{
+          id: string;
+          name: string;
+          position: [number, number, number];
+          direction: [number, number, number];
+          active: boolean;
+        }>;
+      };
+    }) => void;
+    handleImportSectionsToModelResult?: (result: {
+      success: boolean;
+      message: string;
+      count?: number;
     }) => void;
   }
 }

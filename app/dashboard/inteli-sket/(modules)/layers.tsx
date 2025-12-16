@@ -24,7 +24,6 @@ import {
   SelectContent,
 } from '@/components/ui/select';
 import { useLayers } from '@/hooks/useLayers';
-import TagList from './TagList';
 import {
   Dialog,
   DialogContent,
@@ -39,6 +38,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import TagList from '@/app/dashboard/inteli-sket/components/TagList';
 
 export default function LayersComponent() {
   const {

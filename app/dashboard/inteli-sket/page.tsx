@@ -10,17 +10,18 @@ import {
 } from 'lucide-react';
 import PageHeader from '@/components/page-header';
 import PageWrapper from '@/components/ui/page-wraper';
+
 import {
   Tooltip,
+  TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from '@/components/ui/tooltip';
-import DetailsComponent from './components/details';
-import LayersComponent from './components/layers';
-import SectionsComponent from './components/sections';
-import PlansComponent from './components/plans';
-import ScenesComponent from '@/app/dashboard/inteli-sket/components/scenes';
+import DetailsComponent from './(modules)/details';
+import LayersComponent from './(modules)/layers';
+import SectionsComponent from './(modules)/sections';
+import PlansComponent from './(modules)/plans';
+import ScenesComponent from './(modules)/scenes';
 import PageContent from '@/components/ui/page-content';
 
 export default function InteliSketDashboardPage() {

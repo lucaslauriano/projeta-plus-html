@@ -11,16 +11,19 @@ import {
 import { Edit, Trash2, Folder, Loader2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePlans, PlanGroup } from '@/hooks/usePlans';
-import { PlanEditDialog } from './plan-edit-dialog';
-import { AddGroupDialog, AddSceneDialog } from './scene-group-dialogs';
+import {
+  AddGroupDialog,
+  AddSceneDialog,
+} from '@/app/dashboard/inteli-sket/components/scene-group-dialogs';
 import {
   ScenesSkeleton,
   ScenesEmptyState,
   ScenesLoadingState,
-} from './scenes-skeleton';
-import { ViewConfigMenu } from './view-config-menu';
-import { LevelsManagerDialog } from './levels-manager-dialog';
+} from '@/app/dashboard/inteli-sket/components/scenes-skeleton';
+import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
+import { LevelsManagerDialog } from '@/app/dashboard/inteli-sket/components/levels-manager-dialog';
 import { Button } from '@/components/ui/button';
+import { PlanEditDialog } from '@/app/dashboard/inteli-sket/components/plan-edit-dialog';
 
 interface Segment {
   id: string;

@@ -11,14 +11,17 @@ import {
 import { Edit, Trash2, Folder, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SceneGroup, useScenes } from '@/hooks/useScenes';
-import { SceneEditDialog } from './scene-edit-dialog';
-import { AddGroupDialog, AddSceneDialog } from './scene-group-dialogs';
+import { SceneEditDialog } from '@/app/dashboard/inteli-sket/components/scene-edit-dialog';
+import {
+  AddGroupDialog,
+  AddSceneDialog,
+} from '@/app/dashboard/inteli-sket/components/scene-group-dialogs';
 import {
   ScenesSkeleton,
   ScenesEmptyState,
   ScenesLoadingState,
-} from './scenes-skeleton';
-import { ViewConfigMenu } from './view-config-menu';
+} from '@/app/dashboard/inteli-sket/components/scenes-skeleton';
+import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
 
 type Scene = SceneGroup['scenes'][number];
 
