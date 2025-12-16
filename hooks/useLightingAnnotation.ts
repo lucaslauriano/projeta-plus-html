@@ -25,17 +25,14 @@ export function useLightingAnnotation() {
     window.handleLightingDefaults = (response) => {
       if (response) {
         setDefaults(response);
-        console.log('Lighting annotation defaults loaded:', response);
       }
     };
 
     window.handleLightingAnnotationResult = (response) => {
       if (response.success) {
         toast.success(response.message);
-        console.log('Lighting annotation success:', response.message);
       } else {
         toast.error(response.message);
-        console.error('Lighting annotation error:', response.message);
       }
     };
 

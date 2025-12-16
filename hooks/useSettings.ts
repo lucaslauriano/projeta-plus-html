@@ -17,7 +17,6 @@ export function useSettings() {
 
   useEffect(() => {
     window.handleGlobalSettings = (loadedSettings: GlobalSettings) => {
-      console.log('Received global settings from Ruby:', loadedSettings);
       setSettings(loadedSettings);
       setOriginalSettings(loadedSettings);
       setIsLoading(false);
@@ -28,7 +27,6 @@ export function useSettings() {
       setIsLoading(false);
       if (response.success) {
         toast.success(response.message);
-        console.log('Setting update success:', response.message);
 
         if (response.setting_key && response.updated_value !== undefined) {
           setSettings((prev) =>
@@ -52,7 +50,6 @@ export function useSettings() {
         }
 
         if (response.setting_key === 'language') {
-          console.log(`Language changed to: ${response.updated_value}`);
         }
       } else {
         toast.error(response.message);
@@ -64,7 +61,6 @@ export function useSettings() {
       setIsLoading(false);
       if (response.success) {
         toast.success(response.message);
-        console.log('Folder selection success:', response.message);
 
         if (response.setting_key && response.path) {
           setSettings((prev) =>

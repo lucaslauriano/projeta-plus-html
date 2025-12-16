@@ -56,10 +56,8 @@ export function useBasePlans() {
         console.error('[useBasePlans] SketchUp não disponível');
         return;
       }
-      console.log('[useBasePlans] Salvando plantas:', plans);
       setPendingAction('save');
-      // Armazenar se deve mostrar toast em uma variável temporária
-      (window as any)._showSaveToast = showToast;
+      window._showSaveToast = showToast;
       await callSketchupMethod('saveBasePlans', { plans });
     },
     [callSketchupMethod, isAvailable]
@@ -78,7 +76,9 @@ export function useBasePlans() {
       if (result.success && result.plans) {
         setData({ plans: result.plans });
       } else {
-        toast.error(result.message || 'Erro ao carregar configurações das plantas');
+        toast.error(
+          result.message || 'Erro ao carregar configurações das plantas'
+        );
       }
     };
 
@@ -117,11 +117,10 @@ export function useBasePlans() {
       success: boolean;
       message: string;
     }) => {
-      console.log('[useBasePlans] Resposta do save:', result);
       clearPending();
-      const showToast = (window as any)._showSaveToast !== false;
-      delete (window as any)._showSaveToast;
-      
+      const showToast = window._showSaveToast !== false;
+      delete window._showSaveToast;
+
       if (result.success) {
         if (showToast) {
           toast.success(result.message);
@@ -153,7 +152,6 @@ export function useBasePlans() {
   // Load initial data
   useEffect(() => {
     if (isAvailable) {
-      console.log('[useBasePlans] Carregando dados iniciais...');
       loadPlans();
       getAvailableStyles();
       getAvailableLayers();
@@ -175,4 +173,3 @@ export function useBasePlans() {
     getAvailableLayers,
   };
 }
-

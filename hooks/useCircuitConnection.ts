@@ -9,7 +9,6 @@ export function useCircuitConnection() {
     window.handleCircuitConnectionResult = (response) => {
       if (response.success) {
         toast.success(response.message);
-        console.log('Circuit connection success:', response.message);
       } else {
         toast.error(response.message);
         console.error('Circuit connection error:', response.message);

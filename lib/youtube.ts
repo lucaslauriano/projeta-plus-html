@@ -28,7 +28,6 @@ async function resolveChannelId(
 
   // Se é um handle (@username), converte para Channel ID
   try {
-    console.log('🔄 Converting handle to Channel ID:', channelIdOrHandle);
     const response = await fetch(
       `/api/youtube/handle?handle=${encodeURIComponent(channelIdOrHandle)}`
     );
@@ -39,7 +38,6 @@ async function resolveChannelId(
     }
 
     const data = await response.json();
-    console.log('✅ Resolved to Channel ID:', data.channelId);
     return data.channelId;
   } catch (error) {
     console.error('❌ Error converting handle:', error);
@@ -52,8 +50,6 @@ export async function getYouTubeChannelVideos(
   channelIdOrHandle: string,
   maxResults: number = 5
 ): Promise<YouTubeVideo[]> {
-  console.log('🔍 Fetching latest videos from:', channelIdOrHandle);
-
   try {
     // Resolve Channel ID (se for @handle, converte primeiro)
     const channelId = await resolveChannelId(channelIdOrHandle);
@@ -65,13 +61,9 @@ export async function getYouTubeChannelVideos(
 
     const url = `/api/youtube/channel?channelId=${channelId}&maxResults=${maxResults}`;
 
-    console.log('🚀 Calling channel API route:', url);
-
     const response = await fetch(url, {
       cache: 'no-store',
     });
-
-    console.log('📡 API Response status:', response.status);
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -80,11 +72,9 @@ export async function getYouTubeChannelVideos(
     }
 
     const data = await response.json();
-    console.log('✅ Videos received:', data.videos?.length || 0);
 
     return data.videos;
   } catch (error) {
-    console.error('❌ Error fetching channel videos:', error);
     if (error instanceof Error) {
       console.error('Error message:', error.message);
     }
@@ -97,19 +87,13 @@ export async function getYouTubeChannelVideos(
 export async function getYouTubeVideos(
   videoIds: string[]
 ): Promise<YouTubeVideo[]> {
-  console.log('🔍 Fetching YouTube videos:', videoIds);
-
   try {
     // Call our internal API route instead of YouTube directly
     const url = `/api/youtube?ids=${videoIds.join(',')}`;
 
-    console.log('🚀 Calling API route:', url);
-
     const response = await fetch(url, {
       cache: 'no-store', // Don't cache on client side
     });
-
-    console.log('📡 API Response status:', response.status);
 
     if (!response.ok) {
       const errorData = await response.json();
@@ -118,11 +102,9 @@ export async function getYouTubeVideos(
     }
 
     const data = await response.json();
-    console.log('✅ Videos received:', data.videos?.length || 0);
 
     return data.videos;
   } catch (error) {
-    console.error('❌ Error fetching YouTube data:', error);
     if (error instanceof Error) {
       console.error('Error message:', error.message);
     }

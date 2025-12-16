@@ -119,19 +119,8 @@ export default function FurnitureDashboardPage() {
   const isSelected = attributes?.selected ?? false;
 
   useEffect(() => {
-    console.log('[FurniturePage] Attributes changed:', attributes);
-    console.log('[FurniturePage] isSelected:', isSelected);
-    console.log('[FurniturePage] Dimensions from attributes:', {
-      width: attributes?.width,
-      depth: attributes?.depth,
-      height: attributes?.height,
-    });
-
     setFurnitureForm((prev) => {
       if (!attributes || !attributes.selected) {
-        console.log(
-          '[FurniturePage] No attributes or not selected - resetting form'
-        );
         return {
           ...prev,
           ...INITIAL_FURNITURE_FORM,
@@ -141,7 +130,6 @@ export default function FurnitureDashboardPage() {
         };
       }
 
-      console.log('[FurniturePage] Updating form with attributes');
       const newForm = {
         ...prev,
         name: attributes.name,
@@ -158,11 +146,6 @@ export default function FurnitureDashboardPage() {
         depth: attributes.depth,
         height: attributes.height,
       };
-      console.log('[FurniturePage] New form state:', {
-        width: newForm.width,
-        depth: newForm.depth,
-        height: newForm.height,
-      });
       return newForm;
     });
   }, [attributes, isSelected]);
@@ -221,11 +204,6 @@ export default function FurnitureDashboardPage() {
     if (!hasChanged) return;
 
     const controller = setTimeout(() => {
-      console.log('[FurniturePage] Redimensionando ao vivo:', {
-        width,
-        depth,
-        height,
-      });
       void resizeIndependentLive({
         width,
         depth,

@@ -122,6 +122,7 @@ declare global {
   }
 
   interface Window {
+    _showSaveToast?: boolean;
     sketchup: {
       requestAllSettings: () => void;
       loadRoomAnnotationDefaults: () => void;

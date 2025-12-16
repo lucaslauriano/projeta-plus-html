@@ -67,13 +67,10 @@ export function useFurniture() {
   const [pendingAction, setPendingAction] = useState<string | null>(null);
 
   const clearPending = useCallback(() => {
-    console.log('[useFurniture] Clearing pending action');
     setPendingAction(null);
   }, []);
 
-  useEffect(() => {
-    console.log('[useFurniture] Pending action changed:', pendingAction);
-  }, [pendingAction]);
+  useEffect(() => {}, [pendingAction]);
 
   const handleError = useCallback((message?: string) => {
     if (message) {
@@ -86,31 +83,13 @@ export function useFurniture() {
     window.handleFurnitureAttributes = (
       response: FurnitureAttributesResponse
     ) => {
-      console.log(
-        '\n[useFurniture] =========================================='
-      );
-      console.log('[useFurniture] handleFurnitureAttributes called');
-      console.log('[useFurniture] Response:', response);
-      console.log('[useFurniture] Success:', response.success);
-      console.log('[useFurniture] Selected:', response.selected);
-
       clearPending();
       // Limpa atributos se não tiver sucesso OU se não tiver nada selecionado
       if (!response.success || !response.selected) {
-        console.log(
-          '[useFurniture] ❌ Failed or not selected - clearing attributes'
-        );
-
         setAttributes(null);
         setDimensions(null);
         return;
       }
-
-      console.log('[useFurniture] Raw dimensions from response:', {
-        width: response.width,
-        depth: response.depth,
-        height: response.height,
-      });
 
       const nextAttributes: FurnitureData = {
         selected: response.selected ?? false,
@@ -130,27 +109,16 @@ export function useFurniture() {
         height: response.height ?? '',
       };
 
-      console.log('[useFurniture] ✅ Setting attributes:', nextAttributes);
-      console.log('[useFurniture] Dimensions in nextAttributes:', {
-        width: nextAttributes.width,
-        depth: nextAttributes.depth,
-        height: nextAttributes.height,
-      });
       setAttributes(nextAttributes);
       setDimensions({
         width: nextAttributes.width,
         depth: nextAttributes.depth,
         height: nextAttributes.height,
       });
-      console.log('[useFurniture] Dimensions state updated');
       setDimensionPreview(nextAttributes.dimension);
-      console.log(
-        '[useFurniture] ==========================================\n'
-      );
     };
 
     window.handleFurnitureSave = (response) => {
-      console.log('[useFurniture] handleFurnitureSave called', response);
       clearPending();
       if (response.success) {
         toast.success(response.message);
@@ -236,7 +204,6 @@ export function useFurniture() {
 
   const loadFurnitureAttributes = useCallback(async () => {
     if (!isAvailable) return;
-    console.log('[useFurniture] Loading furniture attributes...');
     setPendingAction('load');
     await Promise.all([
       callSketchupMethod('get_furniture_attributes'),
@@ -248,7 +215,6 @@ export function useFurniture() {
   const saveFurnitureAttributes = useCallback(
     async (payload: FurnitureFormPayload) => {
       if (!isAvailable) return;
-      console.log('[useFurniture] Saving furniture attributes...', payload);
       setPendingAction('save');
       await callSketchupMethod(
         'save_furniture_attributes',
@@ -359,7 +325,6 @@ export function useFurniture() {
 
   const captureSelectedComponent = useCallback(async () => {
     if (!isAvailable) return;
-    console.log('[useFurniture] Capturing selected component...');
     setPendingAction('capture');
     await callSketchupMethod('capture_selected_component');
   }, [callSketchupMethod, isAvailable]);
@@ -371,14 +336,7 @@ export function useFurniture() {
 
   const busy = isAvailable && (isLoading || Boolean(pendingAction));
 
-  useEffect(() => {
-    console.log('[useFurniture] Busy state:', {
-      busy,
-      isAvailable,
-      isLoading,
-      pendingAction,
-    });
-  }, [busy, isAvailable, isLoading, pendingAction]);
+  useEffect(() => {}, [busy, isAvailable, isLoading, pendingAction]);
 
   return {
     attributes,

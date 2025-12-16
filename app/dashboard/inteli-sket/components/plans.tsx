@@ -81,7 +81,7 @@ function PlansComponent() {
     [groups]
   );
 
-  const handleAddGroup = () => {
+  const handleAddGroup = async () => {
     if (!newGroupName.trim()) {
       toast.error('Digite um nome para o grupo');
       return;
@@ -98,19 +98,12 @@ function PlansComponent() {
     setNewGroupName('');
     setIsGroupDialogOpen(false);
 
-    // Salvar no JSON após adicionar
-    setTimeout(() => {
-      console.log(
-        '[Plans] Salvando após adicionar grupo. Total de grupos:',
-        updatedGroups.length
-      );
-      saveToJson();
-    }, 100);
+    await saveToJson();
 
     toast.success('Grupo adicionado com sucesso!');
   };
 
-  const handleAddPlan = () => {
+  const handleAddPlan = async () => {
     if (!newPlanTitle.trim()) {
       toast.error('Digite um título para a planta');
       return;
@@ -147,19 +140,12 @@ function PlansComponent() {
     setNewPlanTitle('');
     setIsPlanDialogOpen(false);
 
-    // Salvar no JSON após adicionar
-    setTimeout(() => {
-      console.log(
-        '[Plans] Salvando após adicionar planta. Total de grupos:',
-        updatedGroups.length
-      );
-      saveToJson();
-    }, 100);
+    await saveToJson();
 
     toast.success('Planta adicionada com sucesso!');
   };
 
-  const handleDeleteGroup = (groupId: string) => {
+  const handleDeleteGroup = async (groupId: string) => {
     const group = groups.find((g) => g.id === groupId);
     const confirmed = confirm(
       `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${
@@ -170,15 +156,12 @@ function PlansComponent() {
 
     setGroups(groups.filter((group) => group.id !== groupId));
 
-    // Salvar no JSON após deletar
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    await saveToJson();
 
     toast.success('Grupo removido com sucesso!');
   };
 
-  const handleEditGroup = (groupId: string) => {
+  const handleEditGroup = async (groupId: string) => {
     const group = groups.find((g) => g.id === groupId);
     if (!group) return;
 
@@ -196,15 +179,12 @@ function PlansComponent() {
       groups.map((g) => (g.id === groupId ? { ...g, name: newName.trim() } : g))
     );
 
-    // Salvar no JSON após editar
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    await saveToJson();
 
     toast.success('Grupo renomeado com sucesso!');
   };
 
-  const handleDeletePlan = (groupId: string, planId: string) => {
+  const handleDeletePlan = async (groupId: string, planId: string) => {
     const confirmed = confirm('Deseja realmente remover esta planta?');
     if (!confirmed) return;
 
@@ -220,15 +200,12 @@ function PlansComponent() {
       })
     );
 
-    // Salvar no JSON após deletar
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    await saveToJson();
 
     toast.success('Planta removida com sucesso!');
   };
 
-  const handleDuplicatePlan = (groupId: string, plan: Plan) => {
+  const handleDuplicatePlan = async (groupId: string, plan: Plan) => {
     setGroups(
       groups.map((g) => {
         if (g.id === groupId) {
@@ -248,10 +225,7 @@ function PlansComponent() {
       })
     );
 
-    // Salvar no JSON após duplicar
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    await saveToJson();
 
     toast.success('Planta duplicada!');
   };

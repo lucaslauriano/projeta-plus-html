@@ -87,8 +87,6 @@ function ScenesComponent() {
   );
 
   const handleAddGroup = () => {
-    console.log('[Scenes] handleAddGroup chamado! Nome:', newGroupName);
-
     if (!newGroupName.trim()) {
       toast.error('Digite um nome para o grupo');
       return;
@@ -101,11 +99,6 @@ function ScenesComponent() {
     };
 
     const updatedGroups = [...groups, newGroup];
-    console.log('[Scenes] Novo grupo criado:', newGroup);
-    console.log(
-      '[Scenes] Total de grupos após adicionar:',
-      updatedGroups.length
-    );
 
     setGroups(updatedGroups);
     setNewGroupName('');
@@ -113,10 +106,6 @@ function ScenesComponent() {
 
     // Salvar no JSON após adicionar
     setTimeout(() => {
-      console.log(
-        '[Scenes] Salvando após adicionar grupo. Total de grupos:',
-        updatedGroups.length
-      );
       saveToJson();
     }, 100);
 
@@ -162,10 +151,6 @@ function ScenesComponent() {
 
     // Salvar no JSON após adicionar
     setTimeout(() => {
-      console.log(
-        '[Scenes] Salvando após adicionar cena. Total de grupos:',
-        updatedGroups.length
-      );
       saveToJson();
     }, 100);
 
