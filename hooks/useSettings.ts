@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import { toastWithDebounce } from '@/lib/toast-utils';
 import { useSketchup } from '@/contexts/SketchupContext';
-import { GlobalSettings } from '@/types/global';
+import type { GlobalSettings, RubyResponse } from '@/types/global';
 
 export function useSettings() {
   const {
@@ -17,23 +16,18 @@ export function useSettings() {
     useState<GlobalSettings | null>(null);
 
   useEffect(() => {
-    // Handler para receber configurações do backend
     window.handleGlobalSettings = (loadedSettings: GlobalSettings) => {
-      console.log('Received global settings from Ruby:', loadedSettings);
       setSettings(loadedSettings);
       setOriginalSettings(loadedSettings);
       setIsLoading(false);
       setHasChanges(false);
     };
 
-    // Handler para resposta de atualização de configuração individual
-    window.handleSettingUpdate = (response) => {
+    window.handleSettingUpdate = (response: RubyResponse) => {
       setIsLoading(false);
       if (response.success) {
         toast.success(response.message);
-        console.log('Setting update success:', response.message);
 
-        // Atualizar configuração específica se fornecida
         if (response.setting_key && response.updated_value !== undefined) {
           setSettings((prev) =>
             prev
@@ -55,9 +49,7 @@ export function useSettings() {
           );
         }
 
-        // Se foi mudança de idioma, pode precisar recarregar
         if (response.setting_key === 'language') {
-          console.log(`Language changed to: ${response.updated_value}`);
         }
       } else {
         toast.error(response.message);
@@ -65,14 +57,11 @@ export function useSettings() {
       }
     };
 
-    // Handler para resposta de seleção de pasta
-    window.handleFolderSelection = (response) => {
+    window.handleFolderSelection = (response: RubyResponse) => {
       setIsLoading(false);
       if (response.success) {
         toast.success(response.message);
-        console.log('Folder selection success:', response.message);
 
-        // Atualizar pasta selecionada
         if (response.setting_key && response.path) {
           setSettings((prev) =>
             prev
@@ -115,7 +104,7 @@ export function useSettings() {
   // Carregar configurações do backend
   const loadSettings = useCallback(async () => {
     if (!isAvailable) {
-      toastWithDebounce.error('SketchUp API não disponível');
+      toast.error('SketchUp API não disponível');
       return;
     }
 
@@ -144,7 +133,7 @@ export function useSettings() {
   const saveSetting = useCallback(
     async (key: keyof GlobalSettings, value: unknown) => {
       if (!isAvailable) {
-        toastWithDebounce.error('SketchUp API não disponível');
+        toast.error('SketchUp API não disponível');
         return;
       }
 
@@ -197,7 +186,7 @@ export function useSettings() {
   const selectFolder = useCallback(
     async (settingKey: keyof GlobalSettings, dialogTitle: string) => {
       if (!isAvailable) {
-        toastWithDebounce.error('SketchUp API não disponível');
+        toast.error('SketchUp API não disponível');
         return;
       }
 
@@ -220,13 +209,13 @@ export function useSettings() {
   return {
     settings,
     isLoading: isLoading || contextLoading,
-    isAvailable,
     hasChanges,
-    loadSettings,
-    updateLocalSetting,
+    isAvailable,
     saveSetting,
-    saveAllChanges,
+    loadSettings,
     selectFolder,
     discardChanges,
+    saveAllChanges,
+    updateLocalSetting,
   };
 }

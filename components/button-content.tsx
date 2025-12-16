@@ -27,11 +27,7 @@ export default function Button1ContentPage() {
     if (sketchup) {
       // Chama a função 'showMessageBox' registrada no Ruby, passando a mensagem como argumento
       sketchup.showMessageBox(message);
-      console.log('Mensagem enviada para o SketchUp:', message);
     } else {
-      console.warn(
-        'Não está rodando no ambiente SketchUp. window.sketchup não disponível.'
-      );
       alert('Simulando envio de mensagem para o SketchUp: ' + message);
     }
   };
@@ -41,11 +37,7 @@ export default function Button1ContentPage() {
     // e o JS então exibirá. Isso requer um callback Ruby->JS e um JS->Ruby.
     if (sketchup) {
       sketchup.requestModelName();
-      console.log('Solicitando nome do modelo ao SketchUp...');
     } else {
-      console.warn(
-        'Não está rodando no ambiente SketchUp. window.sketchup não disponível.'
-      );
       alert('Simulando solicitação de nome do modelo ao SketchUp.');
     }
   };
@@ -55,7 +47,6 @@ export default function Button1ContentPage() {
     // e o JS então exibirá. Isso requer um callback Ruby->JS e um JS->Ruby.
     if (sketchup) {
       sketchup.requestAllSettings();
-      console.log('Solicitando nome do modelo ao SketchUp...');
     } else {
       console.warn(
         'Não está rodando no ambiente SketchUp. window.sketchup não disponível.'
@@ -68,7 +59,6 @@ export default function Button1ContentPage() {
     // Definimos uma função global que o Ruby pode chamar via execute_script
     window.receiveModelNameFromRuby = (modelName: string) => {
       alert(`Nome do Modelo do SketchUp: ${modelName}`);
-      console.log('Nome do Modelo recebido do Ruby:', modelName);
     };
 
     // Cleanup quando o componente é desmontado
@@ -84,7 +74,6 @@ export default function Button1ContentPage() {
     // Definimos uma função global que o Ruby pode chamar via execute_script
     window.receiveAllSettingsFromRuby = (settings: GlobalSettings) => {
       alert(`Configurações do SketchUp: ${settings}`);
-      console.log('Configurações do SketchUp recebidas do Ruby:', settings);
     };
 
     // Cleanup quando o componente é desmontado

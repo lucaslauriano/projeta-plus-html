@@ -26,8 +26,6 @@ export async function GET(request: NextRequest) {
     // Use the search API to find the channel by handle/username
     const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${cleanHandle}&key=${apiKey}`;
 
-    console.log('🔍 Searching for channel with handle:', cleanHandle);
-
     const response = await fetch(searchUrl, {
       next: { revalidate: 86400 }, // Cache for 24 hours
     });
@@ -53,9 +51,6 @@ export async function GET(request: NextRequest) {
     // Get the first result's channel ID
     const channelId = data.items[0].snippet.channelId;
     const channelTitle = data.items[0].snippet.channelTitle;
-    console.log(data.items[0]);
-
-    console.log('✅ Found channel:', channelTitle, '→', channelId);
 
     return NextResponse.json({
       channelId,

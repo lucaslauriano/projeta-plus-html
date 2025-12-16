@@ -36,7 +36,6 @@ export function useComponentUpdater() {
     ) => {
       if (response) {
         setDefaults(response);
-        console.log('Component updater defaults loaded:', response);
       }
     };
 
@@ -46,7 +45,6 @@ export function useComponentUpdater() {
     }) => {
       if (response.success) {
         toast.success(response.message);
-        console.log('Component updater success:', response.message);
       } else {
         toast.error(response.message);
         console.error('Component updater error:', response.message);

@@ -8,7 +8,6 @@ import React, {
   ReactNode,
 } from 'react';
 import { toast } from 'sonner';
-import { toastWithDebounce } from '@/lib/toast-utils';
 
 interface SketchupContextType {
   sketchup: Window['sketchup'] | undefined;
@@ -48,7 +47,7 @@ export function SketchupProvider({ children }: SketchupProviderProps) {
     window.handleRubyResponse = (response) => {
       setIsLoading(false);
       if (response.success) {
-        console.log('SketchUp Ruby Success:', response.message);
+        console.info('SketchUp Ruby Success:', response.message);
       } else {
         console.error('SketchUp Ruby Error:', response.message);
       }
@@ -67,9 +66,8 @@ export function SketchupProvider({ children }: SketchupProviderProps) {
     method: string,
     args: Record<string, unknown> = {}
   ) => {
-    console.log('callSketchupMethod', method, args);
     if (!isAvailable) {
-      toastWithDebounce.error('SketchUp API não disponível');
+      toast.error('SketchUp API não disponível');
       return;
     }
 
@@ -80,7 +78,6 @@ export function SketchupProvider({ children }: SketchupProviderProps) {
       if (typeof sketchupMethod === 'function') {
         sketchupMethod(JSON.stringify(args));
       } else {
-        console.log('Direct method not available, using action callback');
         window.location.href = `skp:${method}@${encodeURIComponent(
           JSON.stringify(args)
         )}`;

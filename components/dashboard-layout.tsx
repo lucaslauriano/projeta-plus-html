@@ -7,17 +7,18 @@ import { UserButton, useUser } from '@clerk/nextjs';
 import { useSubscription } from '@clerk/nextjs/experimental';
 import { cn } from '@/lib/utils';
 import {
-  HousePlus,
   Plus,
   Menu,
+  Plug,
   Settings,
   Armchair,
-  Proportions,
-  Plug,
   BrickWall,
+  HousePlus,
+  Proportions,
   FileTextIcon,
   PanelBottom,
   LampCeiling,
+  Monitor,
 } from 'lucide-react';
 import { AiOutlineTag } from 'react-icons/ai';
 import Link from 'next/link';
@@ -43,15 +44,16 @@ const navigation = [
     icon: LampCeiling,
   },
   {
-    name: 'Revestimentos',
-    href: '/dashboard/coatings',
-    icon: BrickWall,
-  },
-  {
     name: 'Rodapés',
     href: '/dashboard/baseboards',
     icon: PanelBottom,
   },
+  {
+    name: 'Revestimentos',
+    href: '/dashboard/coatings',
+    icon: BrickWall,
+  },
+
   {
     name: 'Relatórios',
     href: '/dashboard/generate-report',
@@ -63,6 +65,7 @@ const navigation = [
     icon: Proportions,
   },
   { name: 'Settings', href: '/dashboard/user-settings', icon: Settings },
+  { name: 'Tema', href: '/dashboard/theme-preview', icon: Monitor },
 ];
 
 interface DashboardLayoutProps {
@@ -73,10 +76,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const { user, isLoaded: isUserLoaded } = useUser();
-  const hasPremiumPlan =
-    user?.publicMetadata?.plan === 'premium' ||
-    user?.publicMetadata?.plan === 'pro_user';
-  const userPlan: 'free' | 'premium' = hasPremiumPlan ? 'premium' : 'free';
+  // const hasPremiumPlan =
+  //   user?.publicMetadata?.plan === 'premium' ||
+  //   user?.publicMetadata?.plan === 'pro_user';
+  //const userPlan: 'free' | 'premium' = hasPremiumPlan ? 'premium' : 'free';
   const { data, isLoading: isSubscriptionLoading } = useSubscription();
   const pathname = usePathname();
 
@@ -97,9 +100,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className='relative h-full overflow-hidden'>
       <div
+        onMouseLeave={() => setSidebarExpanded(false)}
         className={cn(
-          'absolute left-3 top-5 bottom-5 z-50 flex flex-col bg-card shadow-2xl rounded-2xl transition-all duration-300 ease-in-out',
-          sidebarExpanded ? 'w-64' : 'w-16'
+          'absolute left-2 top-2 bottom-2 z-50 flex flex-col bg-card shadow-2xl rounded-2xl transition-all duration-300 ease-in-out',
+          sidebarExpanded ? 'w-64' : 'w-14'
         )}
       >
         {/* Header */}
@@ -122,7 +126,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           )}
 
           <button
-            className='text-sidebar-foreground hover:bg-sidebar-accent'
+            className='text-sidebar-foreground hover:bg-sidebar-accent-foreground'
             onClick={() => setSidebarExpanded(!sidebarExpanded)}
             onMouseEnter={() => setSidebarExpanded(!sidebarExpanded)}
           >
@@ -142,7 +146,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   'flex items-center rounded-lg px-2 py-2 text-sm font-medium transition-colors',
                   'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                   isActive
-                    ? 'bg-sidebar-accent text-sidebar-primary-foreground'
+                    ? 'bg-sidebar-accent text-sidebar-primary'
                     : 'text-sidebar-foreground',
                   !sidebarExpanded && 'justify-center'
                 )}
@@ -152,9 +156,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   className={cn(
                     'h-6 w-6',
                     sidebarExpanded && 'mr-3',
-                    isActive &&
-                      !sidebarExpanded &&
-                      'text-sidebar-primary-foreground'
+                    isActive && !sidebarExpanded && 'text-sidebar-primary'
                   )}
                 />
                 {sidebarExpanded && (
@@ -198,7 +200,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       {/* Main content */}
-      <div className='absolute inset-y-0 right-0 left-21'>
+      <div className='absolute inset-y-0 right-0 left-17'>
         {/* <div className='sticky top-5 z-30 ml-2 mr-4 mb-4'>
           <div className='flex h-14 items-center justify-end gap-3 px-4 bg-card rounded-2xl shadow-lg'>
             <Badge
@@ -216,7 +218,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </div> */}
 
-        <main className='pb-6 overflow-y-auto py-4'>{children}</main>
+        <main className='pb-6 overflow-y-auto py-2 bg'>{children}</main>
       </div>
     </div>
   );

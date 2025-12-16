@@ -22,7 +22,6 @@ export function useHeightAnnotation() {
     window.handleHeightDefaults = (response: HeightDefaults) => {
       if (response) {
         setDefaults(response);
-        console.log('Height annotation defaults loaded:', response);
       }
     };
 
@@ -32,10 +31,8 @@ export function useHeightAnnotation() {
     }) => {
       if (response.success) {
         toast.success(response.message);
-        console.log('Height annotation success:', response.message);
       } else {
         toast.error(response.message);
-        console.error('Height annotation error:', response.message);
       }
     };
 
