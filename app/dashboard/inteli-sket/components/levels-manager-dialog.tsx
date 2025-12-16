@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -65,8 +65,48 @@ export function LevelsManagerDialog({
   const [ceilingStyle, setCeilingStyle] = useState('FM_VISTAS');
   const [ceilingLayers, setCeilingLayers] = useState<string[]>(['Layer0']);
   const [isInitialized, setIsInitialized] = useState(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Função para salvar as configurações
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      const plans = [
+        {
+          id: 'base',
+          name: 'Base',
+          style: baseStyle,
+          activeLayers: baseLayers,
+        },
+        {
+          id: 'forro',
+          name: 'Forro',
+          style: ceilingStyle,
+          activeLayers: ceilingLayers,
+        },
+      ];
+
+      savePlans(plans, false);
+    }, 100);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [
+    baseStyle,
+    baseLayers,
+    ceilingStyle,
+    ceilingLayers,
+    isInitialized,
+    savePlans,
+  ]);
+
   const saveConfig = async (showToast: boolean = false) => {
     const plans = [
       {
@@ -83,45 +123,24 @@ export function LevelsManagerDialog({
       },
     ];
 
-    console.log('[LevelsManagerDialog] Salvando configurações:', plans);
     await savePlans(plans, showToast);
   };
 
   // Funções que salvam após alteração
   const handleBaseStyleChange = (style: string) => {
     setBaseStyle(style);
-    if (isInitialized) {
-      setTimeout(() => {
-        saveConfig(false); // Não mostrar toast no salvamento automático
-      }, 100);
-    }
   };
 
   const handleBaseLayersChange = (layers: string[]) => {
     setBaseLayers(layers);
-    if (isInitialized) {
-      setTimeout(() => {
-        saveConfig(false); // Não mostrar toast no salvamento automático
-      }, 100);
-    }
   };
 
   const handleCeilingStyleChange = (style: string) => {
     setCeilingStyle(style);
-    if (isInitialized) {
-      setTimeout(() => {
-        saveConfig(false); // Não mostrar toast no salvamento automático
-      }, 100);
-    }
   };
 
   const handleCeilingLayersChange = (layers: string[]) => {
     setCeilingLayers(layers);
-    if (isInitialized) {
-      setTimeout(() => {
-        saveConfig(false); // Não mostrar toast no salvamento automático
-      }, 100);
-    }
   };
 
   function handleAddLevel() {
