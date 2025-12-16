@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSettings } from '@/hooks/useSettings';
 import PageHeader from '@/components/page-header';
-import { ThemeSelector } from '@/components/ui/theme-selector';
-import { ThemePreview } from '@/components/theme-preview';
 import { Loading } from '@/components/ui/loading';
 import PageWrapper from '@/components/ui/page-wraper';
 import {
@@ -29,7 +27,6 @@ export default function GlobalSettingsPage() {
   } = useSettings();
 
   useEffect(() => {
-    // Carregar configurações quando o componente montar
     loadSettings();
   }, [loadSettings]);
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ScanLine, Grid3x3, Eye, Scissors } from 'lucide-react';
+import { Grid3x3, Eye, Scissors } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function SectionsComponent() {

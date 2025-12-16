@@ -47,9 +47,9 @@ function ScenesComponent() {
     currentState,
     isBusy,
     isLoading,
-    addScene,
-    updateScene,
-    deleteScene,
+    // addScene,
+    // updateScene,
+    // deleteScene,
     applySceneConfig,
     saveToJson,
     loadFromJson,
@@ -104,7 +104,6 @@ function ScenesComponent() {
     setNewGroupName('');
     setIsGroupDialogOpen(false);
 
-    // Salvar no JSON após adicionar
     setTimeout(() => {
       saveToJson();
     }, 100);

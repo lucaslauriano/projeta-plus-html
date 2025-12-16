@@ -4,7 +4,6 @@ import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 
 import { Sun, Moon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function ThemeSelector() {
   const { theme, setTheme } = useTheme();
