@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Eye, Grid3x3, Scissors } from 'lucide-react';
+import { Eye, Grid3x3, Scissors, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -24,6 +24,15 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useSections } from '@/hooks/useSections';
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/ui/accordion';
+import { Folder } from 'lucide-react';
+import { Edit } from 'lucide-react';
+import { PlanItem } from '@/components/PlanItem';
 
 export default function SectionsComponent() {
   const {
@@ -42,6 +51,8 @@ export default function SectionsComponent() {
     importToModel,
     clearAll,
   } = useSections();
+
+  console.log('data iaskjdnfiasndfiuasdfia', data);
 
   const [isIndividualDialogOpen, setIsIndividualDialogOpen] = useState(false);
   const [individualSectionName, setIndividualSectionName] = useState('');
@@ -203,7 +214,69 @@ export default function SectionsComponent() {
           </DialogContent>
         </Dialog>
       </div>
-      <div className='flex flex-col gap-2 w-full'></div>
+      asoifjasdopfjopaisjdfhopaijsdfa
+      <div className='flex flex-col gap-2 w-full bg-red-500'>
+        <Accordion type='single' collapsible className='w-full space-y-2'>
+          {data?.sections.map((item) => (
+            <AccordionItem
+              key={item.id}
+              value={item.id}
+              className='border rounded-xl overflow-hidden bg-muted/20 px-0'
+            >
+              <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 group data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none'>
+                <div className='flex items-center justify-between w-full pr-2'>
+                  <div className='flex items-center gap-2 font-medium text-sm'>
+                    <Folder className='w-4 h-4 text-muted-foreground' />
+                    {item?.name || 'Seção'}
+                  </div>
+                  <div className='flex  items-center justify-end gap-2 text-muted-foreground'>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      className='opacity-0 group-hover:opacity-100 transition-opacity'
+                      title='Editar'
+                    >
+                      <Edit className='w-4 h-4' />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      className='opacity-0 group-hover:opacity-100 transition-opacity'
+                      title='Excluir pasta'
+                    >
+                      <Trash2 className='w-4 h-4' />
+                    </button>
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className='p-4'>
+                <div className='space-y-3 bg-blue-500'>
+                  {/* {item.plans.length > 0 ? (
+                    <div className='space-y-2'>
+                      {item.plans.map((plan) => (
+                        <PlanItem
+                          key={plan.id}
+                          title={plan.title}
+                          onEdit={() => {}}
+                          onLoadFromJson={() => {}}
+                          onDuplicate={() => {}}
+                          onDelete={() => {}}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className='text-center py-4 text-sm text-muted-foreground italic'>
+                      Nenhuma planta neste grupo
+                    </div>
+                  )} */}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
     </div>
   );
 }

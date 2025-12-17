@@ -10,9 +10,22 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, Check, Trash2, Loader2, Building2 } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  Loader2,
+  Building2,
+  ArrowUpToLine,
+  ArrowDownToLine,
+} from 'lucide-react';
 import { useLevels } from '@/hooks/useLevels';
 import { toast } from 'sonner';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 import {
   Table,
@@ -22,6 +35,7 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table';
+import { Card } from '@/components/ui/card';
 
 interface LevelsManagerDialogProps {
   isOpen: boolean;
@@ -119,71 +133,79 @@ export function LevelsManagerDialog({
               </p>
             </div>
           ) : (
-            <div className='border rounded-lg overflow-hidden w-full max-h-[400px] overflow-y-auto'>
-              <Table className='w-full'>
-                <TableHeader>
-                  <TableRow className='bg-muted/50'>
-                    <TableHead className='font-semibold'>Nível</TableHead>
+            <div className='border rounded-lg overflow-auto w-full max-h-[300px] overflow-y-auto'>
+              {levels.reverse().map((level) => (
+                <div
+                  key={level.number}
+                  className='hover:bg-muted/30 flex items-center justify-between py-2 border-b border-border/50 last:border-b-0 P'
+                >
+                  <span className='text-muted-foreground text-sm pl-4'>
+                    <p className='text-sm font-bold'>{level.name}</p>
+                    <p className='flex items-center gap-2  text-muted-foreground text-sm'>
+                      <span className='font-bold text-sm'>Nível:</span>{' '}
+                      {formatHeight(level.height_meters)}
+                    </p>
+                  </span>
+                  <div className='flex items-center gap-2 pr-4'>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size='sm'
+                            variant='ghost'
+                            className='cursor-pointer justify-between w-fit'
+                            onClick={() => createBaseScene(level.number)}
+                            disabled={isBusy}
+                          >
+                            <ArrowDownToLine className='w-3 h-3' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Criar planta base</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
 
-                    <TableHead className='font-semibold'>Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {levels.map((level) => (
-                    <TableRow key={level.number} className='hover:bg-muted/30'>
-                      <TableCell className='font-medium'>
-                        <span className='text-muted-foreground text-sm'>
-                          {level.name}
-                          <p className='flex items-center gap-2  text-muted-foreground text-sm'>
-                            Nível: {formatHeight(level.height_meters)}
-                          </p>
-                        </span>
-                      </TableCell>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size='sm'
+                            variant='ghost'
+                            className='cursor-pointer justify-between w-fit'
+                            onClick={() => createCeilingScene(level.number)}
+                            disabled={isBusy}
+                          >
+                            <ArrowUpToLine className='w-3 h-3' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Criar planta de forro</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
 
-                      <TableCell className='flex gap-2'>
-                        <Button
-                          size='sm'
-                          className='cursor-pointer justify-between w-fit'
-                          onClick={() => createBaseScene(level.number)}
-                          disabled={isBusy}
-                        >
-                          {level.has_base ? (
-                            <Check className='w-3 h-3 mr-2' />
-                          ) : (
-                            <Plus className='w-3 h-3 mr-2' />
-                          )}
-                          Base
-                        </Button>
-
-                        <Button
-                          size='sm'
-                          className='cursor-pointer justify-between w-fit'
-                          onClick={() => createCeilingScene(level.number)}
-                          disabled={isBusy}
-                        >
-                          {level.has_ceiling ? (
-                            <Check className='w-3 h-3 mr-2' />
-                          ) : (
-                            <Plus className='w-3 h-3 mr-2' />
-                          )}
-                          Forro
-                        </Button>
-
-                        <Button
-                          size='sm'
-                          variant='destructive'
-                          className='cursor-pointer justify-between w-fit'
-                          onClick={() => removeLevel(level.number)}
-                          disabled={isBusy}
-                        >
-                          <Trash2 className='w-3 h-3 mr-2' />
-                          Excluir
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size='sm'
+                            variant='ghost'
+                            className='cursor-pointer justify-between w-fit'
+                            onClick={() => removeLevel(level.number)}
+                            disabled={isBusy}
+                          >
+                            <Trash2 className='w-3 h-3' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Remover nível</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
