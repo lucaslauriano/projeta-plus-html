@@ -23,7 +23,7 @@ export default function DashboardPage() {
 
   const tabs = [
     { id: 'tutoriais' as TabId, name: 'Tutoriais', icon: FileTextIcon },
-    { id: 'precos' as TabId, name: 'Planos e Preços', icon: PackageIcon },
+    { id: 'precos' as TabId, name: 'Planos', icon: PackageIcon },
   ];
 
   if (!isLoaded) {
@@ -55,7 +55,7 @@ export default function DashboardPage() {
                 onClick={() => setActiveTab(tab.id)}
                 aria-current={isActive ? 'page' : undefined}
                 className={cn(
-                  'flex items-center gap-2 flex-1 px-4 py-3 rounded-xl text-sm font-medium transition-all',
+                  'flex items-center gap-2 flex-1 px-4 py-3 rounded-md text-sm font-medium transition-all',
                   isActive
                     ? 'bg-background shadow-sm text-foreground'
                     : 'text-muted-foreground hover:text-foreground'
@@ -68,7 +68,7 @@ export default function DashboardPage() {
           })}
         </nav>
 
-        <div className='pb-8'>
+        <div className='pb-8 pt-4'>
           {activeTab === 'tutoriais' && (
             <VideoCarousel
               useChannel={true}

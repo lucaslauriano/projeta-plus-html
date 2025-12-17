@@ -29,7 +29,7 @@ function AnnotationCeilingInner() {
 
   return (
     <div className='w-full max-w-lg mx-auto space-y-5'>
-      <div className='space-y-3  rounded-xl '>
+      <div className='space-y-3  rounded-md '>
         <form onSubmit={handleCeilingSubmit} className='space-y-2'>
           <Input
             type='text'

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -10,18 +10,9 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import {
-  Plus,
-  Loader2,
-  Building2,
-  Check,
-  Trash2,
-  Settings2,
-} from 'lucide-react';
+import { Plus, Check, Trash2, Loader2, Building2 } from 'lucide-react';
 import { useLevels } from '@/hooks/useLevels';
 import { toast } from 'sonner';
-import { BasePlansConfigDialog } from './base-plans-config-dialog';
-import { useBasePlans } from '@/hooks/useBasePlans';
 
 import {
   Table,
@@ -50,98 +41,7 @@ export function LevelsManagerDialog({
     createCeilingScene,
   } = useLevels();
 
-  const {
-    data: basePlansData,
-    availableStyles,
-    availableLayers,
-    savePlans,
-    isBusy: isBusyPlans,
-  } = useBasePlans();
-
   const [heightInput, setHeightInput] = useState('0.00');
-  const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false);
-  const [baseStyle, setBaseStyle] = useState('FM_VISTAS');
-  const [baseLayers, setBaseLayers] = useState<string[]>(['Layer0']);
-  const [ceilingStyle, setCeilingStyle] = useState('FM_VISTAS');
-  const [ceilingLayers, setCeilingLayers] = useState<string[]>(['Layer0']);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    if (!isInitialized) return;
-
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    saveTimeoutRef.current = setTimeout(() => {
-      const plans = [
-        {
-          id: 'base',
-          name: 'Base',
-          style: baseStyle,
-          activeLayers: baseLayers,
-        },
-        {
-          id: 'forro',
-          name: 'Forro',
-          style: ceilingStyle,
-          activeLayers: ceilingLayers,
-        },
-      ];
-
-      savePlans(plans, false);
-    }, 100);
-
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [
-    baseStyle,
-    baseLayers,
-    ceilingStyle,
-    ceilingLayers,
-    isInitialized,
-    savePlans,
-  ]);
-
-  const saveConfig = async (showToast: boolean = false) => {
-    const plans = [
-      {
-        id: 'base',
-        name: 'Base',
-        style: baseStyle,
-        activeLayers: baseLayers,
-      },
-      {
-        id: 'forro',
-        name: 'Forro',
-        style: ceilingStyle,
-        activeLayers: ceilingLayers,
-      },
-    ];
-
-    await savePlans(plans, showToast);
-  };
-
-  // Funções que salvam após alteração
-  const handleBaseStyleChange = (style: string) => {
-    setBaseStyle(style);
-  };
-
-  const handleBaseLayersChange = (layers: string[]) => {
-    setBaseLayers(layers);
-  };
-
-  const handleCeilingStyleChange = (style: string) => {
-    setCeilingStyle(style);
-  };
-
-  const handleCeilingLayersChange = (layers: string[]) => {
-    setCeilingLayers(layers);
-  };
 
   function handleAddLevel() {
     const height = parseFloat(heightInput.replace(',', '.'));
@@ -155,39 +55,15 @@ export function LevelsManagerDialog({
     setHeightInput('0.00');
   }
 
-  // Load initial data from JSON
-  useEffect(() => {
-    if (basePlansData.plans.length > 0 && !isInitialized) {
-      const basePlan = basePlansData.plans.find((p) => p.id === 'base');
-      const ceilingPlan = basePlansData.plans.find((p) => p.id === 'forro');
-
-      if (basePlan) {
-        setBaseStyle(basePlan.style);
-        setBaseLayers(basePlan.activeLayers);
-      }
-      if (ceilingPlan) {
-        setCeilingStyle(ceilingPlan.style);
-        setCeilingLayers(ceilingPlan.activeLayers);
-      }
-
-      setIsInitialized(true);
-    }
-  }, [basePlansData, isInitialized]);
-
   function formatHeight(meters: number): string {
     return meters.toFixed(2) + 'm';
   }
-
-  const handleApplyCurrentState = () => {
-    // TODO: Implementar lógica para aplicar o estado atual do modelo
-    toast.info('Aplicando estado atual...');
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className='w-full max-h-[900px] overflow-y-auto'>
         <DialogHeader>
-          <div className='flex items-center justify-between'>
+          <div className='flex flex-col gap-2 items-end justify-end w-full'>
             <div>
               <DialogTitle className='flex text-start gap-2 text-xl'>
                 Gerenciador de Níveis
@@ -197,15 +73,6 @@ export function LevelsManagerDialog({
                 forro
               </DialogDescription>
             </div>
-            <Button
-              size='sm'
-              variant='outline'
-              onClick={() => setIsConfigDialogOpen(true)}
-              className='flex items-center gap-2'
-            >
-              <Settings2 className='w-4 h-4' />
-              Configurar Plantas
-            </Button>
           </div>
         </DialogHeader>
 
@@ -321,24 +188,6 @@ export function LevelsManagerDialog({
           )}
         </div>
       </DialogContent>
-
-      <BasePlansConfigDialog
-        onSave={saveConfig}
-        isOpen={isConfigDialogOpen}
-        onOpenChange={setIsConfigDialogOpen}
-        availableStyles={availableStyles}
-        availableLayers={availableLayers}
-        baseStyle={baseStyle}
-        baseLayers={baseLayers}
-        ceilingStyle={ceilingStyle}
-        ceilingLayers={ceilingLayers}
-        onBaseStyleChange={handleBaseStyleChange}
-        onBaseLayersChange={handleBaseLayersChange}
-        onCeilingStyleChange={handleCeilingStyleChange}
-        onCeilingLayersChange={handleCeilingLayersChange}
-        onApplyCurrentState={handleApplyCurrentState}
-        isBusy={isBusy || isBusyPlans}
-      />
     </Dialog>
   );
 }

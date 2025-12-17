@@ -318,15 +318,23 @@ export function useSections() {
     callSketchupMethodSafe('createStandardSections');
   }, [callSketchupMethodSafe, isAvailable]);
 
-  const createAutoViews = useCallback(() => {
-    if (!isAvailable) {
-      toast.info('Vistas automáticas criadas (modo simulação)');
-      return;
-    }
+  const createAutoViews = useCallback(
+    (environmentName: string) => {
+      if (!environmentName || environmentName.trim() === '') {
+        toast.error('Nome do ambiente é obrigatório');
+        return;
+      }
 
-    setIsBusy(true);
-    callSketchupMethodSafe('createAutoViews');
-  }, [callSketchupMethodSafe, isAvailable]);
+      if (!isAvailable) {
+        toast.info('Vistas automáticas criadas (modo simulação)');
+        return;
+      }
+
+      setIsBusy(true);
+      callSketchupMethodSafe('createAutoViews', { environmentName });
+    },
+    [callSketchupMethodSafe, isAvailable]
+  );
 
   const createIndividualSection = useCallback(
     (directionType: string, name: string) => {

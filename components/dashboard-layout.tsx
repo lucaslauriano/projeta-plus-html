@@ -102,7 +102,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <div
         onMouseLeave={() => setSidebarExpanded(false)}
         className={cn(
-          'absolute left-2 top-2 bottom-2 z-50 flex flex-col bg-card shadow-2xl rounded-2xl transition-all duration-300 ease-in-out',
+          'absolute left-2 top-2 bottom-2 z-50 flex flex-col bg-card shadow-2xl rounded-md transition-all duration-300 ease-in-out',
           sidebarExpanded ? 'w-64' : 'w-14'
         )}
       >

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { PlanItem } from '@/components/PlanItem';
 import {
   Accordion,
@@ -23,7 +23,9 @@ import {
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
 import { LevelsManagerDialog } from '@/app/dashboard/inteli-sket/components/levels-manager-dialog';
 import { Button } from '@/components/ui/button';
-import { PlanEditDialog } from '@/app/dashboard/inteli-sket/components/plan-edit-dialog';
+import { ViewConfigEditDialog } from '@/app/dashboard/inteli-sket/components/view-config-edit-dialog';
+import { BasePlansConfigDialog } from '@/app/dashboard/inteli-sket/components/base-plans-config-dialog';
+import { useBasePlans } from '@/hooks/useBasePlans';
 
 interface Segment {
   id: string;
@@ -53,6 +55,14 @@ function PlansComponent() {
     applyPlanConfig,
   } = usePlans();
 
+  const {
+    data: basePlansData,
+    availableStyles: bp_availableStyles,
+    availableLayers: bp_availableLayerss,
+    savePlans,
+    isBusy: isBusyPlans,
+  } = useBasePlans();
+
   const groups = data.groups;
   const setGroups = (
     newGroups: PlanGroup[] | ((prev: PlanGroup[]) => PlanGroup[])
@@ -78,6 +88,13 @@ function PlansComponent() {
   const [editPlanStyle, setEditPlanStyle] = useState('');
   const [editCameraType, setEditCameraType] = useState('');
   const [editActiveLayers, setEditActiveLayers] = useState<string[]>([]);
+  const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false);
+  const [baseStyle, setBaseStyle] = useState('FM_VISTAS');
+  const [baseLayers, setBaseLayers] = useState<string[]>(['Layer0']);
+  const [ceilingStyle, setCeilingStyle] = useState('FM_VISTAS');
+  const [ceilingLayers, setCeilingLayers] = useState<string[]>(['Layer0']);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const sortedGroups = useMemo(
     () => [...groups].sort((a, b) => a.name.localeCompare(b.name)),
@@ -355,51 +372,174 @@ function PlansComponent() {
     toast.success(`Planta "${plan.title}" aplicada!`);
   };
 
+  // Funções baseplans config dialog
+  const handleBaseStyleChange = (style: string) => {
+    setBaseStyle(style);
+  };
+
+  const handleBaseLayersChange = (layers: string[]) => {
+    setBaseLayers(layers);
+  };
+
+  const handleCeilingStyleChange = (style: string) => {
+    setCeilingStyle(style);
+  };
+
+  const handleCeilingLayersChange = (layers: string[]) => {
+    setCeilingLayers(layers);
+  };
+
+  const handleBasePlansApplyCurrentState = () => {
+    // TODO: Implementar lógica para aplicar o estado atual do modelo
+    toast.info('Aplicando estado atual...');
+  };
+
+  const saveConfig = async (showToast: boolean = false) => {
+    const plans = [
+      {
+        id: 'base',
+        name: 'Base',
+        style: baseStyle,
+        activeLayers: baseLayers,
+      },
+      {
+        id: 'forro',
+        name: 'Forro',
+        style: ceilingStyle,
+        activeLayers: ceilingLayers,
+      },
+    ];
+
+    await savePlans(plans, showToast);
+  };
+  useEffect(() => {
+    if (!isInitialized) return;
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      const plans = [
+        {
+          id: 'base',
+          name: 'Base',
+          style: baseStyle,
+          activeLayers: baseLayers,
+        },
+        {
+          id: 'forro',
+          name: 'Forro',
+          style: ceilingStyle,
+          activeLayers: ceilingLayers,
+        },
+      ];
+
+      savePlans(plans, false);
+    }, 100);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [
+    baseStyle,
+    baseLayers,
+    ceilingStyle,
+    ceilingLayers,
+    isInitialized,
+    savePlans,
+  ]);
+
+  useEffect(() => {
+    if (basePlansData.plans.length > 0 && !isInitialized) {
+      const basePlan = basePlansData.plans.find((p) => p.id === 'base');
+      const ceilingPlan = basePlansData.plans.find((p) => p.id === 'forro');
+
+      if (basePlan) {
+        setBaseStyle(basePlan.style);
+        setBaseLayers(basePlan.activeLayers);
+      }
+      if (ceilingPlan) {
+        setCeilingStyle(ceilingPlan.style);
+        setCeilingLayers(ceilingPlan.activeLayers);
+      }
+
+      setIsInitialized(true);
+    }
+  }, [basePlansData, isInitialized]);
+
   return (
     <>
       <AddGroupDialog
-        isOpen={isGroupDialogOpen}
-        onOpenChange={setIsGroupDialogOpen}
-        groupName={newGroupName}
-        onGroupNameChange={setNewGroupName}
         onAdd={handleAddGroup}
+        isOpen={isGroupDialogOpen}
+        groupName={newGroupName}
         onKeyPress={handleGroupDialogKeyPress}
+        onOpenChange={setIsGroupDialogOpen}
+        onGroupNameChange={setNewGroupName}
       />
 
       <AddSceneDialog
-        isOpen={isPlanDialogOpen}
-        onOpenChange={setIsPlanDialogOpen}
-        sceneTitle={newPlanTitle}
-        onSceneTitleChange={setNewPlanTitle}
-        selectedGroup={selectedGroup}
-        onSelectedGroupChange={setSelectedGroup}
-        groups={groups}
         onAdd={handleAddPlan}
+        groups={groups}
+        isOpen={isPlanDialogOpen}
         onKeyPress={handlePlanDialogKeyPress}
+        sceneTitle={newPlanTitle}
+        onOpenChange={setIsPlanDialogOpen}
+        selectedGroup={selectedGroup}
+        onSceneTitleChange={setNewPlanTitle}
+        onSelectedGroupChange={setSelectedGroup}
       />
 
-      <PlanEditDialog
-        isOpen={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        planTitle={editPlanName}
+      <ViewConfigEditDialog
+        title='Configuração da Planta'
         style={editPlanStyle}
-        onStyleChange={setEditPlanStyle}
+        onSave={handleSaveEditPlan}
+        isBusy={isBusy}
+        isOpen={isEditDialogOpen}
+        onCancel={() => {
+          setEditingPlan(null);
+          setIsEditDialogOpen(false);
+        }}
         cameraType={editCameraType}
-        onCameraTypeChange={setEditCameraType}
+        onOpenChange={setIsEditDialogOpen}
         activeLayers={editActiveLayers}
-        onActiveLayersChange={setEditActiveLayers}
+        onStyleChange={setEditPlanStyle}
         availableStyles={availableStyles}
         availableLayers={availableLayers}
-        isBusy={isBusy}
-        onSave={handleSaveEditPlan}
-        onPlanTitleChange={setEditPlanName}
-        onCancel={() => {
-          setIsEditDialogOpen(false);
-          setEditingPlan(null);
-        }}
-        onSelectAllLayers={handleSelectAllLayers}
         onSelectNoLayers={handleSelectNoLayers}
+        onSelectAllLayers={handleSelectAllLayers}
+        onCameraTypeChange={setEditCameraType}
         onApplyCurrentState={handleApplyCurrentState}
+        onActiveLayersChange={setEditActiveLayers}
+        itemTitle={editPlanName}
+        onItemTitleChange={setEditPlanName}
+        allowedCameraTypes={[
+          'topo_perspectiva',
+          'topo_ortogonal',
+          'iso_invertida_perspectiva',
+          'iso_invertida_ortogonal',
+        ]}
+      />
+
+      <BasePlansConfigDialog
+        onSave={saveConfig}
+        isOpen={isConfigDialogOpen}
+        isBusy={isBusy || isBusyPlans}
+        baseStyle={baseStyle}
+        baseLayers={baseLayers}
+        onOpenChange={setIsConfigDialogOpen}
+        ceilingStyle={ceilingStyle}
+        ceilingLayers={ceilingLayers}
+        availableStyles={bp_availableStyles}
+        availableLayers={bp_availableLayerss}
+        onBaseStyleChange={handleBaseStyleChange}
+        onBaseLayersChange={handleBaseLayersChange}
+        onCeilingStyleChange={handleCeilingStyleChange}
+        onCeilingLayersChange={handleCeilingLayersChange}
+        onApplyCurrentState={handleBasePlansApplyCurrentState}
       />
 
       <div className='space-y-3'>
@@ -412,6 +552,7 @@ function PlansComponent() {
               isBusy={isBusy}
               onAddItem={() => setIsPlanDialogOpen(true)}
               onAddGroup={() => setIsGroupDialogOpen(true)}
+              onEdit={() => setIsConfigDialogOpen(true)}
               entityLabel='Planta'
               onSaveToJson={saveToJson}
               onLoadDefault={loadDefault}

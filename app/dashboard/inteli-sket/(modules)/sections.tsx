@@ -48,6 +48,9 @@ export default function SectionsComponent() {
   const [individualSectionDirection, setIndividualSectionDirection] =
     useState('frente');
 
+  const [isAutoViewsDialogOpen, setIsAutoViewsDialogOpen] = useState(false);
+  const [autoViewsEnvironmentName, setAutoViewsEnvironmentName] = useState('');
+
   const handleCreateIndividualSection = () => {
     if (!individualSectionName.trim()) {
       return;
@@ -59,9 +62,18 @@ export default function SectionsComponent() {
     setIndividualSectionDirection('frente');
   };
 
+  const handleCreateAutoViews = () => {
+    if (!autoViewsEnvironmentName.trim()) {
+      return;
+    }
+
+    createAutoViews(autoViewsEnvironmentName);
+    setIsAutoViewsDialogOpen(false);
+    setAutoViewsEnvironmentName('');
+  };
+
   return (
     <div className='space-y-4'>
-      {/* Header */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           <h2 className='text-lg font-semibold'>Seções</h2>
@@ -71,21 +83,16 @@ export default function SectionsComponent() {
             </Badge>
           )}
         </div>
-        <Button
-          size='sm'
-          variant='ghost'
-          onClick={getSections}
-          disabled={isBusy}
-        >
-          <ViewConfigMenu
-            isBusy={isBusy}
-            entityLabel='Seção'
-            onEdit={() => {}}
-          />
-        </Button>
+        <ViewConfigMenu
+          isBusy={isBusy}
+          entityLabel='Seção'
+          onEdit={() => {}}
+          onSaveToJson={saveToJson}
+          onLoadDefault={loadDefault}
+          onLoadFromJson={loadFromJson}
+          onLoadFromFile={loadFromFile}
+        />
       </div>
-
-      {/* Main Actions */}
       <div className='flex flex-col gap-2 w-full'>
         <Button
           size='sm'
@@ -97,15 +104,47 @@ export default function SectionsComponent() {
           Cortes Gerais (A, B, C, D)
         </Button>
 
-        <Button
-          size='sm'
-          variant='default'
-          onClick={createAutoViews}
-          disabled={isBusy}
+        <Dialog
+          open={isAutoViewsDialogOpen}
+          onOpenChange={setIsAutoViewsDialogOpen}
         >
-          <Eye className='w-5 h-5' />
-          Vistas Auto (Objeto Selecionado)
-        </Button>
+          <DialogTrigger asChild>
+            <Button size='sm' variant='default' disabled={isBusy}>
+              <Eye className='w-5 h-5' />
+              Vistas Auto (Objeto Selecionado)
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Criar Vistas Automáticas</DialogTitle>
+              <DialogDescription>
+                Selecione um objeto no modelo e informe o nome do ambiente
+              </DialogDescription>
+            </DialogHeader>
+            <div className='space-y-4 py-4'>
+              <div className='space-y-2'>
+                <Label htmlFor='environment-name'>Nome do Ambiente</Label>
+                <Input
+                  id='environment-name'
+                  placeholder='Ex: cozinha, banheiro...'
+                  value={autoViewsEnvironmentName}
+                  onChange={(e) => setAutoViewsEnvironmentName(e.target.value)}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant='outline'
+                onClick={() => setIsAutoViewsDialogOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button onClick={handleCreateAutoViews} disabled={isBusy}>
+                Criar Vistas
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <Dialog
           open={isIndividualDialogOpen}
@@ -164,6 +203,7 @@ export default function SectionsComponent() {
           </DialogContent>
         </Dialog>
       </div>
+      <div className='flex flex-col gap-2 w-full'></div>
     </div>
   );
 }

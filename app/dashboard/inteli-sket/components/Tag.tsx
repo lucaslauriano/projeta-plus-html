@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Edit, Trash2 } from 'lucide-react';
+import { ColorPicker } from '@/components/ui/color-picker';
 
 interface TagProps {
   name: string;
@@ -33,10 +34,9 @@ export default function Tag({
     }
   }, [isEditingName]);
 
-  const handleColorChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newColor = e.target.value;
+  const handleColorChange = (newColor: string) => {
     if (onUpdateColor) {
-      await onUpdateColor(name, newColor);
+      onUpdateColor(name, newColor);
     }
   };
 
@@ -75,18 +75,14 @@ export default function Tag({
       className='flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-accent/20 text-sm group border border-border/50'
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Color picker - sempre visível */}
-      <input
-        type='color'
+      <ColorPicker
         value={currentColor}
         onChange={handleColorChange}
         disabled={!onUpdateColor}
-        className='w-6 h-6 rounded cursor-pointer border border-border disabled:cursor-not-allowed '
-        style={{ padding: 0, border: 'none', borderRadius: '0.375rem' }}
-        title='Editar cor'
+        className='w-4 h-4'
+        size='icon-sm'
       />
 
-      {/* Nome editável ao duplo clique */}
       {isEditingName ? (
         <input
           ref={inputRef}

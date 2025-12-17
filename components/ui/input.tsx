@@ -21,7 +21,7 @@ function Input({
 }: React.ComponentProps<'input'> & {
   label?: string;
   tooltip?: string;
-  error?: boolean;
+  error?: string;
   ref?: React.Ref<HTMLInputElement>;
 }) {
   const inputElement = (
