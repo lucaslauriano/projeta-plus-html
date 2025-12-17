@@ -12,12 +12,12 @@ import {
   AccordionContent,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { ElectricalChangeAtributes } from '@/app/dashboard/annotation/components/change-atributes';
 import { BsHouse } from 'react-icons/bs';
 import PageWrapper from '@/components/ui/page-wraper';
 import PageContent from '@/components/ui/page-content';
-import AnnotationLighting from '@/app/dashboard/annotation/components/lighting';
 import AnnotationCeiling from '@/app/dashboard/annotation/components/ceilling';
+import AnnotationLighting from '@/app/dashboard/annotation/components/lighting';
+import { ElectricalChangeAtributes } from '@/app/dashboard/annotation/components/change-atributes';
 
 const accordionItems = [
   {
@@ -68,9 +68,9 @@ export default function AnnotationDashboardPage() {
               <AccordionItem
                 key={item.value}
                 value={item.value}
-                className='border bg-card rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow'
+                className='border bg-card rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow'
               >
-                <AccordionTrigger className='px-5 py-3 hover:no-underline'>
+                <AccordionTrigger className='px-3 hover:no-underline'>
                   <div className='flex items-center gap-3 text-base font-semibold '>
                     <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 '>
                       <IconComponent className='w-5 h-5 text-primary' />

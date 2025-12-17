@@ -60,7 +60,7 @@ function AnimatedSubtitle() {
 
   return (
     <p
-      className={`text-xl font-serif text-muted-foreground mb-8 leading-relaxed transition-opacity duration-500 ${
+      className={`text-xl text-muted-foreground mb-8 leading-relaxed transition-opacity duration-500 ${
         fadeIn ? 'opacity-100' : 'opacity-0'
       }`}
     >
@@ -122,7 +122,7 @@ function LandingPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className='font-serif'>
+                  <CardDescription>
                     Anote ambientes, alturas, vistas, circuitos elétricos e
                     seções automaticamente. Documentação profissional em
                     segundos.
@@ -138,7 +138,7 @@ function LandingPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className='font-serif'>
+                  <CardDescription>
                     Mobiliário, iluminação, esquadrias, revestimentos e rodapés.
                     Componentes prontos para seus projetos de interiores.
                   </CardDescription>
@@ -153,7 +153,7 @@ function LandingPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className='font-serif'>
+                  <CardDescription>
                     Gere layouts customizados e relatórios detalhados
                     automaticamente. Do modelo 3D à prancha final em minutos.
                   </CardDescription>
@@ -172,7 +172,7 @@ function LandingPage() {
               <h4 className='font-bold font-sans mb-4 flex items-center'>
                 Projeta <Plus className='h-4 w-4 ml-1 text-secondary' />
               </h4>
-              <p className='text-sm text-muted-foreground font-serif'>
+              <p className='text-sm text-muted-foreground'>
                 Plugins profissionais para SketchUp que transformam seu workflow
                 de projetos.
               </p>
@@ -180,7 +180,7 @@ function LandingPage() {
             <div className='grid grid-cols-2 md:grid-cols-2 gap-4 mb-4 justify-center items-center'>
               <div>
                 <h4 className='font-bold font-sans mb-4'>Produto</h4>
-                <ul className='space-y-2 text-sm text-muted-foreground font-serif'>
+                <ul className='space-y-2 text-sm text-muted-foreground'>
                   <li>
                     <a
                       href='#'
@@ -210,7 +210,7 @@ function LandingPage() {
 
               <div>
                 <h4 className='font-bold font-sans mb-4'>Empresa</h4>
-                <ul className='space-y-2 text-sm text-muted-foreground font-serif'>
+                <ul className='space-y-2 text-sm text-muted-foreground'>
                   <li>
                     <a
                       href='#'
@@ -241,7 +241,7 @@ function LandingPage() {
           </div>
 
           <div className='border-t pt-8 text-center'>
-            <p className='text-sm text-muted-foreground font-serif'>
+            <p className='text-sm text-muted-foreground'>
               © {new Date().getFullYear()} Panda Experience. Todos os direitos
               reservados.
             </p>

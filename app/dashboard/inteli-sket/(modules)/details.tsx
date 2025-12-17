@@ -81,7 +81,7 @@ export default function DetailsComponent() {
 
         <div className='flex flex-col gap-3 w-full'>
           <Button
-            className='w-full flex items-center gap-3 justify-center text-base'
+            className='w-full flex items-center gap-3 justify-center'
             variant='default'
             onClick={handleCreateCarpentryDetail}
             disabled={isProcessing}
@@ -91,7 +91,7 @@ export default function DetailsComponent() {
           </Button>
 
           <Button
-            className='w-full flex items-center gap-3 justify-center text-base'
+            className='w-full flex items-center gap-3 justify-center'
             variant='default'
             onClick={handleCreateGeneralDetails}
             disabled={isProcessing}
@@ -110,7 +110,7 @@ export default function DetailsComponent() {
           </Button>
 
           <Button
-            className='w-full flex items-center gap-3 justify-center text-base'
+            className='w-full flex items-center gap-3 justify-center'
             variant='default'
             onClick={handleTogglePerspective}
             disabled={isProcessing}

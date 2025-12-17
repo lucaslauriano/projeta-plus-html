@@ -1,17 +1,17 @@
 import type React from 'react';
 import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
-import { Manrope } from 'next/font/google';
+import { Montserrat } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ContrastProvider } from '@/contexts/ContrastContext';
 import { SketchupProvider } from '@/contexts/SketchupContext';
 import './globals.css';
 import { Toaster } from '@/components/ui/toast';
 
-const manrope = Manrope({
+const montserrat = Montserrat({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-manrope',
+  variable: '--font-montserrat',
 });
 
 export const metadata: Metadata = {
@@ -29,10 +29,10 @@ export default function RootLayout({
     <ClerkProvider>
       <html
         lang='en'
-        className={`${manrope.variable} antialiased h-full`}
-        suppressHydrationWarning
+        className={`${montserrat.variable} antialiased h-full`}
+        suppressHydrationWarning={false}
       >
-        <body className='h-full' suppressHydrationWarning>
+        <body className='h-full' suppressHydrationWarning={false}>
           <ThemeProvider
             attribute='class'
             defaultTheme='dark'

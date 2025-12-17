@@ -71,9 +71,7 @@ export function VideoCarousel({
       <div className='flex items-center justify-between'>
         <div>
           <h2 className='text-xl font-bold font-sans'>{title}</h2>
-          <p className='text-sm text-muted-foreground font-serif'>
-            {description}
-          </p>
+          <p className='text-sm text-muted-foreground'>{description}</p>
         </div>
         <div className='flex gap-2'>
           <Button
@@ -151,7 +149,7 @@ export function VideoCarousel({
                   <CardTitle className='font-sans text-base line-clamp-2'>
                     {video.title}
                   </CardTitle>
-                  <CardDescription className='font-serif text-sm line-clamp-2'>
+                  <CardDescription className='text-sm line-clamp-2'>
                     {video.description}
                   </CardDescription>
                 </CardHeader>

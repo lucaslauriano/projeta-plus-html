@@ -11,14 +11,17 @@ import {
 import { Edit, Trash2, Folder, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SceneGroup, useScenes } from '@/hooks/useScenes';
-import { SceneEditDialog } from './scene-edit-dialog';
-import { AddGroupDialog, AddSceneDialog } from './scene-group-dialogs';
+import {
+  AddGroupDialog,
+  AddSceneDialog,
+} from '@/app/dashboard/inteli-sket/components/scene-group-dialogs';
 import {
   ScenesSkeleton,
   ScenesEmptyState,
   ScenesLoadingState,
-} from './scenes-skeleton';
-import { ViewConfigMenu } from './view-config-menu';
+} from '@/app/dashboard/inteli-sket/components/scenes-skeleton';
+import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
+import { ViewConfigEditDialog } from '@/app/dashboard/inteli-sket/components/view-config-edit-dialog';
 
 type Scene = SceneGroup['scenes'][number];
 
@@ -389,12 +392,15 @@ function ScenesComponent() {
         onKeyPress={handleSceneDialogKeyPress}
       />
 
-      <SceneEditDialog
+      <ViewConfigEditDialog
+        title='Configuração da Cena'
+        itemTitle={editSceneName}
+        onItemTitleChange={setEditSceneName}
+        allowedCameraTypes={['iso_perspectiva', 'iso_ortogonal']}
         style={editSceneStyle}
         isBusy={isBusy}
         isOpen={isEditDialogOpen}
         onSave={handleSaveEditScene}
-        sceneTitle={editSceneName}
         cameraType={editCameraType}
         onOpenChange={setIsEditDialogOpen}
         activeLayers={editActiveLayers}
@@ -403,7 +409,6 @@ function ScenesComponent() {
         availableStyles={availableStyles}
         onCameraTypeChange={setEditCameraType}
         onActiveLayersChange={setEditActiveLayers}
-        onSceneTitleChange={setEditSceneName}
         onCancel={() => {
           setIsEditDialogOpen(false);
           setEditingScene(null);

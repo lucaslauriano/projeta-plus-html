@@ -55,7 +55,7 @@ export default function TagList({
                 <AccordionItem
                   key={i}
                   value={`folder-${i}`}
-                  className='border rounded-xl overflow-hidden bg-muted/20 px-0 data-[state=open]:border-b-0'
+                  className='border rounded-md overflow-hidden bg-muted/20 px-0 data-[state=open]:border-b-0'
                 >
                   <AccordionTrigger className='px-3 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-gray-500/10 group data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none'>
                     <div className='flex items-center justify-between w-full pr-2'>

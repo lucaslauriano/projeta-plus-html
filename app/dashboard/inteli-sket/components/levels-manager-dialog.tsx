@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -12,16 +12,20 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
   Plus,
+  Trash2,
   Loader2,
   Building2,
-  Check,
-  Trash2,
-  Settings2,
+  ArrowUpToLine,
+  ArrowDownToLine,
 } from 'lucide-react';
 import { useLevels } from '@/hooks/useLevels';
 import { toast } from 'sonner';
-import { BasePlansConfigDialog } from './base-plans-config-dialog';
-import { useBasePlans } from '@/hooks/useBasePlans';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 import {
   Table,
@@ -31,6 +35,7 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table';
+import { Card } from '@/components/ui/card';
 
 interface LevelsManagerDialogProps {
   isOpen: boolean;
@@ -50,98 +55,7 @@ export function LevelsManagerDialog({
     createCeilingScene,
   } = useLevels();
 
-  const {
-    data: basePlansData,
-    availableStyles,
-    availableLayers,
-    savePlans,
-    isBusy: isBusyPlans,
-  } = useBasePlans();
-
   const [heightInput, setHeightInput] = useState('0.00');
-  const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false);
-  const [baseStyle, setBaseStyle] = useState('FM_VISTAS');
-  const [baseLayers, setBaseLayers] = useState<string[]>(['Layer0']);
-  const [ceilingStyle, setCeilingStyle] = useState('FM_VISTAS');
-  const [ceilingLayers, setCeilingLayers] = useState<string[]>(['Layer0']);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    if (!isInitialized) return;
-
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    saveTimeoutRef.current = setTimeout(() => {
-      const plans = [
-        {
-          id: 'base',
-          name: 'Base',
-          style: baseStyle,
-          activeLayers: baseLayers,
-        },
-        {
-          id: 'forro',
-          name: 'Forro',
-          style: ceilingStyle,
-          activeLayers: ceilingLayers,
-        },
-      ];
-
-      savePlans(plans, false);
-    }, 100);
-
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [
-    baseStyle,
-    baseLayers,
-    ceilingStyle,
-    ceilingLayers,
-    isInitialized,
-    savePlans,
-  ]);
-
-  const saveConfig = async (showToast: boolean = false) => {
-    const plans = [
-      {
-        id: 'base',
-        name: 'Base',
-        style: baseStyle,
-        activeLayers: baseLayers,
-      },
-      {
-        id: 'forro',
-        name: 'Forro',
-        style: ceilingStyle,
-        activeLayers: ceilingLayers,
-      },
-    ];
-
-    await savePlans(plans, showToast);
-  };
-
-  // Funções que salvam após alteração
-  const handleBaseStyleChange = (style: string) => {
-    setBaseStyle(style);
-  };
-
-  const handleBaseLayersChange = (layers: string[]) => {
-    setBaseLayers(layers);
-  };
-
-  const handleCeilingStyleChange = (style: string) => {
-    setCeilingStyle(style);
-  };
-
-  const handleCeilingLayersChange = (layers: string[]) => {
-    setCeilingLayers(layers);
-  };
 
   function handleAddLevel() {
     const height = parseFloat(heightInput.replace(',', '.'));
@@ -155,39 +69,15 @@ export function LevelsManagerDialog({
     setHeightInput('0.00');
   }
 
-  // Load initial data from JSON
-  useEffect(() => {
-    if (basePlansData.plans.length > 0 && !isInitialized) {
-      const basePlan = basePlansData.plans.find((p) => p.id === 'base');
-      const ceilingPlan = basePlansData.plans.find((p) => p.id === 'forro');
-
-      if (basePlan) {
-        setBaseStyle(basePlan.style);
-        setBaseLayers(basePlan.activeLayers);
-      }
-      if (ceilingPlan) {
-        setCeilingStyle(ceilingPlan.style);
-        setCeilingLayers(ceilingPlan.activeLayers);
-      }
-
-      setIsInitialized(true);
-    }
-  }, [basePlansData, isInitialized]);
-
   function formatHeight(meters: number): string {
     return meters.toFixed(2) + 'm';
   }
-
-  const handleApplyCurrentState = () => {
-    // TODO: Implementar lógica para aplicar o estado atual do modelo
-    toast.info('Aplicando estado atual...');
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className='w-full max-h-[900px] overflow-y-auto'>
         <DialogHeader>
-          <div className='flex items-center justify-between'>
+          <div className='flex flex-col gap-2 items-end justify-end w-full'>
             <div>
               <DialogTitle className='flex text-start gap-2 text-xl'>
                 Gerenciador de Níveis
@@ -197,15 +87,6 @@ export function LevelsManagerDialog({
                 forro
               </DialogDescription>
             </div>
-            <Button
-              size='sm'
-              variant='outline'
-              onClick={() => setIsConfigDialogOpen(true)}
-              className='flex items-center gap-2'
-            >
-              <Settings2 className='w-4 h-4' />
-              Configurar Plantas
-            </Button>
           </div>
         </DialogHeader>
 
@@ -252,93 +133,83 @@ export function LevelsManagerDialog({
               </p>
             </div>
           ) : (
-            <div className='border rounded-lg overflow-hidden w-full max-h-[400px] overflow-y-auto'>
-              <Table className='w-full'>
-                <TableHeader>
-                  <TableRow className='bg-muted/50'>
-                    <TableHead className='font-semibold'>Nível</TableHead>
+            <div className='border rounded-lg overflow-auto w-full max-h-[300px] overflow-y-auto'>
+              {levels.reverse().map((level) => (
+                <div
+                  key={level.number}
+                  className='hover:bg-muted/30 flex items-center justify-between py-2 border-b border-border/50 last:border-b-0 P'
+                >
+                  <span className='text-muted-foreground text-sm pl-4'>
+                    <p className='text-sm font-bold'>{level.name}</p>
+                    <p className='flex items-center gap-2  text-muted-foreground text-sm'>
+                      <span className='font-bold text-sm'>Nível:</span>{' '}
+                      {formatHeight(level.height_meters)}
+                    </p>
+                  </span>
+                  <div className='flex items-center gap-2 pr-4'>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size='sm'
+                            variant='ghost'
+                            className='cursor-pointer justify-between w-fit'
+                            onClick={() => createBaseScene(level.number)}
+                            disabled={isBusy}
+                          >
+                            <ArrowDownToLine className='w-3 h-3' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Criar planta base</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
 
-                    <TableHead className='font-semibold'>Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {levels.map((level) => (
-                    <TableRow key={level.number} className='hover:bg-muted/30'>
-                      <TableCell className='font-medium'>
-                        <span className='text-muted-foreground text-sm'>
-                          {level.name}
-                          <p className='flex items-center gap-2  text-muted-foreground text-sm'>
-                            Nível: {formatHeight(level.height_meters)}
-                          </p>
-                        </span>
-                      </TableCell>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size='sm'
+                            variant='ghost'
+                            className='cursor-pointer justify-between w-fit'
+                            onClick={() => createCeilingScene(level.number)}
+                            disabled={isBusy}
+                          >
+                            <ArrowUpToLine className='w-3 h-3' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Criar planta de forro</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
 
-                      <TableCell className='flex gap-2'>
-                        <Button
-                          size='sm'
-                          className='cursor-pointer justify-between w-fit'
-                          onClick={() => createBaseScene(level.number)}
-                          disabled={isBusy}
-                        >
-                          {level.has_base ? (
-                            <Check className='w-3 h-3 mr-2' />
-                          ) : (
-                            <Plus className='w-3 h-3 mr-2' />
-                          )}
-                          Base
-                        </Button>
-
-                        <Button
-                          size='sm'
-                          className='cursor-pointer justify-between w-fit'
-                          onClick={() => createCeilingScene(level.number)}
-                          disabled={isBusy}
-                        >
-                          {level.has_ceiling ? (
-                            <Check className='w-3 h-3 mr-2' />
-                          ) : (
-                            <Plus className='w-3 h-3 mr-2' />
-                          )}
-                          Forro
-                        </Button>
-
-                        <Button
-                          size='sm'
-                          variant='destructive'
-                          className='cursor-pointer justify-between w-fit'
-                          onClick={() => removeLevel(level.number)}
-                          disabled={isBusy}
-                        >
-                          <Trash2 className='w-3 h-3 mr-2' />
-                          Excluir
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size='sm'
+                            variant='ghost'
+                            className='cursor-pointer justify-between w-fit'
+                            onClick={() => removeLevel(level.number)}
+                            disabled={isBusy}
+                          >
+                            <Trash2 className='w-3 h-3' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Remover nível</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
       </DialogContent>
-
-      <BasePlansConfigDialog
-        onSave={saveConfig}
-        isOpen={isConfigDialogOpen}
-        onOpenChange={setIsConfigDialogOpen}
-        availableStyles={availableStyles}
-        availableLayers={availableLayers}
-        baseStyle={baseStyle}
-        baseLayers={baseLayers}
-        ceilingStyle={ceilingStyle}
-        ceilingLayers={ceilingLayers}
-        onBaseStyleChange={handleBaseStyleChange}
-        onBaseLayersChange={handleBaseLayersChange}
-        onCeilingStyleChange={handleCeilingStyleChange}
-        onCeilingLayersChange={handleCeilingLayersChange}
-        onApplyCurrentState={handleApplyCurrentState}
-        isBusy={isBusy || isBusyPlans}
-      />
     </Dialog>
   );
 }

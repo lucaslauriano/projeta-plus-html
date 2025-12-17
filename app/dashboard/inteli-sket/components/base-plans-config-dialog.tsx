@@ -11,7 +11,7 @@ import {
   SelectContent,
   SelectTrigger,
 } from '@/components/ui/select';
-import { Upload, Search } from 'lucide-react';
+import { Upload, Search, X } from 'lucide-react';
 import {
   Dialog,
   DialogTitle,
@@ -61,6 +61,9 @@ export function BasePlansConfigDialog({
 }: BasePlansConfigDialogProps) {
   const [layerFilter, setLayerFilter] = useState('');
   const [activeTab, setActiveTab] = useState('base');
+  const [filterType, setFilterType] = useState<'all' | 'none' | 'current'>(
+    'all'
+  );
 
   const filteredLayers = useMemo(() => {
     if (!layerFilter.trim()) {
@@ -117,8 +120,8 @@ export function BasePlansConfigDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-[550px] max-h-[90vh] flex flex-col'>
         <DialogHeader>
-          <DialogTitle className='flex items-center gap-2'>
-            Configurações das Plantas Base e Forro
+          <DialogTitle className='flex text-start gap-2 '>
+            Configurações Base e Forro
           </DialogTitle>
           <DialogDescription className='text-start text-sm text-muted-foreground'>
             Configure os estilos e camadas que serão usados nas plantas de base
@@ -134,15 +137,15 @@ export function BasePlansConfigDialog({
 
           <TabsContent
             value={activeTab}
-            className='flex flex-col gap-3 py-2 overflow-y-auto flex-1'
+            className='flex flex-col gap-3 overflow-y-auto flex-1'
           >
             <div className='w-full flex items-end justify-between gap-x-3'>
-              <div className='space-y-1.5 w-2/3 items-center justify-center'>
-                <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
+              <div className='space-y-1.5 items-center justify-center w-full'>
+                <label className='flex items-center gap-2 text-sm font-semibold text-foreground w-full'>
                   Estilo:
                 </label>
                 <Select value={currentStyle} onValueChange={handleStyleChange}>
-                  <SelectTrigger className='h-9 rounded-xl border-2 w-full'>
+                  <SelectTrigger className='w-full'>
                     <SelectValue placeholder='Selecione um estilo' />
                   </SelectTrigger>
                   <SelectContent className='max-h-[200px]'>
@@ -168,8 +171,7 @@ export function BasePlansConfigDialog({
 
             <div className='space-y-2'>
               <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
-                Camadas Ativas ({availableLayers.length} disponíveis
-                {layerFilter && `, ${filteredLayers.length} filtradas`}):
+                Camadas Ativas
               </label>
 
               <div className='relative'>
@@ -179,38 +181,53 @@ export function BasePlansConfigDialog({
                   placeholder='Filtrar camadas...'
                   value={layerFilter}
                   onChange={(e) => setLayerFilter(e.target.value)}
-                  className='pl-9 h-9 rounded-xl border-2'
+                  className='pl-9 '
                 />
+                {layerFilter && (
+                  <X
+                    className='absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground cursor-pointer'
+                    onClick={() => setLayerFilter('')}
+                  />
+                )}
               </div>
 
-              <div className='flex items-center gap-2 flex-wrap'>
+              <div className='flex items-center gap-2 flex-wrap mt-4'>
                 <Button
-                  variant='outline'
+                  variant={filterType === 'all' ? 'default' : 'outline'}
                   size='sm'
-                  onClick={handleSelectAllFiltered}
-                  className='h-8 text-xs'
+                  onClick={() => {
+                    setFilterType('all');
+                    handleSelectAllFiltered();
+                  }}
+                  className='h-8 text-xs rounded-4xl'
                 >
                   Todos
                 </Button>
                 <Button
-                  variant='outline'
+                  variant={filterType === 'none' ? 'default' : 'outline'}
                   size='sm'
-                  onClick={handleSelectNoneFiltered}
-                  className='h-8 text-xs'
+                  onClick={() => {
+                    setFilterType('none');
+                    handleSelectNoneFiltered();
+                  }}
+                  className='h-8 text-xs rounded-4xl'
                 >
                   Nenhum
                 </Button>
                 <Button
-                  variant='outline'
+                  variant={filterType === 'current' ? 'default' : 'outline'}
                   size='sm'
-                  onClick={onApplyCurrentState}
+                  onClick={() => {
+                    setFilterType('current');
+                    onApplyCurrentState();
+                  }}
                   disabled={isBusy}
-                  className='h-8 text-xs'
+                  className='h-8 text-xs rounded-4xl'
                 >
                   Estado Atual
                 </Button>
               </div>
-              <div className='space-y-1.5 max-h-[200px] overflow-y-auto p-3 bg-muted/30 rounded-xl border border-border/50'>
+              <div className='space-y-1.5 max-h-[200px] overflow-y-auto p-3 bg-muted/30 rounded-md border border-border/50'>
                 {filteredLayers.length > 0 ? (
                   <div className='space-y-1.5'>
                     {filteredLayers.map((layer) => (
@@ -240,10 +257,17 @@ export function BasePlansConfigDialog({
             </div>
           </TabsContent>
         </Tabs>
-        <Button onClick={onSave}>Salvar Configurações</Button>
-        <DialogFooter>
-          <Button variant='outline' onClick={() => onOpenChange(false)}>
+
+        <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
+          <Button
+            className='flex-1'
+            variant='outline'
+            onClick={() => onOpenChange(false)}
+          >
             Fechar
+          </Button>
+          <Button className='flex-1' onClick={onSave}>
+            Salvar
           </Button>
         </DialogFooter>
       </DialogContent>

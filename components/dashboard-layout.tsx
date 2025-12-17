@@ -102,7 +102,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <div
         onMouseLeave={() => setSidebarExpanded(false)}
         className={cn(
-          'absolute left-2 top-2 bottom-2 z-50 flex flex-col bg-card shadow-2xl rounded-2xl transition-all duration-300 ease-in-out',
+          'absolute left-2 top-2 bottom-2 z-50 flex flex-col bg-card shadow-2xl rounded-md transition-all duration-300 ease-in-out',
           sidebarExpanded ? 'w-64' : 'w-14'
         )}
       >
@@ -159,9 +159,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     isActive && !sidebarExpanded && 'text-sidebar-primary'
                   )}
                 />
-                {sidebarExpanded && (
-                  <span className='font-serif'>{item.name}</span>
-                )}
+                {sidebarExpanded && <span>{item.name}</span>}
               </Link>
             );
           })}
@@ -185,7 +183,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             />
             {sidebarExpanded && (
               <div className='flex-1 min-w-0'>
-                <p className='text-sm font-medium text-sidebar-foreground font-serif truncate'>
+                <p className='text-sm font-medium text-sidebar-foreground truncate'>
                   {user?.firstName} {user?.lastName}
                 </p>
                 <p className='text-xs text-sidebar-foreground/70 truncate'>
