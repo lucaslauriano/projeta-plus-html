@@ -32,24 +32,23 @@ import {
 } from '@/components/ui/accordion';
 import { Folder } from 'lucide-react';
 import { Edit } from 'lucide-react';
-import { PlanItem } from '@/components/PlanItem';
 
 export default function SectionsComponent() {
   const {
     data,
     isBusy,
     isAvailable,
-    getSections,
+    // getSections,
     createStandardSections,
     createAutoViews,
     createIndividualSection,
-    deleteSection,
+    // deleteSection,
     saveToJson,
     loadFromJson,
     loadDefault,
     loadFromFile,
-    importToModel,
-    clearAll,
+    //   importToModel,
+    //   clearAll,
   } = useSections();
 
   console.log('data iaskjdnfiasndfiuasdfia', data);

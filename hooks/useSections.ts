@@ -30,7 +30,10 @@ export function useSections() {
   const callSketchupMethodSafe = useCallback(
     (method: string, params?: unknown) => {
       if (isAvailable) {
-        callSketchupMethod(method, params).catch(() => {});
+        callSketchupMethod(
+          method,
+          params as Record<string, unknown> | undefined
+        ).catch(() => {});
       } else {
         console.warn(`[MOCK MODE] ${method}:`, params);
       }

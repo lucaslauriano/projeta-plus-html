@@ -27,16 +27,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-import {
-  Table,
-  TableRow,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-} from '@/components/ui/table';
-import { Card } from '@/components/ui/card';
-
 interface LevelsManagerDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
