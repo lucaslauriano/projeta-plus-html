@@ -3,17 +3,17 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useHeightAnnotation } from '@/hooks/useHeightAnnotation';
 import {
   Tooltip,
+  TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
+import { useAnnotations } from '@/hooks/useAnnotations';
 
 export function PrintAttributes() {
-  const { startHeightAnnotation, defaults, isLoading } = useHeightAnnotation();
+  const { startEletricalAnnotation, defaults, isLoading } = useAnnotations();
 
   const [showUsage, setShowUsage] = useState(defaults.show_usage);
 
@@ -24,7 +24,7 @@ export function PrintAttributes() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    await startHeightAnnotation({
+    await startEletricalAnnotation({
       show_usage: showUsage,
     });
   };

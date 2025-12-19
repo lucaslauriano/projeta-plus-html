@@ -47,7 +47,7 @@ export type {
   AnnotationArgs,
   RoomAnnotationArgs,
   CeilingAnnotationArgs,
-  HeightAnnotationArgs,
+  EletricalAnnotationArgs,
   LightingAnnotationArgs,
   SectionAnnotationArgs,
   AnnotationResult,

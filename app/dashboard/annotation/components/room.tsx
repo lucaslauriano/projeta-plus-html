@@ -4,10 +4,10 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { useRoomAnnotation } from '@/hooks/useRoomAnnotation';
+import { useAnnotations } from '@/hooks/useAnnotations';
 
 export function RoomAnnotation() {
-  const { startRoomAnnotation, isLoading } = useRoomAnnotation();
+  const { startRoomAnnotation, isLoading } = useAnnotations();
 
   const [level, setLevel] = useState('');
   const [showLevel, setShowLevel] = useState(true);

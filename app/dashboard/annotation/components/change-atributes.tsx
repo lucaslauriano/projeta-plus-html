@@ -4,8 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { PrintAttributes } from '@/app/dashboard/annotation/components/print-attributes';
-import { useComponentUpdater } from '@/hooks/useComponentUpdater';
+import { PrintAttributes } from '@/app/dashboard/annotation/components/eletrical';
 import {
   Tooltip,
   TooltipTrigger,
@@ -13,6 +12,7 @@ import {
   TooltipProvider,
 } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
+import { useAnnotations } from '@/hooks/useAnnotations';
 
 type AttributeType =
   | 'scale'
@@ -20,6 +20,7 @@ type AttributeType =
   | 'usage'
   | 'usagePrefix'
   | 'situation';
+
 type SituationType = '1' | '2' | '3' | '4';
 
 type SelectionType = AttributeType | SituationType;
@@ -27,8 +28,7 @@ type SelectionType = AttributeType | SituationType;
 const situacaoOptions = ['1', '2', '3', '4'] as const;
 
 export function ElectricalChangeAtributes() {
-  const { updateComponentAttributes, defaults, isLoading } =
-    useComponentUpdater();
+  const { updateComponentAttributes, defaults, isLoading } = useAnnotations();
 
   const [selectedOption, setSelectedOption] = useState<SelectionType>(
     defaults.last_attribute as SelectionType

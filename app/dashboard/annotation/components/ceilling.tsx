@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Button } from '@/components/ui/button';
-import { useCeilingAnnotation } from '@/hooks/useCeilingAnnotation';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useAnnotations } from '@/hooks/useAnnotations';
 
 const AnnotationCeilingContent = dynamic(
   () => Promise.resolve(AnnotationCeilingInner),
@@ -20,7 +20,7 @@ export default function AnnotationCeiling() {
 function AnnotationCeilingInner() {
   const [level, setLevel] = useState('0,00');
   const { startCeilingAnnotation, isLoading: isCeilingLoading } =
-    useCeilingAnnotation();
+    useAnnotations();
 
   const handleCeilingSubmit = (e: React.FormEvent) => {
     e.preventDefault();

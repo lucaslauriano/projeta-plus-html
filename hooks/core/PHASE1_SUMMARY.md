@@ -310,7 +310,7 @@ Migrar hooks mais simples como proof of concept:
 
 - [ ] `useRoomAnnotation`
 - [ ] `useCeilingAnnotation`
-- [ ] `useHeightAnnotation`
+- [ ] `useEletricalAnnotation`
 - [ ] `useLightingAnnotation`
 - [ ] `useSectionAnnotation`
 - [ ] `useComponentUpdater`

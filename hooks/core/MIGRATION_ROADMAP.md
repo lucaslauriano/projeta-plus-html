@@ -76,14 +76,14 @@ TOTAL: 17 arquivos, ~2,700 linhas
 
 ### Hooks a Migrar (6)
 
-| Hook                    | Linhas Atuais | Linhas Esperadas | Redução | Status |
-| ----------------------- | ------------- | ---------------- | ------- | ------ |
-| `useRoomAnnotation`     | 45            | 15               | 67%     | ⏸️     |
-| `useCeilingAnnotation`  | 60            | 15               | 75%     | ⏸️     |
-| `useHeightAnnotation`   | 65            | 15               | 77%     | ⏸️     |
-| `useLightingAnnotation` | 80            | 20               | 75%     | ⏸️     |
-| `useSectionAnnotation`  | 35            | 15               | 57%     | ⏸️     |
-| `useComponentUpdater`   | 80            | 20               | 75%     | ⏸️     |
+| Hook                     | Linhas Atuais | Linhas Esperadas | Redução | Status |
+| ------------------------ | ------------- | ---------------- | ------- | ------ |
+| `useRoomAnnotation`      | 45            | 15               | 67%     | ⏸️     |
+| `useCeilingAnnotation`   | 60            | 15               | 75%     | ⏸️     |
+| `useEletricalAnnotation` | 65            | 15               | 77%     | ⏸️     |
+| `useLightingAnnotation`  | 80            | 20               | 75%     | ⏸️     |
+| `useSectionAnnotation`   | 35            | 15               | 57%     | ⏸️     |
+| `useComponentUpdater`    | 80            | 20               | 75%     | ⏸️     |
 
 **Total:** 365 → 100 linhas (73% redução)
 
@@ -202,7 +202,7 @@ TOTAL: 17 arquivos, ~2,700 linhas
 | `useBasePlansConfig`   | 135           | 50               | 63%     | ⏸️     |
 | `usePlanEditor`        | 170           | 70               | 59%     | ⏸️     |
 | `useCircuitConnection` | 35            | 20               | 43%     | ⏸️     |
-| `useViewIndication`    | 45            | 25               | 44%     | ⏸️     |
+| `useViewAnnotation`    | 45            | 25               | 44%     | ⏸️     |
 
 **Total:** 385 → 165 linhas (57% redução)
 

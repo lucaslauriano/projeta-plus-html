@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import { useLightingAnnotation } from '@/hooks/useLightingAnnotation';
 import { useCircuitConnection } from '@/hooks/useCircuitConnection';
 import { Input } from '@/components/ui/input';
 import {
@@ -13,6 +12,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
+import { useAnnotations } from '@/hooks/useAnnotations';
 
 const AnnotationLightingContent = dynamic(
   () => Promise.resolve(AnnotationLightingInner),
@@ -31,7 +31,7 @@ function AnnotationLightingInner() {
     startLightingAnnotation,
     isLoading: isLightingLoading,
     defaults,
-  } = useLightingAnnotation();
+  } = useAnnotations();
 
   const { startCircuitConnection, isLoading: isCircuitLoading } =
     useCircuitConnection();

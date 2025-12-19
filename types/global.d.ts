@@ -208,14 +208,14 @@ declare global {
     receiveAllSettingsFromRuby?: (settings: GlobalSettings) => void;
     handleRoomAnnotationResult?: (result: RoomAnnotationResult) => void;
     handleSectionAnnotationResult?: (result: RoomAnnotationResult) => void;
-    handleViewIndicationResult?: (result: RoomAnnotationResult) => void;
+    handleViewAnnotationResult?: (result: RoomAnnotationResult) => void;
     handleLightingDefaults?: (defaults: LightingDefaults) => void;
     handleLightingAnnotationResult?: (result: RoomAnnotationResult) => void;
     handleCircuitConnectionResult?: (result: RoomAnnotationResult) => void;
     handleCeilingDefaults?: (defaults: CeilingDefaults) => void;
     handleCeilingAnnotationResult?: (result: RoomAnnotationResult) => void;
     handleHeightDefaults?: (defaults: HeightDefaults) => void;
-    handleHeightAnnotationResult?: (result: RoomAnnotationResult) => void;
+    handleEletricalAnnotationResult?: (result: RoomAnnotationResult) => void;
     handleComponentUpdaterDefaults?: (
       defaults: ComponentUpdaterDefaults
     ) => void;
@@ -721,34 +721,17 @@ export interface RubyResponse {
   updated_value?: unknown;
 }
 
+// Annotation types moved to types/annotations.ts
+export type {
+  LightingDefaults,
+  CeilingDefaults,
+  HeightDefaults,
+  ComponentUpdaterDefaults,
+} from './annotations';
+
 export interface SectionDefaults {
   line_height_cm: string;
   scale_factor: string;
-}
-
-export interface LightingDefaults {
-  circuit_text: string;
-  circuit_scale: number;
-  circuit_height_cm: number;
-  circuit_font: string;
-  circuit_text_color: string;
-}
-
-export interface CeilingDefaults {
-  floor_level: string;
-}
-
-export interface HeightDefaults {
-  scale: number;
-  height_z_cm: string;
-  font: string;
-  show_usage: boolean;
-}
-
-export interface ComponentUpdaterDefaults {
-  last_attribute: string;
-  last_value: string;
-  last_situation_type: string;
 }
 
 export interface LanguageOption {

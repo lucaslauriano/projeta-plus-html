@@ -1,7 +1,3 @@
-/**
- * Annotation tool types
- */
-
 export interface AnnotationArgs {
   [key: string]: string | boolean | number | undefined;
 }
@@ -22,7 +18,7 @@ export interface CeilingAnnotationArgs extends AnnotationArgs {
   level_value: string;
 }
 
-export interface HeightAnnotationArgs extends AnnotationArgs {
+export interface EletricalAnnotationArgs extends AnnotationArgs {
   height_value: string;
   prefix?: string;
   suffix?: string;
@@ -44,3 +40,15 @@ export interface AnnotationResult {
   message: string;
   [key: string]: unknown;
 }
+
+export type ComponentUpdaterDefaults = {
+  last_attribute: string;
+  last_value: string;
+  last_situation_type: string;
+};
+
+export type ComponentUpdaterArgs = {
+  attribute_type: string;
+  new_value: string;
+  situation_type: string;
+};

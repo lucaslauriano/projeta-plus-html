@@ -3,15 +3,14 @@
 import React from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import { useSectionAnnotation } from '@/hooks/useSectionAnnotation';
-import { useViewIndication } from '@/hooks/useViewIndication';
 import {
   Tooltip,
+  TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
+import { useAnnotations } from '@/hooks/useAnnotations';
 
 const AnnotationSectionContent = dynamic(
   () => Promise.resolve(AnnotationSectionInner),
@@ -25,10 +24,8 @@ export default function AnnotationSection() {
 }
 
 function AnnotationSectionInner() {
-  const { startSectionAnnotation, isLoading: sectionLoading } =
-    useSectionAnnotation();
-  const { activateViewIndicationTool, isLoading: viewLoading } =
-    useViewIndication();
+  const { activateViewAnnotationTool, startSectionAnnotation, isLoading } =
+    useAnnotations();
 
   const handleSectionSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,12 +34,11 @@ function AnnotationSectionInner() {
 
   const handleViewSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    activateViewIndicationTool();
+    activateViewAnnotationTool();
   };
 
   return (
     <div className='w-full max-w-lg mx-auto space-y-4'>
-      {/* Cortes */}
       <div className='space-y-3 gap-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
         <div className='flex items-center justify-between'>
           <h3 className='text-sm font-semibold text-foreground'>Cortes</h3>
@@ -68,11 +64,11 @@ function AnnotationSectionInner() {
         <form onSubmit={handleSectionSubmit} className='w-full'>
           <Button
             type='submit'
-            disabled={sectionLoading}
+            disabled={isLoading}
             size='sm'
             className='w-full'
           >
-            {sectionLoading ? 'Ativando...' : 'Criar Anotação'}
+            {isLoading ? 'Ativando...' : 'Criar Anotação'}
           </Button>
         </form>
 
@@ -102,10 +98,10 @@ function AnnotationSectionInner() {
           <Button
             type='submit'
             size='sm'
-            disabled={viewLoading}
+            disabled={isLoading}
             className='w-full'
           >
-            {viewLoading ? 'Ativando...' : 'Inserir Anotação'}
+            {isLoading ? 'Ativando...' : 'Inserir Anotação'}
           </Button>
         </form>
       </div>
