@@ -37,14 +37,6 @@ export function useAnnotations() {
       handleEletricalAnnotationResult: true,
       handleComponentUpdaterResult: true,
 
-      handleCeilingDefaults: (response) => {
-        if (response) {
-          setDefaults((prev) => ({
-            ...prev,
-            ...(response as unknown as { floor_level: string }),
-          }));
-        }
-      },
       handleLightingDefaults: (response) => {
         if (response) {
           setDefaults((prev) => ({
@@ -84,7 +76,6 @@ export function useAnnotations() {
   // CEILING
   const loadDefaults = async () => {
     await Promise.all([
-      callSketchupMethod('loadCeilingAnnotationDefaults', {}),
       callSketchupMethod('loadLightingAnnotationDefaults', {}),
       callSketchupMethod('loadEletricalAnnotationDefaults', {}),
       callSketchupMethod('loadComponentUpdaterDefaults', {}),
@@ -93,8 +84,6 @@ export function useAnnotations() {
 
   const startCeilingAnnotation = async (args = {}) => {
     const params = {
-      scale: 1.0,
-      font: 'Arial',
       floor_level: defaults.floor_level,
       ...args,
     };
