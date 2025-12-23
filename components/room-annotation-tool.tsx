@@ -1,9 +1,9 @@
-import { useRoomAnnotation } from '@/hooks/useRoomAnnotation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAnnotations } from '@/hooks/useAnnotations';
 
 export function RoomAnnotationTool() {
-  const { startRoomAnnotation } = useRoomAnnotation();
+  const { startRoomAnnotation } = useAnnotations();
 
   const handleStartAnnotation = () => {
     startRoomAnnotation({

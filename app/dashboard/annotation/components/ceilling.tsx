@@ -49,7 +49,7 @@ function AnnotationCeilingInner() {
           />
           <Button
             type='submit'
-            size='lg'
+            size='sm'
             disabled={isCeilingLoading}
             className='w-full'
           >

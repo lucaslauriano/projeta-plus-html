@@ -26,7 +26,7 @@ export default function AnnotationLighting() {
 }
 
 function AnnotationLightingInner() {
-  const [circuitText, setCircuitText] = useState('C1');
+  const [circuitText, setCircuitText] = useState('');
   const {
     startLightingAnnotation,
     isLoading: isLightingLoading,
@@ -70,6 +70,7 @@ function AnnotationLightingInner() {
             />
             <Button
               type='submit'
+              size='sm'
               disabled={isLightingLoading}
               className='w-full'
             >
@@ -103,7 +104,7 @@ function AnnotationLightingInner() {
             </div>
             <form onSubmit={handleCircuitConnectionSubmit}>
               <Button
-                size='lg'
+                size='sm'
                 type='submit'
                 disabled={isCircuitLoading}
                 className='w-full'

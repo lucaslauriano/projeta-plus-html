@@ -111,6 +111,7 @@ export default function LayersComponent() {
           </div>
           <DialogFooter>
             <Button
+              size='sm'
               variant='outline'
               onClick={() => {
                 setIsFolderDialogOpen(false);
@@ -119,7 +120,7 @@ export default function LayersComponent() {
             >
               Cancelar
             </Button>
-            <Button onClick={handleAddFolder}>
+            <Button size='sm' onClick={handleAddFolder}>
               <Folder className='w-4 h-4 mr-2' />
               Criar Pasta
             </Button>
@@ -183,6 +184,7 @@ export default function LayersComponent() {
           </div>
           <DialogFooter>
             <Button
+              size='sm'
               variant='outline'
               onClick={() => {
                 setIsTagDialogOpen(false);
@@ -191,7 +193,7 @@ export default function LayersComponent() {
             >
               Cancelar
             </Button>
-            <Button onClick={handleAddTag}>
+            <Button onClick={handleAddTag} size='sm'>
               <Tag className='w-4 h-4 mr-2' />
               Criar Tag
             </Button>

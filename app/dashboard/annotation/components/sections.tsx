@@ -39,7 +39,7 @@ function AnnotationSectionInner() {
 
   return (
     <div className='w-full max-w-lg mx-auto space-y-4'>
-      <div className='space-y-3 gap-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
+      <div className='space-y-2 gap-y-4 '>
         <div className='flex items-center justify-between'>
           <h3 className='text-sm font-semibold text-foreground'>Cortes</h3>
           <TooltipProvider>

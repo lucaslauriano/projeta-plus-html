@@ -305,8 +305,8 @@ export default function FurnitureDashboardPage() {
 
           <div className='mb-6'>
             <Button
+              size='sm'
               type='button'
-              size='lg'
               onClick={() => captureSelectedComponent()}
               disabled={isBusy}
               className='w-full flex items-center justify-center space-2'
@@ -602,7 +602,7 @@ export default function FurnitureDashboardPage() {
 
             <div className='flex flex-col space-y-3 p-1'>
               <Button
-                size='lg'
+                size='sm'
                 type='submit'
                 disabled={isBusy || !isSelected}
                 className='w-full flex items-center justify-center space-2'
@@ -613,6 +613,7 @@ export default function FurnitureDashboardPage() {
 
               <Button
                 type='button'
+                size='sm'
                 variant='outline'
                 disabled={isBusy}
                 onClick={() => {

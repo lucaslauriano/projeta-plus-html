@@ -71,9 +71,9 @@ export default function AnnotationDashboardPage() {
                 className='border bg-card rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow'
               >
                 <AccordionTrigger className='px-3 hover:no-underline'>
-                  <div className='flex items-center gap-3 text-base font-semibold '>
-                    <div className='flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 '>
-                      <IconComponent className='w-5 h-5 text-primary' />
+                  <div className='flex items-center text-base font-semibold '>
+                    <div className='flex items-center justify-center w-8 h-8 rounded-full '>
+                      <IconComponent className='w-4 h-4' />
                     </div>
                     <span>{item.label}</span>
                   </div>

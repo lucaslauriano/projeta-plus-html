@@ -253,10 +253,12 @@ export function ViewConfigEditDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button variant='outline' onClick={onCancel}>
+          <Button variant='outline' onClick={onCancel} size='sm'>
             Cancelar
           </Button>
-          <Button onClick={onSave}>Salvar</Button>
+          <Button onClick={onSave} size='sm'>
+            Salvar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

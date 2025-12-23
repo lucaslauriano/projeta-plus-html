@@ -37,8 +37,8 @@ export default function ElectricalDashboardPage() {
         <PageContent className='space-y-4'>
           <div className='flex gap-2 justify-end'>
             <Button
-              variant='outline'
               size='sm'
+              variant='outline'
               onClick={openBlocksFolder}
               className='flex items-center gap-2 w-full'
             >
@@ -99,8 +99,8 @@ export default function ElectricalDashboardPage() {
                             <TooltipTrigger asChild>
                               <Button
                                 size='sm'
-                                className='h-auto py-2 px-3 text-xs font-medium justify-center'
                                 onClick={() => handleImportBlock(item.path)}
+                                className='h-auto py-2 px-3 text-xs font-medium justify-center'
                                 disabled={isBusy}
                               >
                                 <span className='truncate'>{item.name}</span>

@@ -144,12 +144,17 @@ export default function SectionsComponent() {
             </div>
             <DialogFooter>
               <Button
+                size='sm'
                 variant='outline'
                 onClick={() => setIsAutoViewsDialogOpen(false)}
               >
                 Cancelar
               </Button>
-              <Button onClick={handleCreateAutoViews} disabled={isBusy}>
+              <Button
+                size='sm'
+                onClick={handleCreateAutoViews}
+                disabled={isBusy}
+              >
                 Criar Vistas
               </Button>
             </DialogFooter>
@@ -203,12 +208,15 @@ export default function SectionsComponent() {
             </div>
             <DialogFooter>
               <Button
+                size='sm'
                 variant='outline'
                 onClick={() => setIsIndividualDialogOpen(false)}
               >
                 Cancelar
               </Button>
-              <Button onClick={handleCreateIndividualSection}>Criar</Button>
+              <Button onClick={handleCreateIndividualSection} size='sm'>
+                Criar
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

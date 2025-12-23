@@ -260,6 +260,7 @@ export function BasePlansConfigDialog({
 
         <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
           <Button
+            size='sm'
             className='flex-1'
             variant='outline'
             onClick={() => onOpenChange(false)}

@@ -133,6 +133,7 @@ export default function GlobalSettingsPage() {
           {hasChanges && (
             <div className='col-span-1 mt-6 flex gap-4 justify-end'>
               <Button
+                size='sm'
                 type='button'
                 onClick={saveAllChanges}
                 disabled={isLoading}

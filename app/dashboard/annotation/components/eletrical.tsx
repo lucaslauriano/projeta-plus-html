@@ -70,7 +70,7 @@ export function PrintAttributes() {
           {/* Submit Button */}
           <Button
             type='submit'
-            size='lg'
+            size='sm'
             disabled={isLoading}
             className='w-full'
           >

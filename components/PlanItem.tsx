@@ -38,6 +38,7 @@ export function PlanItem({
   return (
     <DropdownMenu open={contextMenuOpen} onOpenChange={setContextMenuOpen}>
       <Button
+        size='sm'
         className='flex items-center justify-between p-2 rounded-lg border transition-colors w-full bg-primary'
         onClick={(e) => {
           e.stopPropagation();

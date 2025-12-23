@@ -61,6 +61,7 @@ export function AddGroupDialog({
         </div>
         <DialogFooter>
           <Button
+            size='sm'
             variant='outline'
             onClick={() => {
               onOpenChange(false);
@@ -69,7 +70,7 @@ export function AddGroupDialog({
           >
             Cancelar
           </Button>
-          <Button onClick={onAdd}>
+          <Button onClick={onAdd} size='sm'>
             <Folder className='w-4 h-4 mr-2' />
             Criar Grupo
           </Button>

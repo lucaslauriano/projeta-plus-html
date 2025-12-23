@@ -81,7 +81,7 @@ export default function DetailsComponent() {
 
         <div className='flex flex-col gap-3 w-full'>
           <Button
-            className='w-full flex items-center gap-3 justify-center'
+            size='sm'
             variant='default'
             onClick={handleCreateCarpentryDetail}
             disabled={isProcessing}
@@ -91,7 +91,7 @@ export default function DetailsComponent() {
           </Button>
 
           <Button
-            className='w-full flex items-center gap-3 justify-center'
+            size='sm'
             variant='default'
             onClick={handleCreateGeneralDetails}
             disabled={isProcessing}
@@ -101,6 +101,7 @@ export default function DetailsComponent() {
           </Button>
 
           <Button
+            size='sm'
             variant='default'
             onClick={handleOpenDuplicateDialog}
             disabled={isProcessing}
@@ -110,7 +111,7 @@ export default function DetailsComponent() {
           </Button>
 
           <Button
-            className='w-full flex items-center gap-3 justify-center'
+            size='sm'
             variant='default'
             onClick={handleTogglePerspective}
             disabled={isProcessing}
@@ -166,6 +167,7 @@ export default function DetailsComponent() {
           <DialogFooter className='flex gap-2'>
             <div className='w-full flex gap-2'>
               <Button
+                size='sm'
                 variant='outline'
                 onClick={() => {
                   setIsDuplicateDialogOpen(false);
@@ -176,7 +178,11 @@ export default function DetailsComponent() {
               >
                 Cancelar
               </Button>
-              <Button onClick={handleDuplicateScene} disabled={isProcessing}>
+              <Button
+                size='sm'
+                onClick={handleDuplicateScene}
+                disabled={isProcessing}
+              >
                 <Copy className='w-4 h-4 mr-2' />
                 Criar
               </Button>
