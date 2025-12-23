@@ -23,6 +23,7 @@ import SectionsComponent from './(modules)/sections';
 import PlansComponent from './(modules)/plans';
 import ScenesComponent from './(modules)/scenes';
 import PageContent from '@/components/ui/page-content';
+import Tabs2 from '@/components/ui/tabs2';
 
 export default function InteliSketDashboardPage() {
   const [activeTab, setActiveTab] = useState('layers');
@@ -60,7 +61,8 @@ export default function InteliSketDashboardPage() {
       />
 
       <PageContent>
-        <div className='flex space-x-2 border-b mb-4 pb-2'>
+        <div className='flex space-x-2 border-b mb-4 items-center'>
+          {/* 
           <TooltipProvider>
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -84,6 +86,19 @@ export default function InteliSketDashboardPage() {
                 </Tooltip>
               );
             })}
+          </TooltipProvider> 
+          */}
+          <TooltipProvider>
+            <Tabs2
+              tabs={tabs.map((tab) => ({
+                name: tab.label,
+                href: '#',
+                current: activeTab === tab.id,
+                icon: tab.icon,
+                id: tab.id,
+              }))}
+              onTabChange={setActiveTab}
+            />
           </TooltipProvider>
         </div>
 

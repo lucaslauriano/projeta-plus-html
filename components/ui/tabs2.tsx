@@ -1,0 +1,51 @@
+import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
+
+export default function Tabs2({
+  tabs,
+  onTabChange,
+}: {
+  tabs: {
+    name: string;
+    href: string;
+    current: boolean;
+    icon: React.ComponentType;
+    id?: string;
+  }[];
+  onTabChange?: (tabId: string) => void;
+}) {
+  return (
+    <div className='flex items-center justify-center w-full'>
+      <nav aria-label='Tabs' className='-mb-px flex space-x-7 justify-center'>
+        {tabs.map((tab) => (
+          <Tooltip key={tab.id}>
+            <TooltipTrigger asChild>
+              <button
+                key={tab.name}
+                onClick={() => onTabChange?.(tab.id || tab.name)}
+                aria-current={tab.current ? 'page' : undefined}
+                className={cn(
+                  tab.current
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-gray-900 hover:border-white/20 hover:text-gray-200',
+                  'border-b-2 px-1 pt-0 pb-4 text-sm font-medium whitespace-nowrap '
+                )}
+              >
+                <tab.icon />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{tab.name}</p>
+            </TooltipContent>
+          </Tooltip>
+        ))}
+      </nav>
+    </div>
+  );
+}

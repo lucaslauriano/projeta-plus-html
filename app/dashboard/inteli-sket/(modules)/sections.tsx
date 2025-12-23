@@ -32,26 +32,27 @@ import {
 } from '@/components/ui/accordion';
 import { Folder } from 'lucide-react';
 import { Edit } from 'lucide-react';
+import { PlanItem } from '@/components/PlanItem';
 
 export default function SectionsComponent() {
   const {
     data,
     isBusy,
     isAvailable,
-    // getSections,
     createStandardSections,
     createAutoViews,
     createIndividualSection,
+    // getSections,
     // deleteSection,
+    // importToModel,
+    // clearAll,
     saveToJson,
     loadFromJson,
     loadDefault,
     loadFromFile,
-    //   importToModel,
-    //   clearAll,
   } = useSections();
 
-  console.log('data iaskjdnfiasndfiuasdfia', data);
+  console.log('data', data);
 
   const [isIndividualDialogOpen, setIsIndividualDialogOpen] = useState(false);
   const [individualSectionName, setIndividualSectionName] = useState('');
@@ -221,8 +222,8 @@ export default function SectionsComponent() {
           </DialogContent>
         </Dialog>
       </div>
-      asoifjasdopfjopaisjdfhopaijsdfa
-      <div className='flex flex-col gap-2 w-full bg-red-500'>
+
+      <div className='flex flex-col gap-2 w-full'>
         <Accordion type='single' collapsible className='w-full space-y-2'>
           {data?.sections.map((item) => (
             <AccordionItem
