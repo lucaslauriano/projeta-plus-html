@@ -13,7 +13,7 @@ export function useAnnotations() {
   const { callSketchupMethod, isLoading, isAvailable } = useSketchup();
 
   const [defaults, setDefaults] = useState({
-    floor_level: '0.00',
+    floor_level: '0,00',
     circuit_text: 'C1',
     circuit_scale: 1.0,
     circuit_height_cm: 250,
@@ -183,6 +183,7 @@ export function useAnnotations() {
     // DEFAULTS
     loadDefaults,
     defaults,
+    setDefaults,
     isLoading,
     isAvailable,
   };

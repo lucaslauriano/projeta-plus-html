@@ -46,12 +46,16 @@ export function ElectricalChangeAtributes() {
 
   const fieldConfig: Record<
     'scale' | 'environment' | 'usage' | 'usagePrefix',
-    { label: string; placeholder: string }
+    { label: string; placeholder: string; type?: string }
   > = {
-    scale: { label: 'Escala:', placeholder: 'Ex: 1:50' },
-    environment: { label: 'Ambiente:', placeholder: 'Ex: Sala' },
-    usage: { label: 'Uso:', placeholder: 'Ex: Iluminação' },
-    usagePrefix: { label: 'Prefixo do uso:', placeholder: 'Ex: IL' },
+    scale: { label: 'Escala:', placeholder: 'Ex: 50', type: 'number' },
+    environment: { label: 'Ambiente:', placeholder: 'Ex: Sala', type: 'text' },
+    usage: { label: 'Uso:', placeholder: 'Ex: Iluminação', type: 'text' },
+    usagePrefix: {
+      label: 'Prefixo do uso:',
+      placeholder: 'Ex: IL',
+      type: 'text',
+    },
   };
 
   const isInputFieldSelected = !(situacaoOptions as readonly string[]).includes(
@@ -118,6 +122,7 @@ export function ElectricalChangeAtributes() {
           <RadioGroup
             value={selectedOption}
             onValueChange={(value) => {
+              setInputValue('');
               const newValue = value as SelectionType;
               setSelectedOption(newValue);
 
@@ -144,7 +149,7 @@ export function ElectricalChangeAtributes() {
             </div>
             <Input
               id='inputValue'
-              type='text'
+              type={getFieldConfig().type || 'text'}
               prefix={
                 isInputFieldSelected && selectedOption === 'scale'
                   ? '1:'

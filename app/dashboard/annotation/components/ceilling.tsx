@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import React, { useState } from 'react';
+import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAnnotations } from '@/hooks/useAnnotations';
@@ -18,9 +18,12 @@ export default function AnnotationCeiling() {
 }
 
 function AnnotationCeilingInner() {
-  const [level, setLevel] = useState('0,00');
-  const { startCeilingAnnotation, isLoading: isCeilingLoading } =
-    useAnnotations();
+  const {
+    startCeilingAnnotation,
+    isLoading: isCeilingLoading,
+    defaults,
+    setDefaults,
+  } = useAnnotations();
 
   const handleCeilingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,8 +41,10 @@ function AnnotationCeilingInner() {
             tooltip='Anotar a área da face selecionada e a altura do pé-direito,
                   calculadas automaticamente de acordo com o eixo Z, lembrando
                   de informar o nível do piso caso seja diferente de 0,00.'
-            value={level}
-            onChange={(e) => setLevel(e.target.value)}
+            value={defaults.floor_level}
+            onChange={(e) =>
+              setDefaults((prev) => ({ ...prev, floor_level: e.target.value }))
+            }
             required
           />
           <Button

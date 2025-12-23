@@ -1,23 +1,23 @@
 'use client';
 
 import React from 'react';
-import { RoomAnnotation } from '@/app/dashboard/annotation/components/room';
-import AnnotationSection from '@/app/dashboard/annotation/components/sections';
 import PageHeader from '@/components/page-header';
-import { Zap, LampCeiling } from 'lucide-react';
+import { BsHouse } from 'react-icons/bs';
 import { AiOutlineScan } from 'react-icons/ai';
+import { RoomAnnotation } from '@/app/dashboard/annotation/components/room';
+import { Zap, LampCeiling } from 'lucide-react';
+import { ElectricalChangeAtributes } from '@/app/dashboard/annotation/components/change-atributes';
+import AnnotationSection from '@/app/dashboard/annotation/components/sections';
 import {
   Accordion,
   AccordionItem,
   AccordionContent,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { BsHouse } from 'react-icons/bs';
 import PageWrapper from '@/components/ui/page-wraper';
 import PageContent from '@/components/ui/page-content';
 import AnnotationCeiling from '@/app/dashboard/annotation/components/ceilling';
 import AnnotationLighting from '@/app/dashboard/annotation/components/lighting';
-import { ElectricalChangeAtributes } from '@/app/dashboard/annotation/components/change-atributes';
 
 const accordionItems = [
   {
@@ -47,7 +47,7 @@ const accordionItems = [
   {
     icon: Zap,
     value: 'electrical',
-    label: 'Eletrica',
+    label: 'Pontos Técnicos',
     content: <ElectricalChangeAtributes />,
   },
 ];

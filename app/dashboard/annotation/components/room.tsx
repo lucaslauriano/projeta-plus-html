@@ -72,7 +72,7 @@ Depois, selecione os campos abaixo para anotar o pé-direito e o nível do piso 
               onChange={(e) => setCeillingHeight(e.target.value)}
               required={showCeillingHeight}
               disabled={isLoading}
-              placeholder='2,60'
+              placeholder='Ex: 2,60'
               label='Altura (m)'
             />
           )}

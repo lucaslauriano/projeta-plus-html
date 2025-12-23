@@ -15,6 +15,14 @@ import {
   SelectContent,
 } from '@/components/ui/select';
 import PageContent from '@/components/ui/page-content';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+  InputGroupText,
+} from '@/components/ui/input-group';
+import { Label } from '@/components/ui/label';
 
 export default function GlobalSettingsPage() {
   const {
@@ -82,44 +90,42 @@ export default function GlobalSettingsPage() {
             </SelectContent>
           </Select>
 
-          <div className=' w-full gap-y-4'>
-            <div className='flex gap-2 w-full '>
-              <Input
-                type='number'
-                disabled
-                label='Escala:'
-                value={settings?.scale_numerator?.toString() || ''}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  updateLocalSetting('scale_numerator', isNaN(val) ? 0 : val);
-                }}
-                min='1'
-              />
-              <Input
-                type='number'
-                id='scale_denominator'
-                value={settings?.scale_denominator?.toString() || ''}
-                onChange={(e) => {
-                  const val = parseFloat(e.target.value);
-                  updateLocalSetting('scale_denominator', isNaN(val) ? 0 : val);
-                }}
-                disabled={isLoading}
-                min='1'
-              />
+          <div className=' w-full gap-y-4 '>
+            <div className='flex flex-col gap-2 w-full items-start'>
+              <Label htmlFor='scale_denominator' className='font-medium'>
+                Escala
+              </Label>
+              <InputGroup>
+                <InputGroupInput
+                  id='scale_denominator'
+                  value={settings?.scale_denominator?.toString() || ''}
+                  className='!pl-1'
+                  placeholder='50'
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    updateLocalSetting(
+                      'scale_denominator',
+                      isNaN(val) ? 0 : val
+                    );
+                  }}
+                  disabled={isLoading}
+                  min='1'
+                />
+                <InputGroupAddon>
+                  <InputGroupText>1:</InputGroupText>
+                </InputGroupAddon>
+              </InputGroup>
             </div>
-            <p className='col-span-2 text-xs pt-2 text-gray-500'>
-              Display: 1:{settings?.scale_denominator}
-            </p>
           </div>
 
           <Input
-            type='text'
+            type='number'
             id='cut_height'
             label='Altura de corte (m):'
             value={settings?.cut_height?.toString() || ''}
             onChange={(e) => {
-              const val = parseFloat(e.target.value);
-              updateLocalSetting('cut_height', isNaN(val) ? 0 : val);
+              const val = e.target.value;
+              updateLocalSetting('cut_height', val);
             }}
             disabled={isLoading}
           />
