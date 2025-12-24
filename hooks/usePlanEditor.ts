@@ -41,25 +41,14 @@ export function usePlanEditor(
   const openEditor = useCallback(
     (plan: Plan) => {
       setEditingPlan(plan);
-      setEditPlanName(plan.name);
+      setEditPlanName(plan.name || '');
 
-      const planConfig = (data.plans as PlanConfig[]).find(
-        (p) => p.id === plan.id || p.name === plan.name
-      );
-
-      if (planConfig) {
-        setEditPlanStyle(
-          planConfig.style || availableStyles[0] || 'FM_PLANTAS'
-        );
-        setEditCameraType(planConfig.cameraType || 'topo_ortogonal');
-        setEditActiveLayers(planConfig.activeLayers || ['Layer0']);
-      } else {
-        setEditPlanStyle(availableStyles[0] || 'FM_PLANTAS');
-        setEditCameraType('topo_ortogonal');
-        setEditActiveLayers(['Layer0']);
-      }
+      // Plan já tem todas as configurações como segment
+      setEditPlanStyle(plan.style || availableStyles[0] || 'FM_PLANTAS');
+      setEditCameraType(plan.cameraType || 'topo_ortogonal');
+      setEditActiveLayers(plan.activeLayers || ['Layer0']);
     },
-    [data.plans, availableStyles]
+    [availableStyles]
   );
 
   const closeEditor = useCallback(() => {
@@ -91,48 +80,26 @@ export function usePlanEditor(
         return false;
       }
 
-      const updatedPlans = (data.plans as PlanConfig[]).map((p) => {
-        if (p.id === editingPlan.id || p.name === editingPlan.name) {
-          return {
-            ...p,
-            name: editPlanName.trim(),
-            style: editPlanStyle,
-            cameraType: editCameraType,
-            activeLayers: editActiveLayers,
-          };
-        }
-        return p;
-      });
-
-      const planExists = (data.plans as PlanConfig[]).some(
-        (p) => p.id === editingPlan.id || p.name === editingPlan.name
-      );
-
-      if (!planExists) {
-        updatedPlans.push({
-          id: editingPlan.id,
-          name: editPlanName.trim(),
-          style: editPlanStyle,
-          cameraType: editCameraType,
-          activeLayers: editActiveLayers,
-        });
-      }
-
       const updatedGroups = (
-        groups as Array<{
-          id: string;
-          plans: Plan[];
-        }>
+        groups as Array<{ id: string; segments: Plan[] }>
       ).map((g) => ({
         ...g,
-        plans: g.plans.map((p: Plan) =>
-          p.id === editingPlan.id ? { ...p, title: editPlanName.trim() } : p
+        segments: (g.segments || []).map((p: Plan) =>
+          p.id === editingPlan.id
+            ? {
+                ...p,
+                name: editPlanName.trim(),
+                style: editPlanStyle,
+                cameraType: editCameraType,
+                activeLayers: editActiveLayers,
+              }
+            : p
         ),
       }));
 
       setData({
+        ...data,
         groups: updatedGroups,
-        plans: updatedPlans,
       });
 
       await saveToJson();
@@ -147,7 +114,7 @@ export function usePlanEditor(
       editPlanStyle,
       editCameraType,
       editActiveLayers,
-      data.plans,
+      data,
       setData,
       saveToJson,
     ]
