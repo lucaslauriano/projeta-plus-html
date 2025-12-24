@@ -82,7 +82,7 @@ function PlansComponent() {
 
   // Hook para gerenciar edição de plantas
   const editor = usePlanEditor(
-    { groups: data.groups, plans: data.plans as unknown[] },
+    { groups: data.groups, plans: [] },
     availableStyles,
     availableLayers,
     getCurrentState,
@@ -122,7 +122,7 @@ function PlansComponent() {
     const newGroup: PlanGroup = {
       id: Date.now().toString(),
       name: groupDialog.name.trim(),
-      plans: [],
+      segments: [],
     };
 
     setGroups([...groups, newGroup]);
@@ -135,7 +135,7 @@ function PlansComponent() {
     const group = groups.find((g) => g.id === groupId);
     const confirmed = confirm(
       `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${
-        group?.plans.length || 0
+        (group?.segments || []).length
       } planta(s)?`
     );
     if (!confirmed) return;
@@ -174,17 +174,20 @@ function PlansComponent() {
       return;
     }
 
-    const newPlan = {
+    const newSegment = {
       id: Date.now().toString(),
-      title: planDialog.title.trim(),
-      segments: [],
+      name: planDialog.title.trim(),
+      code: planDialog.title.trim().toLowerCase().replace(/\s+/g, '_'),
+      style: currentState?.style || 'FM_PLANTAS',
+      cameraType: currentState?.cameraType || 'topo_ortogonal',
+      activeLayers: currentState?.activeLayers || [],
     };
 
     if (planDialog.selectedGroup === 'root') {
       const newGroup: PlanGroup = {
         id: Date.now().toString(),
         name: planDialog.title.trim(),
-        plans: [],
+        segments: [newSegment],
       };
       setGroups([...groups, newGroup]);
     } else {
@@ -193,7 +196,7 @@ function PlansComponent() {
           if (group.id === planDialog.selectedGroup) {
             return {
               ...group,
-              plans: [...group.plans, newPlan],
+              segments: [...(group.segments || []), newSegment],
             };
           }
           return group;
@@ -206,7 +209,7 @@ function PlansComponent() {
     toast.success('Planta adicionada com sucesso!');
   };
 
-  const handleDeletePlan = async (groupId: string, planId: string) => {
+  const handleDeletePlan = async (groupId: string, segmentId: string) => {
     const confirmed = confirm('Deseja realmente remover esta planta?');
     if (!confirmed) return;
 
@@ -215,7 +218,9 @@ function PlansComponent() {
         if (group.id === groupId) {
           return {
             ...group,
-            plans: group.plans.filter((plan) => plan.id !== planId),
+            segments: (group.segments || []).filter(
+              (segment) => segment.id !== segmentId
+            ),
           };
         }
         return group;
@@ -225,18 +230,18 @@ function PlansComponent() {
     toast.success('Planta removida com sucesso!');
   };
 
-  const handleDuplicatePlan = async (groupId: string, plan: Plan) => {
+  const handleDuplicatePlan = async (groupId: string, segment: Plan) => {
     setGroups(
       groups.map((g) => {
         if (g.id === groupId) {
           return {
             ...g,
-            plans: [
-              ...g.plans,
+            segments: [
+              ...(g.segments || []),
               {
+                ...segment,
                 id: Date.now().toString(),
-                title: `${plan.title} (cópia)`,
-                segments: [...plan.segments],
+                name: `${segment.name!} (cópia)`,
               },
             ],
           };
@@ -248,23 +253,15 @@ function PlansComponent() {
     toast.success('Planta duplicada!');
   };
 
-  const handleApplyPlan = async (plan: Plan) => {
-    const planConfig = data.plans.find(
-      (p) => p.id === plan.id || p.name === plan.title
-    );
-
-    if (!planConfig) {
-      toast.error('Configuração da planta não encontrada no JSON');
-      return;
-    }
-
-    await applyPlanConfig(plan.title, {
-      style: planConfig.style,
-      cameraType: planConfig.cameraType,
-      activeLayers: planConfig.activeLayers,
+  const handleApplyPlan = async (segment: Plan) => {
+    // Segment já tem todas as configurações necessárias
+    await applyPlanConfig(segment.name!, {
+      style: segment.style,
+      cameraType: segment.cameraType,
+      activeLayers: segment.activeLayers,
     });
 
-    toast.success(`Planta "${plan.title}" aplicada!`);
+    toast.success(`Planta "${segment.name}" aplicada!`);
   };
 
   // ========================================
@@ -430,57 +427,75 @@ function PlansComponent() {
                 value={group.id}
                 className='border rounded-xl overflow-hidden bg-muted/20 px-0'
               >
-                <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 group data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none'>
-                  <div className='flex items-center justify-between w-full pr-2'>
+                <div className='relative group'>
+                  <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none w-full'>
                     <div className='flex items-center gap-2 font-medium text-sm'>
                       <Folder className='w-4 h-4 text-muted-foreground' />
                       {group.name}
                     </div>
-                    <div className='flex  items-center justify-end gap-2 text-muted-foreground'>
-                      <button
-                        onClick={(e) => {
+                  </AccordionTrigger>
+                  <div className='absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-muted-foreground pointer-events-none'>
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditGroup(group.id);
+                      }}
+                      className='opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto'
+                      title='Editar'
+                      role='button'
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
                           e.stopPropagation();
                           handleEditGroup(group.id);
-                        }}
-                        className='opacity-0 group-hover:opacity-100 transition-opacity'
-                        title='Editar'
-                      >
-                        <Edit className='w-4 h-4' />
-                      </button>
-                      <button
-                        onClick={(e) => {
+                        }
+                      }}
+                    >
+                      <Edit className='w-4 h-4' />
+                    </span>
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteGroup(group.id);
+                      }}
+                      className='opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto'
+                      title='Excluir pasta'
+                      role='button'
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
                           e.stopPropagation();
                           handleDeleteGroup(group.id);
-                        }}
-                        className='opacity-0 group-hover:opacity-100 transition-opacity'
-                        title='Excluir pasta'
-                      >
-                        <Trash2 className='w-4 h-4' />
-                      </button>
-                    </div>
+                        }
+                      }}
+                    >
+                      <Trash2 className='w-4 h-4' />
+                    </span>
                   </div>
-                </AccordionTrigger>
+                </div>
                 <AccordionContent className='p-4'>
                   <div className='space-y-3'>
-                    {group.plans.length > 0 ? (
+                    {(group.segments || []).length > 0 ? (
                       <div className='space-y-2'>
-                        {group.plans.map((plan) => (
+                        {(group.segments || []).map((segment) => (
                           <PlanItem
-                            key={plan.id}
-                            title={plan.title}
+                            key={segment.id}
+                            title={segment.name}
                             onEdit={() =>
-                              handleEditPlan(plan as unknown as Plan)
+                              handleEditPlan(segment as unknown as Plan)
                             }
                             onLoadFromJson={() =>
-                              handleApplyPlan(plan as unknown as Plan)
+                              handleApplyPlan(segment as unknown as Plan)
                             }
                             onDuplicate={() =>
                               handleDuplicatePlan(
                                 group.id,
-                                plan as unknown as Plan
+                                segment as unknown as Plan
                               )
                             }
-                            onDelete={() => handleDeletePlan(group.id, plan.id)}
+                            onDelete={() =>
+                              handleDeletePlan(group.id, segment.id)
+                            }
                           />
                         ))}
                       </div>

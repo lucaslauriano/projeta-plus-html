@@ -2,12 +2,9 @@
 
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
+import type { ViewConfigSegment } from '@/types/global';
 
-export type Plan = {
-  id: string;
-  title: string;
-  segments: unknown[];
-};
+export type Plan = ViewConfigSegment;
 
 type PlanConfig = {
   id: string;
@@ -44,10 +41,10 @@ export function usePlanEditor(
   const openEditor = useCallback(
     (plan: Plan) => {
       setEditingPlan(plan);
-      setEditPlanName(plan.title);
+      setEditPlanName(plan.name);
 
       const planConfig = (data.plans as PlanConfig[]).find(
-        (p) => p.id === plan.id || p.name === plan.title
+        (p) => p.id === plan.id || p.name === plan.name
       );
 
       if (planConfig) {
@@ -95,7 +92,7 @@ export function usePlanEditor(
       }
 
       const updatedPlans = (data.plans as PlanConfig[]).map((p) => {
-        if (p.id === editingPlan.id || p.name === editingPlan.title) {
+        if (p.id === editingPlan.id || p.name === editingPlan.name) {
           return {
             ...p,
             name: editPlanName.trim(),
@@ -108,7 +105,7 @@ export function usePlanEditor(
       });
 
       const planExists = (data.plans as PlanConfig[]).some(
-        (p) => p.id === editingPlan.id || p.name === editingPlan.title
+        (p) => p.id === editingPlan.id || p.name === editingPlan.name
       );
 
       if (!planExists) {
