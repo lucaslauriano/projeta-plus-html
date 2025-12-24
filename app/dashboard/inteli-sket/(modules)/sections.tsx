@@ -1,26 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Eye, Grid3x3, Scissors, Trash2 } from 'lucide-react';
+import { Grid3x3, Trash2, Folder, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Dialog,
-  DialogTitle,
-  DialogFooter,
-  DialogHeader,
-  DialogTrigger,
-  DialogContent,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectItem,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-} from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useSections } from '@/hooks/useSections';
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
@@ -30,9 +12,8 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from '@/components/ui/accordion';
-import { Folder } from 'lucide-react';
-import { Edit } from 'lucide-react';
-import { PlanItem } from '@/components/PlanItem';
+import { CreateAutoViewsDialog } from '@/app/dashboard/inteli-sket/components/create-auto-views-dialog';
+import { CreateIndividualSectionDialog } from '@/app/dashboard/inteli-sket/components/create-individual-section-dialog';
 
 export default function SectionsComponent() {
   const {
@@ -115,112 +96,25 @@ export default function SectionsComponent() {
           Cortes Gerais (A, B, C, D)
         </Button>
 
-        <Dialog
+        <CreateAutoViewsDialog
           open={isAutoViewsDialogOpen}
+          disabled={isBusy}
+          environmentName={autoViewsEnvironmentName}
+          onConfirm={handleCreateAutoViews}
           onOpenChange={setIsAutoViewsDialogOpen}
-        >
-          <DialogTrigger asChild>
-            <Button size='sm' variant='default' disabled={isBusy}>
-              <Eye className='w-5 h-5' />
-              Vistas Auto (Objeto Selecionado)
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Criar Vistas Automáticas</DialogTitle>
-              <DialogDescription>
-                Selecione um objeto no modelo e informe o nome do ambiente
-              </DialogDescription>
-            </DialogHeader>
-            <div className='space-y-4 py-4'>
-              <div className='space-y-2'>
-                <Label htmlFor='environment-name'>Nome do Ambiente</Label>
-                <Input
-                  id='environment-name'
-                  placeholder='Ex: cozinha, banheiro...'
-                  value={autoViewsEnvironmentName}
-                  onChange={(e) => setAutoViewsEnvironmentName(e.target.value)}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                size='sm'
-                variant='outline'
-                onClick={() => setIsAutoViewsDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button
-                size='sm'
-                onClick={handleCreateAutoViews}
-                disabled={isBusy}
-              >
-                Criar Vistas
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+          onEnvironmentNameChange={setAutoViewsEnvironmentName}
+        />
 
-        <Dialog
+        <CreateIndividualSectionDialog
           open={isIndividualDialogOpen}
+          disabled={isBusy}
+          direction={individualSectionDirection}
+          sectionName={individualSectionName}
+          onConfirm={handleCreateIndividualSection}
           onOpenChange={setIsIndividualDialogOpen}
-        >
-          <DialogTrigger asChild>
-            <Button size='sm' variant='default' disabled={isBusy}>
-              <Scissors className='w-5 h-5' />
-              Corte Individual
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Criar Corte Individual</DialogTitle>
-              <DialogDescription>
-                Configure o nome e a direção do corte
-              </DialogDescription>
-            </DialogHeader>
-            <div className='space-y-4 py-4'>
-              <div className='space-y-2'>
-                <Label htmlFor='section-name'>Nome do Corte</Label>
-                <Input
-                  id='section-name'
-                  placeholder='Ex: Cozinha, Banheiro...'
-                  value={individualSectionName}
-                  onChange={(e) => setIndividualSectionName(e.target.value)}
-                />
-              </div>
-              <div className='space-y-2'>
-                <Label htmlFor='section-direction'>Direção</Label>
-                <Select
-                  value={individualSectionDirection}
-                  onValueChange={setIndividualSectionDirection}
-                >
-                  <SelectTrigger id='section-direction'>
-                    <SelectValue placeholder='Selecione a direção' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='frente'>Frente</SelectItem>
-                    <SelectItem value='esquerda'>Esquerda</SelectItem>
-                    <SelectItem value='voltar'>Voltar</SelectItem>
-                    <SelectItem value='direita'>Direita</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button
-                size='sm'
-                variant='outline'
-                onClick={() => setIsIndividualDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button onClick={handleCreateIndividualSection} size='sm'>
-                Criar
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+          onSectionNameChange={setIndividualSectionName}
+          onDirectionChange={setIndividualSectionDirection}
+        />
       </div>
 
       <div className='flex flex-col gap-2 w-full'>
