@@ -119,60 +119,67 @@ export default function SectionsComponent() {
 
       <div className='flex flex-col gap-2 w-full'>
         <Accordion type='single' collapsible className='w-full space-y-2'>
-          {data?.sections.map((item) => (
+          {data.groups.map((group) => (
             <AccordionItem
-              key={item.id}
-              value={item.id}
+              key={group.id}
+              value={group.id}
               className='border rounded-xl overflow-hidden bg-muted/20 px-0'
             >
-              <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 group data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none'>
-                <div className='flex items-center justify-between w-full pr-2'>
+              <div className='relative group'>
+                <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none w-full'>
                   <div className='flex items-center gap-2 font-medium text-sm'>
                     <Folder className='w-4 h-4 text-muted-foreground' />
-                    {item?.name || 'Seção'}
+                    {group.name || 'Grupo'}
                   </div>
-                  <div className='flex  items-center justify-end gap-2 text-muted-foreground'>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      className='opacity-0 group-hover:opacity-100 transition-opacity'
-                      title='Editar'
-                    >
-                      <Edit className='w-4 h-4' />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      className='opacity-0 group-hover:opacity-100 transition-opacity'
-                      title='Excluir pasta'
-                    >
-                      <Trash2 className='w-4 h-4' />
-                    </button>
-                  </div>
+                </AccordionTrigger>
+                <div className='absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-muted-foreground pointer-events-none'>
+                  <span
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className='opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto'
+                    title='Editar'
+                    role='button'
+                    tabIndex={0}
+                  >
+                    <Edit className='w-4 h-4' />
+                  </span>
+                  <span
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className='opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto'
+                    title='Excluir pasta'
+                    role='button'
+                    tabIndex={0}
+                  >
+                    <Trash2 className='w-4 h-4' />
+                  </span>
                 </div>
-              </AccordionTrigger>
+              </div>
               <AccordionContent className='p-4'>
-                <div className='space-y-3 bg-blue-500'>
-                  {/* {item.plans.length > 0 ? (
+                <div className='space-y-3'>
+                  {(group.segments || []).length > 0 ? (
                     <div className='space-y-2'>
-                      {item.plans.map((plan) => (
-                        <PlanItem
-                          key={plan.id}
-                          title={plan.title}
-                          onEdit={() => {}}
-                          onLoadFromJson={() => {}}
-                          onDuplicate={() => {}}
-                          onDelete={() => {}}
-                        />
+                      {(group.segments || []).map((segment) => (
+                        <div
+                          key={segment.id}
+                          className='p-3 border rounded-lg bg-background'
+                        >
+                          <div className='flex items-center justify-between'>
+                            <span className='font-medium'>{segment.name}</span>
+                            <Badge variant='outline'>
+                              {segment.style || 'N/A'}
+                            </Badge>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   ) : (
                     <div className='text-center py-4 text-sm text-muted-foreground italic'>
-                      Nenhuma planta neste grupo
+                      Nenhuma seção neste grupo
                     </div>
-                  )} */}
+                  )}
                 </div>
               </AccordionContent>
             </AccordionItem>

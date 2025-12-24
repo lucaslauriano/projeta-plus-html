@@ -7,19 +7,30 @@ import { useSketchup } from '@/contexts/SketchupContext';
 export interface Section {
   id: string;
   name: string;
+  style: string;
+  cameraType: string;
+  activeLayers: string[];
+  code?: string;
   position: [number, number, number];
   direction: [number, number, number];
-  active: boolean;
+  active?: boolean;
+}
+
+export interface SectionGroup {
+  id: string;
+  name: string;
+  segments: Section[];
 }
 
 export interface SectionsData {
-  sections: Section[];
+  groups: SectionGroup[];
+  sections?: Section[]; // Deprecated, for backward compatibility
 }
 
 export function useSections() {
   const { callSketchupMethod, isAvailable } = useSketchup();
   const [data, setData] = useState<SectionsData>({
-    sections: [],
+    groups: [],
   });
   const [isBusy, setIsBusy] = useState(false);
 
@@ -54,7 +65,15 @@ export function useSections() {
       }) => {
         setIsBusy(false);
         if (result.success && result.sections) {
-          setData({ sections: result.sections });
+          // Backward compatibility: convert flat sections to groups
+          const groups = [
+            {
+              id: 'default',
+              name: 'Sections',
+              segments: result.sections,
+            },
+          ];
+          setData({ groups, sections: result.sections });
         } else {
           toast.error(result.message || 'Erro ao carregar seções');
         }
@@ -160,7 +179,15 @@ export function useSections() {
     }) => {
       setIsBusy(false);
       if (result.success && result.data) {
-        setData(result.data);
+        // Normalize groups to ensure segments is always an array
+        const normalizedData = {
+          ...result.data,
+          groups: (result.data.groups || []).map((group) => ({
+            ...group,
+            segments: Array.isArray(group.segments) ? group.segments : [],
+          })),
+        };
+        setData(normalizedData);
         toast.success(result.message);
       } else {
         toast.error(result.message || 'Erro ao carregar configurações');
@@ -176,7 +203,15 @@ export function useSections() {
     }) => {
       setIsBusy(false);
       if (result.success && result.data) {
-        setData(result.data);
+        // Normalize groups to ensure segments is always an array
+        const normalizedData = {
+          ...result.data,
+          groups: (result.data.groups || []).map((group) => ({
+            ...group,
+            segments: Array.isArray(group.segments) ? group.segments : [],
+          })),
+        };
+        setData(normalizedData);
         toast.success(result.message);
       } else {
         toast.error(result.message || 'Erro ao carregar dados padrão');
@@ -192,7 +227,15 @@ export function useSections() {
     }) => {
       setIsBusy(false);
       if (result.success && result.data) {
-        setData(result.data);
+        // Normalize groups to ensure segments is always an array
+        const normalizedData = {
+          ...result.data,
+          groups: (result.data.groups || []).map((group) => ({
+            ...group,
+            segments: Array.isArray(group.segments) ? group.segments : [],
+          })),
+        };
+        setData(normalizedData);
         toast.success(result.message);
       } else {
         toast.error(result.message || 'Erro ao carregar arquivo');
@@ -239,17 +282,7 @@ export function useSections() {
 
   const getSections = useCallback(() => {
     if (!isAvailable) {
-      setData({
-        sections: [
-          {
-            id: 'A',
-            name: 'A',
-            position: [0, 40, 0],
-            direction: [0, 1, 0],
-            active: true,
-          },
-        ],
-      });
+      setData({ groups: [] });
       return;
     }
 
@@ -414,7 +447,7 @@ export function useSections() {
     const confirmed = confirm('Deseja realmente limpar todas as seções?');
     if (!confirmed) return;
 
-    setData({ sections: [] });
+    setData({ groups: [] });
     toast.info('Seções limpas');
   }, []);
 
