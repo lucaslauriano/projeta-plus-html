@@ -189,7 +189,15 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
       clearPending();
       setIsLoading(false);
       if (result.success && result.data) {
-        setData(result.data);
+        // Normalize groups to ensure segments is always an array
+        const normalizedData = {
+          ...result.data,
+          groups: (result.data.groups || []).map((group) => ({
+            ...group,
+            segments: Array.isArray(group.segments) ? group.segments : [],
+          })),
+        };
+        setData(normalizedData);
         if (pendingAction !== 'loadJson') {
           toast.success(result.message);
         }
@@ -212,7 +220,15 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
       clearPending();
       setIsLoading(false);
       if (result.success && result.data) {
-        setData(result.data);
+        // Normalize groups to ensure segments is always an array
+        const normalizedData = {
+          ...result.data,
+          groups: (result.data.groups || []).map((group) => ({
+            ...group,
+            segments: Array.isArray(group.segments) ? group.segments : [],
+          })),
+        };
+        setData(normalizedData);
         toast.success(result.message);
       } else {
         toast.error(result.message || 'Erro ao carregar dados padrão');
@@ -230,7 +246,15 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
       clearPending();
       setIsLoading(false);
       if (result.success && result.data) {
-        setData(result.data);
+        // Normalize groups to ensure segments is always an array
+        const normalizedData = {
+          ...result.data,
+          groups: (result.data.groups || []).map((group) => ({
+            ...group,
+            segments: Array.isArray(group.segments) ? group.segments : [],
+          })),
+        };
+        setData(normalizedData);
         toast.success(result.message);
       } else {
         toast.error(result.message || 'Erro ao carregar arquivo');

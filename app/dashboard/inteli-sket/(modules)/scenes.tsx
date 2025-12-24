@@ -23,7 +23,7 @@ import {
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
 import { ViewConfigEditDialog } from '@/app/dashboard/inteli-sket/components/view-config-edit-dialog';
 
-type Scene = SceneGroup['scenes'][number];
+type Scene = SceneGroup['segments'][number];
 
 function ScenesComponent() {
   const {
@@ -84,7 +84,7 @@ function ScenesComponent() {
     const newGroup: SceneGroup = {
       id: Date.now().toString(),
       name: newGroupName.trim(),
-      scenes: [],
+      segments: [],
     };
 
     const updatedGroups = [...groups, newGroup];
@@ -106,10 +106,13 @@ function ScenesComponent() {
       return;
     }
 
-    const newScene = {
+    const newSegment = {
       id: Date.now().toString(),
-      title: newSceneTitle.trim(),
-      segments: [],
+      name: newSceneTitle.trim(),
+      code: newSceneTitle.trim().toLowerCase().replace(/\s+/g, '_'),
+      style: currentState?.style || 'FM_VISTAS',
+      cameraType: currentState?.cameraType || 'iso_perspectiva',
+      activeLayers: currentState?.activeLayers || [],
     };
 
     let updatedGroups: SceneGroup[];
@@ -117,7 +120,7 @@ function ScenesComponent() {
       const newGroup: SceneGroup = {
         id: Date.now().toString(),
         name: newSceneTitle.trim(),
-        scenes: [],
+        segments: [newSegment],
       };
       updatedGroups = [...groups, newGroup];
       setGroups(updatedGroups);
@@ -126,7 +129,7 @@ function ScenesComponent() {
         if (group.id === selectedGroup) {
           return {
             ...group,
-            scenes: [...group.scenes, newScene],
+            segments: [...group.segments, newSegment],
           };
         }
         return group;
@@ -149,7 +152,7 @@ function ScenesComponent() {
     const group = groups.find((g) => g.id === groupId);
     const confirmed = confirm(
       `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${
-        group?.scenes.length || 0
+        group?.segments.length || 0
       } cena(s)?`
     );
     if (!confirmed) return;
@@ -190,7 +193,7 @@ function ScenesComponent() {
     toast.success('Grupo renomeado com sucesso!');
   };
 
-  const handleDeleteScene = (groupId: string, sceneId: string) => {
+  const handleDeleteScene = (groupId: string, segmentId: string) => {
     const confirmed = confirm('Deseja realmente remover esta cena?');
     if (!confirmed) return;
 
@@ -199,7 +202,9 @@ function ScenesComponent() {
         if (group.id === groupId) {
           return {
             ...group,
-            scenes: group.scenes.filter((scene) => scene.id !== sceneId),
+            segments: group.segments.filter(
+              (segment) => segment.id !== segmentId
+            ),
           };
         }
         return group;
@@ -214,18 +219,18 @@ function ScenesComponent() {
     toast.success('Cena removida com sucesso!');
   };
 
-  const handleDuplicateScene = (groupId: string, scene: Scene) => {
+  const handleDuplicateScene = (groupId: string, segment: Scene) => {
     setGroups(
       groups.map((g) => {
         if (g.id === groupId) {
           return {
             ...g,
-            scenes: [
-              ...g.scenes,
+            segments: [
+              ...g.segments,
               {
+                ...segment,
                 id: Date.now().toString(),
-                title: `${scene.title} (cópia)`,
-                segments: [...scene.segments],
+                name: `${segment.name} (cópia)`,
               },
             ],
           };
@@ -242,24 +247,15 @@ function ScenesComponent() {
     toast.success('Cena duplicada!');
   };
 
-  const handleApplyScene = async (scene: Scene) => {
-    // Buscar configuração da cena no data.scenes (do JSON)
-    const sceneConfig = data.scenes.find(
-      (s) => s.id === scene.id || s.name === scene.title
-    );
-
-    if (!sceneConfig) {
-      toast.error('Configuração da cena não encontrada no JSON');
-      return;
-    }
-
-    await applySceneConfig(scene.title, {
-      style: sceneConfig.style,
-      cameraType: sceneConfig.cameraType,
-      activeLayers: sceneConfig.activeLayers,
+  const handleApplyScene = async (segment: Scene) => {
+    // Segment já tem todas as configurações necessárias
+    await applySceneConfig(segment.name, {
+      style: segment.style,
+      cameraType: segment.cameraType,
+      activeLayers: segment.activeLayers,
     });
 
-    toast.success(`Cena "${scene.title}" aplicada!`);
+    toast.success(`Cena "${segment.name}" aplicada!`);
   };
 
   const handleGroupDialogKeyPress = (e: React.KeyboardEvent) => {
@@ -274,24 +270,14 @@ function ScenesComponent() {
     }
   };
 
-  const handleEditScene = (scene: Scene) => {
-    setEditingScene(scene);
-    setEditSceneName(scene.title);
+  const handleEditScene = (segment: Scene) => {
+    setEditingScene(segment);
+    setEditSceneName(segment.name);
 
-    // Buscar configuração da cena no data.scenes (do JSON)
-    const sceneConfig = data.scenes.find(
-      (s) => s.id === scene.id || s.name === scene.title
-    );
-
-    if (sceneConfig) {
-      setEditSceneStyle(sceneConfig.style || availableStyles[0] || 'FM_VISTAS');
-      setEditCameraType(sceneConfig.cameraType || 'iso_perspectiva');
-      setEditActiveLayers(sceneConfig.activeLayers || ['Layer0']);
-    } else {
-      setEditSceneStyle(availableStyles[0] || 'FM_VISTAS');
-      setEditCameraType('iso_perspectiva');
-      setEditActiveLayers(['Layer0']);
-    }
+    // Segment já tem todas as configurações
+    setEditSceneStyle(segment.style || availableStyles[0] || 'FM_VISTAS');
+    setEditCameraType(segment.cameraType || 'iso_perspectiva');
+    setEditActiveLayers(segment.activeLayers || ['Layer0']);
 
     setIsEditDialogOpen(true);
   };
@@ -321,44 +307,25 @@ function ScenesComponent() {
       return;
     }
 
-    const updatedScenes = data.scenes.map((s) => {
-      if (s.id === editingScene.id || s.name === editingScene.title) {
-        return {
-          ...s,
-          name: editSceneName.trim(),
-          style: editSceneStyle,
-          cameraType: editCameraType,
-          activeLayers: editActiveLayers,
-        };
-      }
-      return s;
-    });
-
-    const sceneExists = data.scenes.some(
-      (s) => s.id === editingScene.id || s.name === editingScene.title
-    );
-
-    if (!sceneExists) {
-      updatedScenes.push({
-        id: editingScene.id,
-        name: editSceneName.trim(),
-        style: editSceneStyle,
-        cameraType: editCameraType,
-        activeLayers: editActiveLayers,
-      });
-    }
-
     const updatedGroups = groups.map((g) => ({
       ...g,
-      scenes: g.scenes.map((s) =>
-        s.id === editingScene.id ? { ...s, title: editSceneName.trim() } : s
+      segments: g.segments.map((s) =>
+        s.id === editingScene.id
+          ? {
+              ...s,
+              name: editSceneName.trim(),
+              style: editSceneStyle,
+              cameraType: editCameraType,
+              activeLayers: editActiveLayers,
+            }
+          : s
       ),
     }));
 
     // Atualizar estado local
     setData({
+      ...data,
       groups: updatedGroups,
-      scenes: updatedScenes,
     });
 
     // Salvar no JSON (não mexe no modelo do SketchUp)
@@ -457,53 +424,69 @@ function ScenesComponent() {
                   value={group.id}
                   className='border rounded-xl overflow-hidden bg-muted/20 px-0'
                 >
-                  <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 group data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none'>
-                    <div className='flex items-center justify-between w-full pr-2'>
+                  <div className='relative group'>
+                    <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none w-full'>
                       <div className='flex items-center gap-2 font-medium text-sm'>
                         <Folder className='w-4 h-4 text-gray-500' />
                         {group.name}
                       </div>
-                      <div className='flex  items-center justify-end gap-2 text-muted-foreground'>
-                        <button
-                          onClick={(e) => {
+                    </AccordionTrigger>
+                    <div className='absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-muted-foreground pointer-events-none'>
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditGroup(group.id);
+                        }}
+                        className='opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto'
+                        title='Editar'
+                        role='button'
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
                             e.stopPropagation();
                             handleEditGroup(group.id);
-                          }}
-                          className='opacity-0 group-hover:opacity-100 transition-opacity'
-                          title='Editar'
-                        >
-                          <Edit className='w-4 h-4' />
-                        </button>
-                        <button
-                          onClick={(e) => {
+                          }
+                        }}
+                      >
+                        <Edit className='w-4 h-4' />
+                      </span>
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteGroup(group.id);
+                        }}
+                        className='opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto'
+                        title='Excluir pasta'
+                        role='button'
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
                             e.stopPropagation();
                             handleDeleteGroup(group.id);
-                          }}
-                          className='opacity-0 group-hover:opacity-100 transition-opacity'
-                          title='Excluir pasta'
-                        >
-                          <Trash2 className='w-4 h-4' />
-                        </button>
-                      </div>
+                          }
+                        }}
+                      >
+                        <Trash2 className='w-4 h-4' />
+                      </span>
                     </div>
-                  </AccordionTrigger>
+                  </div>
                   <AccordionContent className='p-4'>
                     <div className='space-y-3'>
-                      {group.scenes.length > 0 ? (
+                      {(group.segments || []).length > 0 ? (
                         <div className='space-y-2'>
-                          {group.scenes.map((scene) => (
+                          {(group.segments || []).map((segment) => (
                             <PlanItem
-                              key={scene.id}
-                              title={scene.title}
-                              onEdit={() => handleEditScene(scene as Scene)}
+                              key={segment.id}
+                              title={segment.name}
+                              onEdit={() => handleEditScene(segment as Scene)}
                               onLoadFromJson={() =>
-                                handleApplyScene(scene as Scene)
+                                handleApplyScene(segment as Scene)
                               }
                               onDuplicate={() =>
-                                handleDuplicateScene(group.id, scene as Scene)
+                                handleDuplicateScene(group.id, segment as Scene)
                               }
                               onDelete={() =>
-                                handleDeleteScene(group.id, scene.id)
+                                handleDeleteScene(group.id, segment.id)
                               }
                             />
                           ))}
@@ -520,10 +503,6 @@ function ScenesComponent() {
             </Accordion>
           </div>
         )}
-
-        {isLoading && sortedGroups.length === 0 && <ScenesLoadingState />}
-
-        {!isLoading && sortedGroups.length === 0 && <ScenesEmptyState />}
       </div>
     </>
   );

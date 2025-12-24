@@ -97,6 +97,17 @@ export interface ViewConfig {
   activeLayers: string[];
 }
 
+export interface ViewConfigSegment extends ViewConfig {
+  code?: string;
+}
+
+export interface ViewConfigGroup {
+  id: string;
+  name: string;
+  segments: ViewConfigSegment[];
+  [key: string]: unknown;
+}
+
 export interface BasePlan {
   id: string;
   name: string;
@@ -105,8 +116,8 @@ export interface BasePlan {
 }
 
 export interface ViewConfigsData {
-  groups?: unknown[];
-  scenes?: ViewConfig[];
+  groups: ViewConfigGroup[];
+  scenes?: ViewConfig[]; // Deprecated, for backward compatibility
   plans?: ViewConfig[];
 }
 
