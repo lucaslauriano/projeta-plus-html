@@ -349,7 +349,9 @@ function PlansComponent() {
         onApplyCurrentState={editor.applyCurrentState}
         onActiveLayersChange={editor.setEditActiveLayers}
         itemTitle={editor.editPlanName}
+        itemCode={editor.editPlanCode}
         onItemTitleChange={editor.setEditPlanName}
+        onItemCodeChange={editor.setEditPlanCode}
         allowedCameraTypes={[
           'topo_perspectiva',
           'topo_ortogonal',

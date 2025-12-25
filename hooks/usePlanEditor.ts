@@ -34,6 +34,7 @@ export function usePlanEditor(
 ) {
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [editPlanName, setEditPlanName] = useState('');
+  const [editPlanCode, setEditPlanCode] = useState('');
   const [editPlanStyle, setEditPlanStyle] = useState('');
   const [editCameraType, setEditCameraType] = useState('');
   const [editActiveLayers, setEditActiveLayers] = useState<string[]>([]);
@@ -42,6 +43,7 @@ export function usePlanEditor(
     (plan: Plan) => {
       setEditingPlan(plan);
       setEditPlanName(plan.name || '');
+      setEditPlanCode(plan.code || plan.name?.toLowerCase().replace(/\s+/g, '_') || '');
 
       // Plan já tem todas as configurações como segment
       setEditPlanStyle(plan.style || availableStyles[0] || 'FM_PLANTAS');
@@ -89,6 +91,7 @@ export function usePlanEditor(
             ? {
                 ...p,
                 name: editPlanName.trim(),
+                code: editPlanCode.trim() || editPlanName.trim().toLowerCase().replace(/\s+/g, '_'),
                 style: editPlanStyle,
                 cameraType: editCameraType,
                 activeLayers: editActiveLayers,
@@ -110,6 +113,7 @@ export function usePlanEditor(
     },
     [
       editPlanName,
+      editPlanCode,
       editingPlan,
       editPlanStyle,
       editCameraType,
@@ -123,10 +127,12 @@ export function usePlanEditor(
   return {
     editingPlan,
     editPlanName,
+    editPlanCode,
     editPlanStyle,
     editCameraType,
     editActiveLayers,
     setEditPlanName,
+    setEditPlanCode,
     setEditPlanStyle,
     setEditCameraType,
     setEditActiveLayers,

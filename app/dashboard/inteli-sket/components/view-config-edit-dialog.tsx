@@ -23,6 +23,7 @@ import {
 interface ViewConfigEditDialogProps {
   title: string;
   itemTitle: string;
+  itemCode?: string;
   style: string;
   isOpen: boolean;
   onSave: () => void;
@@ -41,7 +42,8 @@ interface ViewConfigEditDialogProps {
   onApplyCurrentState: () => void;
   onActiveLayersChange: (layers: string[]) => void;
   allowedCameraTypes: string[];
-  onItemTitleChange?: (title: string) => void; // Nova prop para editar nome
+  onItemTitleChange?: (title: string) => void;
+  onItemCodeChange?: (code: string) => void;
 }
 
 const CAMERA_TYPE_LABELS: Record<string, string> = {
@@ -56,6 +58,7 @@ const CAMERA_TYPE_LABELS: Record<string, string> = {
 export function ViewConfigEditDialog({
   title,
   itemTitle,
+  itemCode,
   isOpen,
   style,
   isBusy = false,
@@ -74,7 +77,8 @@ export function ViewConfigEditDialog({
   onCameraTypeChange,
   onActiveLayersChange,
   onApplyCurrentState,
-  onItemTitleChange, // Nova prop
+  onItemTitleChange,
+  onItemCodeChange,
 }: ViewConfigEditDialogProps) {
   const [layerFilter, setLayerFilter] = useState('');
 
@@ -126,6 +130,25 @@ export function ViewConfigEditDialog({
                 placeholder='Nome da configuração'
                 value={itemTitle}
                 onChange={(e) => onItemTitleChange(e.target.value)}
+                className='h-9 rounded-xl border-2'
+              />
+            </div>
+          )}
+
+          {/* Campo para editar o código */}
+          {onItemCodeChange && (
+            <div className='space-y-1.5'>
+              <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
+                Código:
+                <span className='text-xs text-muted-foreground font-normal'>
+                  (usado como nome da cena)
+                </span>
+              </label>
+              <Input
+                type='text'
+                placeholder='Ex: gnrl, draw, plans'
+                value={itemCode || ''}
+                onChange={(e) => onItemCodeChange(e.target.value.toLowerCase().replace(/\s+/g, '_'))}
                 className='h-9 rounded-xl border-2'
               />
             </div>

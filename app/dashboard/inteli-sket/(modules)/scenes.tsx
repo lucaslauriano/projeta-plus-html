@@ -66,6 +66,7 @@ function ScenesComponent() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingScene, setEditingScene] = useState<Scene | null>(null);
   const [editSceneName, setEditSceneName] = useState('');
+  const [editSceneCode, setEditSceneCode] = useState('');
   const [editSceneStyle, setEditSceneStyle] = useState('');
   const [editCameraType, setEditCameraType] = useState('');
   const [editActiveLayers, setEditActiveLayers] = useState<string[]>([]);
@@ -273,6 +274,7 @@ function ScenesComponent() {
   const handleEditScene = (segment: Scene) => {
     setEditingScene(segment);
     setEditSceneName(segment.name);
+    setEditSceneCode(segment.code || segment.name.toLowerCase().replace(/\s+/g, '_'));
 
     // Segment já tem todas as configurações
     setEditSceneStyle(segment.style || availableStyles[0] || 'FM_VISTAS');
@@ -314,6 +316,7 @@ function ScenesComponent() {
           ? {
               ...s,
               name: editSceneName.trim(),
+              code: editSceneCode.trim() || editSceneName.trim().toLowerCase().replace(/\s+/g, '_'),
               style: editSceneStyle,
               cameraType: editCameraType,
               activeLayers: editActiveLayers,
@@ -362,7 +365,9 @@ function ScenesComponent() {
       <ViewConfigEditDialog
         title='Configuração da Cena'
         itemTitle={editSceneName}
+        itemCode={editSceneCode}
         onItemTitleChange={setEditSceneName}
+        onItemCodeChange={setEditSceneCode}
         allowedCameraTypes={['iso_perspectiva', 'iso_ortogonal']}
         style={editSceneStyle}
         isBusy={isBusy}
