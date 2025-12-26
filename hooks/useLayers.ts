@@ -400,9 +400,7 @@ export function useLayers() {
 
   const getJsonPath = useCallback(async () => {
     if (!isAvailable) {
-      setJsonPath(
-        'C:/Users/Franciell/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/tags_data.json'
-      );
+      // Modo simulação - caminho será obtido do backend quando disponível
       return;
     }
 
@@ -717,8 +715,6 @@ export function useLayers() {
       return;
     }
 
-    if (!confirm(`Importar ${countTags()} tags no modelo?`)) return;
-
     if (!isAvailable) {
       toast.info('Importando tags no modelo...');
       return;
@@ -732,7 +728,6 @@ export function useLayers() {
   }, [callSketchupMethod, countTags, data, isAvailable]);
 
   const clearAll = useCallback(() => {
-    if (!confirm('Limpar toda a lista?')) return;
     setData({ folders: [], tags: [] });
   }, []);
 

@@ -3,16 +3,7 @@
 import React, { useState } from 'react';
 import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useLayers } from '@/hooks/useLayers';
 import TagList from '@/app/dashboard/inteli-sket/components/TagList';
 import LayerDialogs from '@/app/dashboard/inteli-sket/components/layer-dialogs';
@@ -50,6 +41,8 @@ export default function LayersComponent() {
     name: string;
     type: 'tag' | 'folder';
   } | null>(null);
+  const [clearAllConfirmOpen, setClearAllConfirmOpen] = useState(false);
+  const [importConfirmOpen, setImportConfirmOpen] = useState(false);
 
   const handleAddFolder = async () => {
     if (await addFolder(newFolderName)) {
@@ -87,6 +80,17 @@ export default function LayersComponent() {
     setItemToDelete(null);
   };
 
+  const handleClearAll = () => {
+    setClearAllConfirmOpen(true);
+  };
+
+  const handleImportToModel = () => {
+    if (countTags() === 0) {
+      return;
+    }
+    setImportConfirmOpen(true);
+  };
+
   const menu = [
     {
       label: 'Criar pasta',
@@ -121,35 +125,45 @@ export default function LayersComponent() {
     },
     {
       label: 'Deletar todos',
-      action: () => clearAll(),
+      action: handleClearAll,
       hasDivider: false,
     },
   ];
 
   return (
     <>
-      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {itemToDelete?.type === 'folder'
-                ? 'Excluir Pasta'
-                : 'Excluir Tag'}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {itemToDelete?.type === 'folder'
-                ? `Tem certeza que deseja excluir a pasta "${itemToDelete?.name}"? As tags da pasta serão movidas para fora.`
-                : `Tem certeza que deseja excluir a tag "${itemToDelete?.name}"? Esta ação não pode ser desfeita.`}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete}>
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        title={itemToDelete?.type === 'folder' ? 'Excluir Pasta' : 'Excluir Tag'}
+        description={
+          itemToDelete?.type === 'folder'
+            ? `Tem certeza que deseja excluir a pasta "${itemToDelete?.name}"? As tags da pasta serão movidas para fora.`
+            : `Tem certeza que deseja excluir a tag "${itemToDelete?.name}"? Esta ação não pode ser desfeita.`
+        }
+        confirmText='Excluir'
+        onConfirm={confirmDelete}
+        variant='destructive'
+      />
+
+      <ConfirmDialog
+        open={clearAllConfirmOpen}
+        onOpenChange={setClearAllConfirmOpen}
+        title='Limpar todas as etiquetas'
+        description='Tem certeza que deseja remover todas as pastas e etiquetas? Esta ação não pode ser desfeita.'
+        confirmText='Limpar tudo'
+        onConfirm={clearAll}
+        variant='destructive'
+      />
+
+      <ConfirmDialog
+        open={importConfirmOpen}
+        onOpenChange={setImportConfirmOpen}
+        title='Aplicar no Modelo'
+        description={`Deseja aplicar ${countTags()} etiqueta(s) no modelo SketchUp?`}
+        confirmText='Aplicar'
+        onConfirm={importToModel}
+      />
 
       <LayerDialogs
         isFolderDialogOpen={isFolderDialogOpen}
@@ -184,7 +198,7 @@ export default function LayersComponent() {
             type='button'
             size='sm'
             title='Aplicar no Modelo'
-            onClick={importToModel}
+            onClick={handleImportToModel}
             className='w-full'
           >
             <Upload className='w-5 h-5' />

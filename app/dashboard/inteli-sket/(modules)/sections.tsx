@@ -1,18 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Grid3x3, Trash2, Folder, Edit, Plus } from 'lucide-react';
+import { Grid3x3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { PlanItem } from '@/components/PlanItem';
 import { useSections } from '@/hooks/useSections';
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from '@/components/ui/accordion';
+import { GroupAccordion } from '@/app/dashboard/inteli-sket/components/group-accordion';
 import { CreateAutoViewsDialog } from '@/app/dashboard/inteli-sket/components/create-auto-views-dialog';
 import { CreateIndividualSectionDialog } from '@/app/dashboard/inteli-sket/components/create-individual-section-dialog';
 import { SectionsConfigDialog } from '@/app/dashboard/inteli-sket/components/sections-config-dialog';
@@ -314,91 +309,31 @@ export default function SectionsComponent() {
       </div>
 
       <div className='flex flex-col gap-2 w-full'>
-        <Accordion type='single' collapsible className='w-full space-y-2'>
-          {data.groups.map((group) => (
-            <AccordionItem
-              key={group.id}
-              value={group.id}
-              className='border rounded-xl overflow-hidden bg-muted/20 px-0'
-            >
-              <div className='relative group'>
-                <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none w-full'>
-                  <div className='flex items-center gap-2 font-medium text-sm'>
-                    <Folder className='w-4 h-4 text-muted-foreground' />
-                    {group.name || 'Grupo'}
-                  </div>
-                </AccordionTrigger>
-                <div className='absolute right-12 top-1/2 -translate-y-1/2 flex items-center gap-2 text-muted-foreground pointer-events-none z-10'>
-                  <span
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddSegment(group.id);
-                    }}
-                    className='opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto hover:text-foreground'
-                    title='Adicionar segmento'
-                    role='button'
-                    tabIndex={0}
-                  >
-                    <Plus className='w-4 h-4' />
-                  </span>
-                  <span
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    className='opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto hover:text-foreground'
-                    title='Editar grupo'
-                    role='button'
-                    tabIndex={0}
-                  >
-                    <Edit className='w-4 h-4' />
-                  </span>
-                  <span
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (confirm('Deseja realmente remover este grupo?')) {
-                        deleteGroup(group.id);
-                      }
-                    }}
-                    className='opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto hover:text-destructive'
-                    title='Excluir grupo'
-                    role='button'
-                    tabIndex={0}
-                  >
-                    <Trash2 className='w-4 h-4' />
-                  </span>
-                </div>
-              </div>
-              <AccordionContent className='p-4'>
-                <div className='space-y-3'>
-                  {(group.segments || []).length > 0 ? (
-                    <div className='space-y-2'>
-                      {(group.segments || []).map((segment) => (
-                        <PlanItem
-                          key={segment.id}
-                          title={segment.name}
-                          onEdit={() => handleEditSegment(group.id, segment)}
-                          onLoadFromJson={() =>
-                            handleOpenDuplicateDialog(group.id, segment)
-                          }
-                          onDuplicate={() =>
-                            handleOpenDuplicateDialog(group.id, segment)
-                          }
-                          onDelete={() =>
-                            handleDeleteSegment(group.id, segment.id)
-                          }
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className='text-center py-4 text-sm text-muted-foreground italic'>
-                      Nenhum segmento neste grupo
-                    </div>
-                  )}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        <GroupAccordion
+          groups={data.groups}
+          onEditGroup={(groupId) => {
+            // TODO: Implementar edição de grupo
+            console.log('Editar grupo:', groupId);
+          }}
+          onDeleteGroup={(groupId) => {
+            if (confirm('Deseja realmente remover este grupo?')) {
+              deleteGroup(groupId);
+            }
+          }}
+          onAddSegment={handleAddSegment}
+          emptyMessage='Nenhum segmento neste grupo'
+          iconPosition='right'
+          renderSegment={(segment, groupId) => (
+            <PlanItem
+              key={segment.id}
+              title={segment.name}
+              onEdit={() => handleEditSegment(groupId, segment)}
+              onLoadFromJson={() => handleOpenDuplicateDialog(groupId, segment)}
+              onDuplicate={() => handleOpenDuplicateDialog(groupId, segment)}
+              onDelete={() => handleDeleteSegment(groupId, segment.id)}
+            />
+          )}
+        />
       </div>
     </div>
   );

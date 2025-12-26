@@ -2,13 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { PlanItem } from '@/components/PlanItem';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionContent,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Edit, Trash2, Folder, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SceneGroup, useScenes } from '@/hooks/useScenes';
 import {
@@ -22,6 +16,7 @@ import {
 } from '@/app/dashboard/inteli-sket/components/scenes-skeleton';
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
 import { ViewConfigEditDialog } from '@/app/dashboard/inteli-sket/components/view-config-edit-dialog';
+import { GroupAccordion } from '@/app/dashboard/inteli-sket/components/group-accordion';
 
 type Scene = SceneGroup['segments'][number];
 
@@ -274,7 +269,9 @@ function ScenesComponent() {
   const handleEditScene = (segment: Scene) => {
     setEditingScene(segment);
     setEditSceneName(segment.name);
-    setEditSceneCode(segment.code || segment.name.toLowerCase().replace(/\s+/g, '_'));
+    setEditSceneCode(
+      segment.code || segment.name.toLowerCase().replace(/\s+/g, '_')
+    );
 
     // Segment já tem todas as configurações
     setEditSceneStyle(segment.style || availableStyles[0] || 'FM_VISTAS');
@@ -316,7 +313,9 @@ function ScenesComponent() {
           ? {
               ...s,
               name: editSceneName.trim(),
-              code: editSceneCode.trim() || editSceneName.trim().toLowerCase().replace(/\s+/g, '_'),
+              code:
+                editSceneCode.trim() ||
+                editSceneName.trim().toLowerCase().replace(/\s+/g, '_'),
               style: editSceneStyle,
               cameraType: editCameraType,
               activeLayers: editActiveLayers,
@@ -422,90 +421,25 @@ function ScenesComponent() {
 
         {!isLoading && sortedGroups.length > 0 && (
           <div className='space-y-4'>
-            <Accordion type='single' collapsible className='w-full space-y-2'>
-              {sortedGroups.map((group) => (
-                <AccordionItem
-                  key={group.id}
-                  value={group.id}
-                  className='border rounded-xl overflow-hidden bg-muted/20 px-0'
-                >
-                  <div className='relative group'>
-                    <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none w-full'>
-                      <div className='flex items-center gap-2 font-medium text-sm'>
-                        <Folder className='w-4 h-4 text-gray-500' />
-                        {group.name}
-                      </div>
-                    </AccordionTrigger>
-                    <div className='absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-muted-foreground pointer-events-none'>
-                      <span
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditGroup(group.id);
-                        }}
-                        className='opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto'
-                        title='Editar'
-                        role='button'
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.stopPropagation();
-                            handleEditGroup(group.id);
-                          }
-                        }}
-                      >
-                        <Edit className='w-4 h-4' />
-                      </span>
-                      <span
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteGroup(group.id);
-                        }}
-                        className='opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto'
-                        title='Excluir pasta'
-                        role='button'
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.stopPropagation();
-                            handleDeleteGroup(group.id);
-                          }
-                        }}
-                      >
-                        <Trash2 className='w-4 h-4' />
-                      </span>
-                    </div>
-                  </div>
-                  <AccordionContent className='p-4'>
-                    <div className='space-y-3'>
-                      {(group.segments || []).length > 0 ? (
-                        <div className='space-y-2'>
-                          {(group.segments || []).map((segment) => (
-                            <PlanItem
-                              key={segment.id}
-                              title={segment.name}
-                              onEdit={() => handleEditScene(segment as Scene)}
-                              onLoadFromJson={() =>
-                                handleApplyScene(segment as Scene)
-                              }
-                              onDuplicate={() =>
-                                handleDuplicateScene(group.id, segment as Scene)
-                              }
-                              onDelete={() =>
-                                handleDeleteScene(group.id, segment.id)
-                              }
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <div className='text-center py-4 text-sm text-muted-foreground italic'>
-                          Nenhuma cena neste grupo
-                        </div>
-                      )}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            <GroupAccordion
+              groups={sortedGroups}
+              onEditGroup={handleEditGroup}
+              onDeleteGroup={handleDeleteGroup}
+              emptyMessage='Nenhuma cena neste grupo'
+              iconPosition='right'
+              renderSegment={(segment, groupId) => (
+                <PlanItem
+                  key={segment.id}
+                  title={segment.name}
+                  onEdit={() => handleEditScene(segment as Scene)}
+                  onLoadFromJson={() => handleApplyScene(segment as Scene)}
+                  onDuplicate={() =>
+                    handleDuplicateScene(groupId, segment as Scene)
+                  }
+                  onDelete={() => handleDeleteScene(groupId, segment.id)}
+                />
+              )}
+            />
           </div>
         )}
       </div>
