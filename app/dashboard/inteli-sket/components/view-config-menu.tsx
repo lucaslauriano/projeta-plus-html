@@ -28,6 +28,8 @@ interface ViewConfigMenuProps {
   onLoadDefault?: () => void;
   onLoadFromJson?: () => void;
   onLoadFromFile?: () => void;
+  onDeleteAll?: () => void;
+  menuItems?: Array<{ label: string; action: () => void; hasDivider: boolean }>;
 }
 
 export function ViewConfigMenu({
@@ -40,6 +42,8 @@ export function ViewConfigMenu({
   onLoadDefault,
   onLoadFromJson,
   onLoadFromFile,
+  onDeleteAll,
+  menuItems = [],
 }: ViewConfigMenuProps) {
   return (
     <DropdownMenu>
@@ -49,6 +53,16 @@ export function ViewConfigMenu({
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-48'>
+        {menuItems.map((item, index) => (
+          <React.Fragment key={index}>
+            <DropdownMenuItem className='cursor-pointer' onClick={item.action}>
+              {item.label}
+            </DropdownMenuItem>
+            {item.hasDivider && (
+              <hr className='my-1 border-muted-foreground/20' />
+            )}
+          </React.Fragment>
+        ))}
         {onEdit && (
           <DropdownMenuItem className='cursor-pointer' onClick={onEdit}>
             <Edit className='w-4 h-4 mr-2' />
@@ -93,6 +107,12 @@ export function ViewConfigMenu({
           >
             <Save className='w-4 h-4 mr-2' />
             Salvar
+          </DropdownMenuItem>
+        )}
+        {onDeleteAll && (
+          <DropdownMenuItem className='cursor-pointer' onClick={onDeleteAll}>
+            <Edit className='w-4 h-4 mr-2' />
+            Deletar Todos
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

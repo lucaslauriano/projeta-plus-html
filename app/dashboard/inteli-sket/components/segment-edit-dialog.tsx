@@ -98,11 +98,11 @@ export function SegmentEditDialog({
       <DialogContent className='sm:max-w-[550px] max-h-[90vh] flex flex-col'>
         <DialogHeader>
           <DialogTitle className='flex text-start gap-2'>
-            {isNew ? 'Novo Segmento' : 'Editar Segmento'}
+            {isNew ? 'Novo Corte' : 'Editar Corte'}
           </DialogTitle>
           <DialogDescription className='text-start text-sm text-muted-foreground'>
-            Configure o nome, código (sufixo), estilo e camadas ativas para
-            este segmento de seções
+            Configure o nome, código (sufixo), estilo e camadas ativas para este
+            segmento de seções
           </DialogDescription>
         </DialogHeader>
 
@@ -270,4 +270,3 @@ export function SegmentEditDialog({
     </Dialog>
   );
 }
-

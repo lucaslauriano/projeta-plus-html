@@ -9,7 +9,7 @@ interface TagProps {
   color: number[];
   visible: boolean;
   rgbToHex: (r: number, g: number, b: number) => string;
-  onDelete: (name: string) => Promise<void>;
+  onDelete: (name: string) => void;
   onUpdateColor?: (name: string, color: string) => Promise<void>;
   onUpdateName?: (oldName: string, newName: string) => Promise<void>;
 }
@@ -72,15 +72,15 @@ export default function Tag({
 
   return (
     <div
-      className='flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-accent/20 text-sm group border border-border/50'
+      className='pl-4 flex items-center justify-between gap-x-2 p-1 hover:bg-accent/20 text-sm group border-b border-border/50'
       onClick={(e) => e.stopPropagation()}
     >
       <ColorPicker
+        size='icon-sm'
         value={currentColor}
         onChange={handleColorChange}
         disabled={!onUpdateColor}
-        className='w-4 h-4'
-        size='icon-sm'
+        className='w-3 h-3'
       />
 
       {isEditingName ? (
@@ -91,7 +91,7 @@ export default function Tag({
           onChange={handleNameChange}
           onBlur={handleNameBlur}
           onKeyDown={handleNameKeyDown}
-          className='flex-1 px-2 py-1 text-[10px] border border-primary rounded focus:outline-none focus:ring-2 focus:ring-primary/50'
+          className='flex-1 px-2 text-[10px] border border-primary rounded focus:outline-none focus:ring-2 focus:ring-primary/50'
           onClick={(e) => e.stopPropagation()}
         />
       ) : (
@@ -111,7 +111,7 @@ export default function Tag({
           }}
           className='opacity-0 group-hover:opacity-100 transition-opacity'
         >
-          <Edit className='w-4 h-4' />
+          <Edit className='w-3 h-3' />
         </button>
 
         <button
@@ -121,7 +121,7 @@ export default function Tag({
           }}
           className='opacity-0 group-hover:opacity-100 transition-opacity'
         >
-          <Trash2 className='w-4 h-4' />
+          <Trash2 className='w-3 h-3' />
         </button>
       </div>
     </div>

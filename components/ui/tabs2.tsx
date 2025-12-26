@@ -1,8 +1,6 @@
-import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
@@ -33,8 +31,8 @@ export default function Tabs2({
                 className={cn(
                   tab.current
                     ? 'border-primary text-primary'
-                    : 'border-transparent text-gray-900 hover:border-white/20 hover:text-gray-200',
-                  'border-b-2 px-1 pt-0 pb-4 text-sm font-medium whitespace-nowrap '
+                    : 'border-transparent text-muted-foreground hover:border-primary hover:text-primary',
+                  'border-b-2 px-1 pb-2 text-sm font-medium whitespace-nowrap transition-colors'
                 )}
               >
                 <tab.icon />

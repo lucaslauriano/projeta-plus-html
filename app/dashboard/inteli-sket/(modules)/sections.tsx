@@ -18,6 +18,7 @@ import { CreateIndividualSectionDialog } from '@/app/dashboard/inteli-sket/compo
 import { SectionsConfigDialog } from '@/app/dashboard/inteli-sket/components/sections-config-dialog';
 import { SegmentEditDialog } from '@/app/dashboard/inteli-sket/components/segment-edit-dialog';
 import { SelectScenesDialog } from '@/app/dashboard/inteli-sket/components/select-scenes-dialog';
+import { Segment } from 'next/dist/server/app-render/types';
 
 export default function SectionsComponent() {
   const {
@@ -61,26 +62,36 @@ export default function SectionsComponent() {
   const [configStyle, setConfigStyle] = useState(settings.style);
   const [configLayers, setConfigLayers] = useState(settings.activeLayers);
 
-  // Segment editing
   const [isSegmentEditDialogOpen, setIsSegmentEditDialogOpen] = useState(false);
   const [editingSegment, setEditingSegment] = useState<{
     groupId: string;
-    segment?: { id: string; name: string; code: string; style: string; activeLayers: string[] };
+    segment?: {
+      id: string;
+      name: string;
+      code: string;
+      style: string;
+      activeLayers: string[];
+    };
   } | null>(null);
   const [segmentName, setSegmentName] = useState('');
   const [segmentCode, setSegmentCode] = useState('');
   const [segmentStyle, setSegmentStyle] = useState('FM_VISTAS');
   const [segmentLayers, setSegmentLayers] = useState<string[]>([]);
 
-  // Scene selection for duplication
-  const [isSelectScenesDialogOpen, setIsSelectScenesDialogOpen] = useState(false);
+  const [isSelectScenesDialogOpen, setIsSelectScenesDialogOpen] =
+    useState(false);
   const [selectedScenes, setSelectedScenes] = useState<string[]>([]);
   const [duplicatingSegment, setDuplicatingSegment] = useState<{
     groupId: string;
-    segment: { id: string; name: string; code: string; style: string; activeLayers: string[] };
+    segment: {
+      id: string;
+      name: string;
+      code: string;
+      style: string;
+      activeLayers: string[];
+    };
   } | null>(null);
 
-  // Update local state when settings change
   useEffect(() => {
     setConfigStyle(settings.style);
     setConfigLayers(settings.activeLayers);
@@ -128,7 +139,6 @@ export default function SectionsComponent() {
     setIsConfigDialogOpen(true);
   };
 
-  // Segment handlers
   const handleAddSegment = (groupId: string) => {
     setEditingSegment({ groupId });
     setSegmentName('');
@@ -138,7 +148,7 @@ export default function SectionsComponent() {
     setIsSegmentEditDialogOpen(true);
   };
 
-  const handleEditSegment = (groupId: string, segment: any) => {
+  const handleEditSegment = (groupId: string, segment: Segment) => {
     setEditingSegment({ groupId, segment });
     setSegmentName(segment.name);
     setSegmentCode(segment.code);
@@ -158,10 +168,8 @@ export default function SectionsComponent() {
     };
 
     if (editingSegment.segment) {
-      // Update existing
       updateSegment(editingSegment.groupId, editingSegment.segment.id, params);
     } else {
-      // Add new
       addSegment(editingSegment.groupId, params);
     }
 
@@ -182,13 +190,14 @@ export default function SectionsComponent() {
     });
   };
 
-  // Duplication handlers
-  const handleOpenDuplicateDialog = async (groupId: string, segment: any) => {
+  const handleOpenDuplicateDialog = async (
+    groupId: string,
+    segment: Segment
+  ) => {
     setDuplicatingSegment({ groupId, segment });
     setSelectedScenes([]);
     setIsSelectScenesDialogOpen(true);
-    
-    // Fetch model scenes
+
     await getModelScenes();
   };
 
@@ -368,9 +377,15 @@ export default function SectionsComponent() {
                           key={segment.id}
                           title={segment.name}
                           onEdit={() => handleEditSegment(group.id, segment)}
-                          onLoadFromJson={() => handleOpenDuplicateDialog(group.id, segment)}
-                          onDuplicate={() => handleOpenDuplicateDialog(group.id, segment)}
-                          onDelete={() => handleDeleteSegment(group.id, segment.id)}
+                          onLoadFromJson={() =>
+                            handleOpenDuplicateDialog(group.id, segment)
+                          }
+                          onDuplicate={() =>
+                            handleOpenDuplicateDialog(group.id, segment)
+                          }
+                          onDelete={() =>
+                            handleDeleteSegment(group.id, segment.id)
+                          }
                         />
                       ))}
                     </div>
