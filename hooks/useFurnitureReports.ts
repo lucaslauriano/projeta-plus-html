@@ -276,9 +276,23 @@ export function useFurnitureReports() {
   );
 
   const exportXLSX = useCallback(
-    async (categories: string[]) => {
+    async (categories: string[], format: 'csv' | 'xlsx' = 'xlsx', isConsolidated: boolean = true) => {
       try {
         setIsBusy(true);
+        
+        // Determinar nome do arquivo baseado no contexto
+        const fileExtension = format;
+        let defaultFileName: string;
+        
+        if (isConsolidated || categories.length > 1) {
+          // Exportação consolidada ou múltiplas categorias
+          defaultFileName = `furniture_report_consolidated.${fileExtension}`;
+        } else {
+          // Exportação individual - usar nome da categoria
+          const categoryName = categories[0].replace(/[^a-zA-Z0-9]/g, '_');
+          defaultFileName = `${categoryName}.${fileExtension}`;
+        }
+        
         // Primeiro solicita ao usuário onde salvar o arquivo
         const pathResult = await new Promise<{
           success: boolean;
@@ -294,8 +308,8 @@ export function useFurnitureReports() {
           (window as WindowWithHandlers).handlePickSaveFilePathFurnitureResult =
             handler;
           callSketchupMethod('pickSaveFilePathFurniture', {
-            defaultName: 'furniture_report',
-            fileType: 'xlsx',
+            defaultName: defaultFileName,
+            fileType: fileExtension,
           });
         });
 
@@ -305,14 +319,23 @@ export function useFurnitureReports() {
           return;
         }
 
-        // Agora exporta para o caminho escolhido
-        await callSketchupMethod('exportXLSX', {
-          categories,
-          path: pathResult.path,
-        });
+        // Agora exporta para o caminho escolhido com o formato especificado
+        if (format === 'csv' && categories.length === 1) {
+          // Se for CSV e uma única categoria, usar exportCategoryCSV
+          await callSketchupMethod('exportCategoryCSV', {
+            category: categories[0],
+            path: pathResult.path,
+          });
+        } else {
+          // Para XLSX ou múltiplas categorias em CSV, usar exportXLSX
+          await callSketchupMethod('exportXLSX', {
+            categories,
+            path: pathResult.path,
+          });
+        }
       } catch (error) {
-        console.error('Error exporting XLSX:', error);
-        toast.error('Erro ao exportar XLSX');
+        console.error('Error exporting:', error);
+        toast.error(`Erro ao exportar ${format.toUpperCase()}`);
         setIsBusy(false);
       }
     },

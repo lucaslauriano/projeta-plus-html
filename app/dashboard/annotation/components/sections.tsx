@@ -39,7 +39,7 @@ function AnnotationSectionInner() {
 
   return (
     <div className='w-full max-w-lg mx-auto space-y-4'>
-      <div className='space-y-2 gap-y-4 '>
+      <div className='space-y-2 gap-y-4'>
         <div className='flex items-center justify-between'>
           <h3 className='text-sm font-semibold text-foreground'>Cortes</h3>
           <TooltipProvider>
@@ -52,10 +52,11 @@ function AnnotationSectionInner() {
                   <Info className='w-4 h-4 text-muted-foreground' />
                 </button>
               </TooltipTrigger>
-              <TooltipContent className='max-w-xs'>
+              <TooltipContent>
                 <p className='text-sm'>
-                  AAnotar automaticamente todas as seções existentes no modelo,
-                  atribuindo nomes conforme o identificador do corte de seção.
+                  Anota automaticamente todas as seções existentes no modelo,
+                  atribuindo o nome da seção conforme o identificador do corte
+                  definido nas informações da entidade.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -84,11 +85,11 @@ function AnnotationSectionInner() {
                   <Info className='w-4 h-4 text-muted-foreground' />
                 </button>
               </TooltipTrigger>
-              <TooltipContent className='max-w-xs'>
+              <TooltipContent>
                 <p className='text-sm'>
-                  Inserir a simbologia de indicação de vistas no centro da face
-                  selecionada, permitindo a geração de cortes de seção pelo modo{' '}
-                  <strong>Vistas</strong>.
+                  Insere a simbologia de indicação de vistas no centro da face
+                  selecionada. Utilize essa simbologia para gerar cortes por
+                  ambiente na área de Seções do SketchUp Inteligente.
                 </p>
               </TooltipContent>
             </Tooltip>

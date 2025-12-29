@@ -6,22 +6,30 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Table,
+  TableRow,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
 } from '@/components/ui/table';
 import {
   Card,
+  CardTitle,
+  CardHeader,
   CardContent,
   CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Download, FileSpreadsheet, Eye, Trash2 } from 'lucide-react';
 import { DeleteConfirmDialog } from './delete-confirm-dialog';
+import { ExportXLSXModal } from './export-xlsx-modal';
+import { ExportFormatDialog } from './export-format-dialog';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipProvider,
+} from '@radix-ui/react-tooltip';
+import { TooltipContent } from '@/components/ui/tooltip';
 
 export function FurnitureReports() {
   const {
@@ -41,6 +49,11 @@ export function FurnitureReports() {
   } = useFurnitureReports();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [xlsxModalOpen, setXlsxModalOpen] = useState(false);
+  const [exportDialog, setExportDialog] = useState<{
+    open: boolean;
+    category: string;
+  }>({ open: false, category: '' });
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean;
     itemId: number | null;
@@ -108,14 +121,24 @@ export function FurnitureReports() {
   };
 
   const handleExportCSV = (category: string) => {
-    exportCategoryCSV(category);
+    setExportDialog({ open: true, category });
   };
 
-  const handleExportXLSX = () => {
-    const categoriesToExport = categories.filter(
-      (cat) => categoryPrefs[cat]?.export !== false
-    );
-    exportXLSX(categoriesToExport);
+  const handleExportCategory = (format: 'csv' | 'xlsx') => {
+    if (format === 'csv') {
+      exportCategoryCSV(exportDialog.category);
+    } else {
+      // Exportação individual - isConsolidated = false
+      exportXLSX([exportDialog.category], format, false);
+    }
+  };
+
+  const handleExportXLSX = (
+    selectedCategories: string[],
+    format: 'csv' | 'xlsx'
+  ) => {
+    // Exportação consolidada - isConsolidated = true
+    exportXLSX(selectedCategories, format, true);
   };
 
   const handleIsolate = (entityId: number) => {
@@ -147,7 +170,6 @@ export function FurnitureReports() {
 
   return (
     <div className='space-y-6'>
-      {/* Header */}
       <div className='flex items-center justify-between'>
         <div>
           <h2 className='text-2xl font-bold'>Mobiliário</h2>
@@ -164,9 +186,19 @@ export function FurnitureReports() {
           {isBusy && <Loader2 className='w-4 h-4 animate-spin' />}
         </div>
       </div>
-
+      <div className='flex gap-2 items-center justify-center'>
+        <Button
+          size='sm'
+          className='w-full md:w-fit'
+          onClick={() => setXlsxModalOpen(true)}
+          disabled={isBusy}
+        >
+          <FileSpreadsheet className='w-4 h-4 mr-2' />
+          Exportar Consolidado
+        </Button>
+      </div>
       {/* Category Filters */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Categorias</CardTitle>
           <CardDescription>
@@ -211,7 +243,7 @@ export function FurnitureReports() {
             ))}
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Column Filters */}
       <Card>
@@ -245,16 +277,6 @@ export function FurnitureReports() {
       </Card>
 
       {/* Export Actions */}
-      <div className='flex gap-2'>
-        <Button
-          onClick={handleExportXLSX}
-          disabled={isBusy || false}
-          title='Exportação XLSX disponível apenas no Windows'
-        >
-          <FileSpreadsheet className='w-4 h-4 mr-2' />
-          Exportar XLSX
-        </Button>
-      </div>
 
       {/* Category Tables */}
       {selectedCategories.map((category) => {
@@ -271,15 +293,23 @@ export function FurnitureReports() {
                     {data.itemCount} itens • Total: R$ {data.total.toFixed(2)}
                   </CardDescription>
                 </div>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={() => handleExportCSV(category)}
-                  disabled={isBusy}
-                >
-                  <Download className='w-4 h-4 mr-2' />
-                  CSV
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        onClick={() => handleExportCSV(category)}
+                        disabled={isBusy}
+                      >
+                        <Download className='w-4 h-4' />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className='text-sm'>Exportar</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </CardHeader>
             <CardContent>
@@ -381,6 +411,25 @@ export function FurnitureReports() {
           </Card>
         );
       })}
+
+      {/* Export Format Dialog (Individual) */}
+      <ExportFormatDialog
+        open={exportDialog.open}
+        onOpenChange={(open) => setExportDialog({ open, category: '' })}
+        categoryName={exportDialog.category}
+        onExport={handleExportCategory}
+        isBusy={isBusy}
+      />
+
+      {/* Export XLSX Modal */}
+      <ExportXLSXModal
+        open={xlsxModalOpen}
+        onOpenChange={setXlsxModalOpen}
+        categories={categories}
+        categoryPrefs={categoryPrefs}
+        onExport={handleExportXLSX}
+        isBusy={isBusy}
+      />
 
       {/* Delete Confirmation Dialog */}
       <DeleteConfirmDialog

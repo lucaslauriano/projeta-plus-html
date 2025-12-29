@@ -43,7 +43,7 @@ export function PrintAttributes() {
                   type='button'
                   className='p-1 hover:bg-accent rounded-md transition-colors'
                 >
-                  <Info className='w-4 h-4 text-muted-foreground' />
+                  <Info className='w-4 h-4' />
                 </button>
               </TooltipTrigger>
               <TooltipContent className='max-w-xs'>

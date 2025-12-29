@@ -52,6 +52,10 @@ function AnnotationLightingInner() {
     startCircuitConnection();
   };
 
+  const lightingTooltip = `Anote os circuitos digitando o valor no campo, 
+                            clique para registrar e selecione as faces dos interruptores,
+                            utilizando as setas para ajustar a direção.`;
+
   return (
     <div className='w-full max-w-lg mx-auto space-y-5'>
       <div className='space-y-3 rounded-xl'>
@@ -62,9 +66,7 @@ function AnnotationLightingInner() {
               placeholder='Ex: C1 ou A'
               label='Código do Circuito'
               value={circuitText}
-              tooltip='Anotar os circuitos digitando o valor no campo, clicando para
-                  registrar e selecionando as faces dos interruptores,
-                  utilizando as setas para alterar a direção.'
+              tooltip={lightingTooltip}
               onChange={(e) => setCircuitText(e.target.value)}
               required
             />
@@ -93,10 +95,13 @@ function AnnotationLightingInner() {
                       <Info className='w-4 h-4 text-muted-foreground' />
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent className='max-w-xs'>
+                  <TooltipContent>
                     <p className='text-sm'>
-                      Ligar os circuitos clicando no botão e selecionando os
-                      códigos correspondentes criados anteriormente.
+                      Conecte os circuitos clicando no botão e selecionando os
+                      códigos correspondentes criados anteriormente. Use as
+                      teclas de direção para ajustar a posição, + / − para
+                      aumentar ou diminuir a curvatura e Shift para alternar
+                      entre curva e linhas retas.
                     </p>
                   </TooltipContent>
                 </Tooltip>

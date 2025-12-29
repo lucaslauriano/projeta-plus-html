@@ -31,17 +31,16 @@ export function RoomAnnotation() {
     startRoomAnnotation(args);
   };
 
+  const roomTooltipContent = `Insira o nome do ambiente e, a partir da face selecionada, o sistema identifica automaticamente a área (m²). O pé-direito é anotado a partir do valor inserido no campo, enquanto o nível do piso pode ser definido manualmente ou automaticamente pelo eixo Z do modelo.`;
   return (
     <div className='w-full max-w-lg mx-auto space-y-4'>
-      <div className='flex items-center justify-between'></div>
-      <form onSubmit={handleSubmit} className='space-y-5'>
+      <form onSubmit={handleSubmit} className='space-y-4'>
         <div className='space-y-2'>
           <Input
             id='environmentName'
             type='text'
             label='Nome do Ambiente'
-            tooltip=' Inserir o nome do ambiente e sua área em m² conforme a face selecionada.
-Depois, selecione os campos abaixo para anotar o pé-direito e o nível do piso — lembrando que o nível pode ser definido de forma manual ou automática, a partir do eixo Z do modelo.'
+            tooltip={roomTooltipContent}
             value={environmentName}
             onChange={(e) => setEnvironmentName(e.target.value)}
             required
@@ -50,7 +49,7 @@ Depois, selecione os campos abaixo para anotar o pé-direito e o nível do piso 
           />
         </div>
 
-        <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
+        <div className='space-y-2 p-2 bg-muted/30 rounded-xl border border-border/50'>
           <div className='flex items-center'>
             <Checkbox
               id='showCeillingHeight'
@@ -78,7 +77,7 @@ Depois, selecione os campos abaixo para anotar o pé-direito e o nível do piso 
           )}
         </div>
 
-        <div className='space-y-3 p-4 bg-muted/30 rounded-xl border border-border/50'>
+        <div className='space-y-2 p-2 bg-muted/30 rounded-xl border border-border/50'>
           <div className='flex items-center '>
             <Checkbox
               id='showLevel'

@@ -30,7 +30,7 @@ export default function RootLayout({
       <html
         lang='en'
         className={`${montserrat.variable} antialiased h-full`}
-        suppressHydrationWarning={false}
+        suppressHydrationWarning={true}
       >
         <body className='h-full' suppressHydrationWarning={false}>
           <ThemeProvider
