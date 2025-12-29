@@ -30,19 +30,19 @@ export default function LayersComponent() {
     toggleVisibility,
   } = useLayers();
 
-  const [newFolderName, setNewFolderName] = useState('');
   const [newTagName, setNewTagName] = useState('');
   const [newTagColor, setNewTagColor] = useState('#ffffff');
+  const [newFolderName, setNewFolderName] = useState('');
   const [selectedFolder, setSelectedFolder] = useState<string>('root');
-  const [isFolderDialogOpen, setIsFolderDialogOpen] = useState(false);
   const [isTagDialogOpen, setIsTagDialogOpen] = useState(false);
+  const [importConfirmOpen, setImportConfirmOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [isFolderDialogOpen, setIsFolderDialogOpen] = useState(false);
+  const [clearAllConfirmOpen, setClearAllConfirmOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{
     name: string;
     type: 'tag' | 'folder';
   } | null>(null);
-  const [clearAllConfirmOpen, setClearAllConfirmOpen] = useState(false);
-  const [importConfirmOpen, setImportConfirmOpen] = useState(false);
 
   const handleAddFolder = async () => {
     if (await addFolder(newFolderName)) {
@@ -91,7 +91,7 @@ export default function LayersComponent() {
     setImportConfirmOpen(true);
   };
 
-  const menu = [
+  const menuItems = [
     {
       label: 'Criar pasta',
       action: () => setIsFolderDialogOpen(true),
@@ -102,7 +102,6 @@ export default function LayersComponent() {
       action: () => setIsTagDialogOpen(true),
       hasDivider: true,
     },
-
     {
       label: 'Importar personalizado',
       action: () => loadMyTags(),
@@ -135,7 +134,9 @@ export default function LayersComponent() {
       <ConfirmDialog
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}
-        title={itemToDelete?.type === 'folder' ? 'Excluir Pasta' : 'Excluir Tag'}
+        title={
+          itemToDelete?.type === 'folder' ? 'Excluir Pasta' : 'Excluir Tag'
+        }
         description={
           itemToDelete?.type === 'folder'
             ? `Tem certeza que deseja excluir a pasta "${itemToDelete?.name}"? As tags da pasta serão movidas para fora.`
@@ -148,12 +149,12 @@ export default function LayersComponent() {
 
       <ConfirmDialog
         open={clearAllConfirmOpen}
-        onOpenChange={setClearAllConfirmOpen}
+        variant='destructive'
         title='Limpar todas as etiquetas'
+        onConfirm={clearAll}
         description='Tem certeza que deseja remover todas as pastas e etiquetas? Esta ação não pode ser desfeita.'
         confirmText='Limpar tudo'
-        onConfirm={clearAll}
-        variant='destructive'
+        onOpenChange={setClearAllConfirmOpen}
       />
 
       <ConfirmDialog
@@ -166,6 +167,7 @@ export default function LayersComponent() {
       />
 
       <LayerDialogs
+        folders={data.folders}
         isFolderDialogOpen={isFolderDialogOpen}
         setIsFolderDialogOpen={setIsFolderDialogOpen}
         newFolderName={newFolderName}
@@ -180,7 +182,6 @@ export default function LayersComponent() {
         selectedFolder={selectedFolder}
         setSelectedFolder={setSelectedFolder}
         handleAddTag={handleAddTag}
-        folders={data.folders}
       />
 
       <div className='space-y-2'>
@@ -190,7 +191,11 @@ export default function LayersComponent() {
               Etiquetas
             </h2>
           </div>
-          <ViewConfigMenu isBusy={isBusy} entityLabel='Tag' menuItems={menu} />
+          <ViewConfigMenu
+            isBusy={isBusy}
+            menuItems={menuItems}
+            entityLabel='Tag'
+          />
         </div>
 
         <div className='flex items-center justify-center w-full'>

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Edit, Folder, RefreshCw, Trash2 } from 'lucide-react';
+import { Edit, RefreshCw, Trash2 } from 'lucide-react';
 import Tag from './Tag';
 import {
   Accordion,
@@ -37,7 +37,7 @@ export default function TagList({
   );
 
   return (
-    <div className='mt-4 pt-2 border *:border-border rounded-md pl-2 max-h-[420px] overflow-y-auto'>
+    <div className='mt-4 pt-2 border *:border-border rounded-md pl-2 max-h-[412px] overflow-y-auto'>
       <div className=' '>
         {isBusy ? (
           <div className='flex justify-center items-center h-full text-muted-foreground'>

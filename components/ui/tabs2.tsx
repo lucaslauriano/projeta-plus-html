@@ -19,8 +19,8 @@ export default function Tabs2({
   onTabChange?: (tabId: string) => void;
 }) {
   return (
-    <div className='flex items-center justify-center w-full'>
-      <nav aria-label='Tabs' className='-mb-px flex space-x-7 justify-center'>
+    <div className='flex items-center justify-center w-full overflow-x-hidden'>
+      <nav aria-label='Tabs' className=' flex space-x-5 justify-center w-full'>
         {tabs.map((tab) => (
           <Tooltip key={tab.id}>
             <TooltipTrigger asChild>

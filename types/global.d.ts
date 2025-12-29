@@ -63,6 +63,47 @@ interface FurnitureReportResponse {
   message?: string;
 }
 
+interface FurnitureTypesResult {
+  success: boolean;
+  types?: string[];
+  message?: string;
+}
+
+interface ElectricalReportTypesResult {
+  success: boolean;
+  types?: string[];
+  message?: string;
+}
+
+interface CategoryDataResult {
+  success: boolean;
+  data?: unknown;
+  message?: string;
+}
+
+interface CategoryPreferencesResult {
+  success: boolean;
+  preferences?: unknown;
+  message?: string;
+}
+
+interface ColumnPreferencesResult {
+  success: boolean;
+  preferences?: unknown;
+  message?: string;
+}
+
+interface ExportResult {
+  success: boolean;
+  path?: string;
+  message?: string;
+}
+
+interface FurnitureItemOperationResult {
+  success: boolean;
+  message?: string;
+}
+
 export interface RoomDefaults {
   scale?: string;
   font?: string;
@@ -206,6 +247,11 @@ declare global {
       loadDefaultSections: () => void;
       loadSectionsFromFile: () => void;
       importSectionsToModel: (payload: string) => void;
+      // Electrical Reports
+      getElectricalReportTypes: () => void;
+      getElectricalReportData: (payload: string) => void;
+      exportElectricalCSV: (payload: string) => void;
+      exportElectricalXLSX: (payload: string) => void;
     };
     changeLanguage: (langCode: string) => void;
     loadGlobalSettings: () => void;
@@ -244,6 +290,47 @@ declare global {
     }) => void;
     handleFurnitureReport?: (response: FurnitureReportResponse) => void;
     handleFurnitureOperation?: (response: FurnitureOperationResponse) => void;
+
+    // Furniture Reports Module
+    handleGetFurnitureTypesResult?: (result: FurnitureTypesResult) => void;
+    handleGetCategoryDataResult?: (result: CategoryDataResult) => void;
+    handleGetCategoryPreferencesResult?: (
+      result: CategoryPreferencesResult
+    ) => void;
+    handleSaveCategoryPreferencesResult?: (
+      result: CategoryPreferencesResult
+    ) => void;
+    handleGetColumnPreferencesResult?: (
+      result: ColumnPreferencesResult
+    ) => void;
+    handleSaveColumnPreferencesResult?: (
+      result: ColumnPreferencesResult
+    ) => void;
+    handlePickSaveFilePathFurnitureResult?: (
+      result: SketchupResult & { path?: string }
+    ) => void;
+    handlePickSaveFilePathElectricalResult?: (
+      result: SketchupResult & { path?: string }
+    ) => void;
+    handleExportCategoryCSVResult?: (
+      result: ExportResult & { path?: string }
+    ) => void;
+    handleExportXLSXResult?: (result: ExportResult & { path?: string }) => void;
+    handleIsolateFurnitureItemResult?: (
+      result: FurnitureItemOperationResult
+    ) => void;
+    handleDeleteFurnitureItemResult?: (
+      result: FurnitureItemOperationResult
+    ) => void;
+
+    // Electrical Reports Module
+    handleGetElectricalReportTypesResult?: (
+      result: ElectricalReportTypesResult
+    ) => void;
+    handleGetElectricalReportDataResult?: (result: CategoryDataResult) => void;
+    handleExportElectricalCSVResult?: (result: ExportResult) => void;
+    handleExportElectricalXLSXResult?: (result: ExportResult) => void;
+
     handleImportLayersResult?: (result: {
       success: boolean;
       message: string;
