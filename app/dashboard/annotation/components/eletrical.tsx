@@ -31,7 +31,7 @@ export function PrintAttributes() {
 
   return (
     <TooltipProvider>
-      <div className='space-y-3  rounded-xl'>
+      <div className='space-y-3 rounded-xl'>
         <div className='flex justify-between'>
           <h3 className='text-sm font-semibold text-foreground'>
             Anotação de Altura
@@ -48,9 +48,9 @@ export function PrintAttributes() {
               </TooltipTrigger>
               <TooltipContent className='max-w-xs'>
                 <p className='text-sm'>
-                  Anotar a altura (ex.: H 60) ou a altura acompanhada do uso
-                  (ex.: H 60 – PIA), aplicável somente a componentes dinâmicos
-                  de pontos técnicos.
+                  Anote a altura (ex.: H 60) ou a altura acompanhada do uso
+                  (ex.: H 60 – PIA), aplicável apenas a componentes dinâmicos de
+                  pontos técnicos.
                 </p>
               </TooltipContent>
             </Tooltip>

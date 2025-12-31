@@ -100,8 +100,8 @@ function AnnotationLightingInner() {
                       Conecte os circuitos clicando no botão e selecionando os
                       códigos correspondentes criados anteriormente. Use as
                       teclas de direção para ajustar a posição, + / − para
-                      aumentar ou diminuir a curvatura e Shift para alternar
-                      entre curva e linhas retas.
+                      aumentar ou diminuir a curvatura.
+                      {/* e Shift para alternarentre curva e linhas retas. */}
                     </p>
                   </TooltipContent>
                 </Tooltip>

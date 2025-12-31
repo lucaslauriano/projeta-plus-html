@@ -61,22 +61,20 @@ export default function AnnotationDashboardPage() {
       />
 
       <PageContent>
-        <Accordion type='single' collapsible className='w-full space-y-4'>
+        <Accordion type='single' collapsible className='w-full space-y-2'>
           {accordionItems.map((item) => {
             const IconComponent = item.icon;
             return (
               <AccordionItem
                 key={item.value}
                 value={item.value}
-                className='border bg-card rounded-md shadow-sm overflow-hidden hover:shadow-md transition-shadow'
+                className='border rounded-md overflow-hidden bg-muted/20 px-0'
               >
-                <AccordionTrigger className=' hover:no-underline'>
-                  <div className='flex items-center text-base font-semibold '>
-                    <div className='flex items-center justify-center w-8 h-8 rounded-full '>
-                      <IconComponent className='w-4 h-4' />
-                    </div>
-                    <span>{item.label}</span>
+                <AccordionTrigger className='hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none w-full'>
+                  <div className='flex items-start text-base font-semibold '>
+                    <IconComponent className='w-4 h-4' />
                   </div>
+                  <span className='pl-2 text-start w-full'>{item.label}</span>
                 </AccordionTrigger>
                 <AccordionContent className='px-4 py-4'>
                   {item.content}

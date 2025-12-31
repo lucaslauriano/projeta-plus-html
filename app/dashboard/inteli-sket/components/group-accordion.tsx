@@ -43,12 +43,12 @@ export function GroupAccordion<T extends { id: string }>({
         <AccordionItem
           key={group.id}
           value={group.id}
-          className='border rounded-xl overflow-hidden bg-muted/20 px-0'
+          className='border rounded-[8px] overflow-hidden bg-muted/20 px-0'
         >
           <div className='relative group'>
             <AccordionTrigger
               iconPosition={iconPosition}
-              className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none w-full'
+              className='hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none w-full'
             >
               <div className='flex items-center gap-2 font-medium text-sm'>
                 <Folder className='w-4 h-4 text-gray-500' />

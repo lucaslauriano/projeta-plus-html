@@ -111,8 +111,8 @@ export function ElectricalChangeAtributes() {
                 </TooltipTrigger>
                 <TooltipContent className='max-w-xs'>
                   <p className='text-sm'>
-                    Selecionar os componentes dinâmicos de pontos técnicos no
-                    modelo e definir o tipo de atributo a modificar.
+                    Selecione os componentes dinâmicos de pontos técnicos no
+                    modelo e defina o tipo de atributo a ser modificado.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -182,58 +182,60 @@ export function ElectricalChangeAtributes() {
           </Button>
         </div>
 
-        <div className='space-y-3 rounded-xl'>
-          <div className='flex justify-between space-y-2'>
-            <h3 className='text-sm font-semibold text-foreground'>Situação</h3>
-            <TooltipProvider>
+        <TooltipProvider>
+          <div className='space-y-3 rounded-xl'>
+            <div className='flex justify-between space-y-2'>
+              <h3 className='text-sm font-semibold text-foreground'>
+                Situação
+              </h3>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
                     type='button'
                     className='p-1 hover:bg-accent rounded-md transition-colors'
                   >
-                    <Info className='w-4 h-4 text-muted-foreground' />
+                    <Info className='w-4 h-4' />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent className='max-w-xs'>
                   <p className='text-sm'>
-                    Selecionar os componentes dinâmicos de pontos técnicos no
-                    modelo e definir o status da situação.
+                    Selecione os componentes dinâmicos de pontos técnicos no
+                    modelo e defina o status da situação.
                   </p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
-          </div>
-
-          <RadioGroup
-            value={selectedOption}
-            onValueChange={(value) => {
-              const newValue = value as SelectionType;
-              setSelectedOption(newValue);
-
-              if ((situacaoOptions as readonly string[]).includes(newValue)) {
-                setSelectedSituation(newValue as SituationType);
-              }
-            }}
-            disabled={isLoading}
-          >
-            <div className='grid grid-cols-2 gap-3'>
-              <RadioGroupItem value='1' id='new' label='Novo' />
-              <RadioGroupItem value='2' id='existing' label='Existente' />
-              <RadioGroupItem value='3' id='modify' label='Modificar' />
-              <RadioGroupItem value='4' id='remove' label='Remover' />
             </div>
-          </RadioGroup>
 
-          <Button
-            type='submit'
-            size='sm'
-            disabled={isLoading}
-            className='w-full'
-          >
-            {isLoading ? 'Executando...' : 'Aplicar Alterações'}
-          </Button>
-        </div>
+            <RadioGroup
+              value={selectedOption}
+              onValueChange={(value) => {
+                const newValue = value as SelectionType;
+                setSelectedOption(newValue);
+
+                if ((situacaoOptions as readonly string[]).includes(newValue)) {
+                  setSelectedSituation(newValue as SituationType);
+                }
+              }}
+              disabled={isLoading}
+            >
+              <div className='grid grid-cols-2 gap-3'>
+                <RadioGroupItem value='1' id='new' label='Novo' />
+                <RadioGroupItem value='2' id='existing' label='Existente' />
+                <RadioGroupItem value='3' id='modify' label='Modificar' />
+                <RadioGroupItem value='4' id='remove' label='Remover' />
+              </div>
+            </RadioGroup>
+
+            <Button
+              type='submit'
+              size='sm'
+              disabled={isLoading}
+              className='w-full'
+            >
+              {isLoading ? 'Executando...' : 'Aplicar Alterações'}
+            </Button>
+          </div>
+        </TooltipProvider>
       </form>
       <PrintAttributes />
     </div>
