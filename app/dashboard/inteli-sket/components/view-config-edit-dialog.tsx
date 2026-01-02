@@ -11,7 +11,7 @@ import {
   SelectContent,
   SelectTrigger,
 } from '@/components/ui/select';
-import { Upload, Search } from 'lucide-react';
+import { Upload, Search, X } from 'lucide-react';
 import {
   Dialog,
   DialogTitle,
@@ -148,7 +148,11 @@ export function ViewConfigEditDialog({
                 type='text'
                 placeholder='Ex: gnrl, draw, plans'
                 value={itemCode || ''}
-                onChange={(e) => onItemCodeChange(e.target.value.toLowerCase().replace(/\s+/g, '_'))}
+                onChange={(e) =>
+                  onItemCodeChange(
+                    e.target.value.toLowerCase().replace(/\s+/g, '_')
+                  )
+                }
                 className='h-9 rounded-xl border-2'
               />
             </div>
@@ -217,6 +221,12 @@ export function ViewConfigEditDialog({
                 onChange={(e) => setLayerFilter(e.target.value)}
                 className='pl-9 h-9 rounded-xl border-2'
               />
+              {layerFilter && (
+                <X
+                  className='absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground cursor-pointer'
+                  onClick={() => setLayerFilter('')}
+                />
+              )}
             </div>
 
             <div className='flex items-center gap-2 flex-wrap'>
