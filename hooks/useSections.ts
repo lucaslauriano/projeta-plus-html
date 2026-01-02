@@ -383,11 +383,12 @@ export function useSections() {
       setIsBusy(false);
       if (result.success && result.layers) {
         // Call the callback if it exists
-        const callback = (window as any)
+        const callback = (window as unknown as Record<string, unknown>)
           ._getCurrentActiveLayersFilteredCallback;
-        if (callback) {
+        if (typeof callback === 'function') {
           callback(result.layers);
-          delete (window as any)._getCurrentActiveLayersFilteredCallback;
+          delete (window as unknown as Record<string, unknown>)
+            ._getCurrentActiveLayersFilteredCallback;
         }
         toast.success(result.message || 'Camadas capturadas');
       } else {
@@ -619,7 +620,7 @@ export function useSections() {
 
   const createStandardSections = useCallback(() => {
     if (!isAvailable) {
-      toast.info('Cortes padrões criados (modo simulação)');
+      toast.info('Seções gerais criadas (modo simulação)');
       return;
     }
 
@@ -635,7 +636,7 @@ export function useSections() {
       }
 
       if (!isAvailable) {
-        toast.info('Vistas automáticas criadas (modo simulação)');
+        toast.info('Seções por ambiente criadas (modo simulação)');
         return;
       }
 
@@ -653,7 +654,7 @@ export function useSections() {
       }
 
       if (!isAvailable) {
-        toast.info('Corte individual criado (modo simulação)');
+        toast.info('Seção individual criado (modo simulação)');
         return;
       }
 
@@ -797,7 +798,13 @@ export function useSections() {
 
       // Store callback for later use
       if (callback) {
-        (window as any)._getCurrentActiveLayersFilteredCallback = callback;
+        (
+          window as Window & {
+            _getCurrentActiveLayersFilteredCallback?: (
+              layers: string[]
+            ) => void;
+          }
+        )._getCurrentActiveLayersFilteredCallback = callback;
       }
 
       setIsBusy(true);

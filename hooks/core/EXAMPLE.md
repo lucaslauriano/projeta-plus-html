@@ -11,7 +11,7 @@ Vamos criar um hook `useSections` para gerenciar seções (section planes) do Sk
 - CRUD básico (get, add, update, delete)
 - Persistência JSON (save, load)
 - Métodos especiais:
-  - `createStandard()` - Cria cortes padrões (A, B, C, D)
+  - `createStandard()` - Cria secoes padrões (A, B, C, D)
   - `createAutoViews(environmentName)` - Cria vistas automáticas para um ambiente
   - `createIndividual(directionType, name)` - Cria corte individual
 
@@ -102,7 +102,7 @@ export function useSections() {
       // Método simples sem parâmetros
       createStandard: {
         rubyMethod: 'createStandardSections',
-        successMessage: 'Cortes padrões (A, B, C, D) criados!',
+        successMessage: 'Seções gerais (A, B, C, D) criados!',
         reloadAfter: true,
       },
 
@@ -131,7 +131,7 @@ export function useSections() {
           if (!params.name) return 'Nome é obrigatório';
           if (!params.directionType) return 'Tipo de direção é obrigatório';
         },
-        successMessage: 'Corte individual criado!',
+        successMessage: 'Seção individual criado!',
         reloadAfter: true,
       },
     },
@@ -220,7 +220,7 @@ export default function SectionsPage() {
         <h2 className='font-semibold'>Ações Rápidas</h2>
         <div className='flex gap-2'>
           <Button onClick={createStandard} disabled={isBusy}>
-            Criar Cortes Padrões (A, B, C, D)
+            Criar Seções Gerais (A, B, C, D)
           </Button>
 
           <Button onClick={loadDefault} disabled={isBusy} variant='outline'>
@@ -342,7 +342,7 @@ Abra o navegador e teste:
 2. Carregue o plugin
 3. Abra a interface
 4. Teste cada funcionalidade:
-   - ✅ Criar cortes padrões
+   - ✅ Criar seções padrões
    - ✅ Criar vistas automáticas
    - ✅ Adicionar seção individual
    - ✅ Remover seção
@@ -463,7 +463,7 @@ export function useSections() {
     customMethods: {
       createStandard: {
         rubyMethod: 'createStandardSections',
-        successMessage: 'Cortes criados!',
+        successMessage: 'Seções criados!',
         reloadAfter: true,
       },
       // ... 2 métodos customizados

@@ -488,7 +488,7 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
 
   const getAvailableStyles = useCallback(async () => {
     if (!isAvailable) {
-      setAvailableStyles(['PRO_VISTAS', 'PRO_PLANTAS', 'PRO_CORTES', 'PRO_3D']);
+      setAvailableStyles(['PRO_VISTAS', 'PRO_PLANTAS', 'PRO_SECOES', 'PRO_3D']);
       return;
     }
 

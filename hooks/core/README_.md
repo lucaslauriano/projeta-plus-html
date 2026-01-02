@@ -139,7 +139,7 @@ export function useSections() {
     customMethods: {
       createStandard: {
         rubyMethod: 'createStandardSections',
-        successMessage: 'Cortes criados!',
+        successMessage: 'Seções criados!',
         reloadAfter: true,
       },
     },
@@ -346,7 +346,7 @@ export function useSections() {
     customMethods: {
       createStandard: {
         rubyMethod: 'createStandardSections',
-        successMessage: 'Cortes criados!',
+        successMessage: 'Seções criados!',
         reloadAfter: true,
       },
     },

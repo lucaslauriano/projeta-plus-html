@@ -211,6 +211,29 @@ export default function SectionsComponent() {
     setSelectedScenes([]);
   };
 
+  const menuItems = [
+    {
+      label: 'Criar grupo',
+      action: () => alert('TODO:Criar grupo'),
+      hasDivider: false,
+    },
+    {
+      label: 'Criar seção',
+      action: () => alert('TODO:Criar seção'),
+      hasDivider: false,
+    },
+    {
+      label: 'Editar seções',
+      action: () => alert('TODO:Editar seções'),
+      hasDivider: true,
+    },
+    {
+      label: 'Restaurar padrão',
+      action: loadDefault,
+      hasDivider: false,
+    },
+  ];
+
   return (
     <div className='space-y-4'>
       <div className='flex items-center justify-between'>
@@ -222,15 +245,7 @@ export default function SectionsComponent() {
             </Badge>
           )}
         </div>
-        <ViewConfigMenu
-          isBusy={isBusy}
-          entityLabel='Seção'
-          onEdit={handleOpenConfig}
-          onSaveToJson={saveToJson}
-          onLoadDefault={loadDefault}
-          onLoadFromJson={loadFromJson}
-          onLoadFromFile={loadFromFile}
-        />
+        <ViewConfigMenu menuItems={menuItems} />
       </div>
 
       <SectionsConfigDialog
@@ -284,7 +299,7 @@ export default function SectionsComponent() {
           disabled={isBusy}
         >
           <Grid3x3 className='w-5 h-5' />
-          Cortes Gerais (ABCD)
+          Seções Gerais
         </Button>
 
         <CreateAutoViewsDialog

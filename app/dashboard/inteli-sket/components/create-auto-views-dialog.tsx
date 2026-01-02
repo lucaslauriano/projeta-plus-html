@@ -37,12 +37,12 @@ export function CreateAutoViewsDialog({
       <DialogTrigger asChild>
         <Button size='sm' variant='default' disabled={disabled}>
           <Eye className='w-5 h-5' />
-          Vistas Auto (Objeto Selecionado)
+          Seções por ambiente
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Criar Vistas Automáticas</DialogTitle>
+          <DialogTitle>Criar Seções por Ambiente</DialogTitle>
           <DialogDescription>
             Selecione um objeto no modelo e informe o nome do ambiente
           </DialogDescription>

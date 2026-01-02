@@ -326,6 +326,29 @@ function PlansComponent() {
   // RENDER
   // ========================================
 
+  const menuItems = [
+    {
+      label: 'Criar grupo',
+      action: () => groupDialog.open(),
+      hasDivider: true,
+    },
+    {
+      label: 'Criar planta',
+      action: () => planDialog.open(),
+      hasDivider: false,
+    },
+    {
+      label: 'Editar níveis',
+      action: () => levelsDialog.open(),
+      hasDivider: true,
+    },
+    {
+      label: 'Restaurar padrão',
+      action: () => loadDefault(),
+      hasDivider: false,
+    },
+  ];
+
   return (
     <>
       <AddGroupDialog
@@ -414,14 +437,8 @@ function PlansComponent() {
           <div className='flex items-center gap-2'>
             <ViewConfigMenu
               isBusy={isBusy}
-              onAddItem={planDialog.open}
-              onAddGroup={groupDialog.open}
-              onEdit={configDialog.open}
+              menuItems={menuItems}
               entityLabel='Planta'
-              onSaveToJson={saveToJson}
-              onLoadDefault={loadDefault}
-              onLoadFromJson={loadFromJson}
-              onLoadFromFile={loadFromFile}
             />
           </div>
         </div>

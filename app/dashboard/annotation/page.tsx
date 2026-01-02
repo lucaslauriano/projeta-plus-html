@@ -29,7 +29,7 @@ const accordionItems = [
   {
     icon: AiOutlineScan,
     value: 'section',
-    label: 'Cortes e Vistas',
+    label: 'Seções e Vistas',
     content: <AnnotationSection />,
   },
   {

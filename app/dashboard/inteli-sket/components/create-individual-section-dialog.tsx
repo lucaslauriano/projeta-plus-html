@@ -48,19 +48,19 @@ export function CreateIndividualSectionDialog({
       <DialogTrigger asChild>
         <Button size='sm' variant='default' disabled={disabled}>
           <Scissors className='w-5 h-5' />
-          Corte Individual
+          Seção Individual
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Criar Corte Individual</DialogTitle>
+          <DialogTitle>Criar seção individual</DialogTitle>
           <DialogDescription>
-            Configure o nome e a direção do corte
+            Configure o nome e a direção do seção
           </DialogDescription>
         </DialogHeader>
         <div className='space-y-4 py-4'>
           <div className='space-y-2'>
-            <Label htmlFor='section-name'>Nome do Corte</Label>
+            <Label htmlFor='section-name'>Nome da seção</Label>
             <Input
               id='section-name'
               placeholder='Ex: Cozinha, Banheiro...'

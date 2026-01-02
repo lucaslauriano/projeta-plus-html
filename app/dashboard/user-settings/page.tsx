@@ -17,10 +17,9 @@ import {
 import PageContent from '@/components/ui/page-content';
 import {
   InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
   InputGroupText,
+  InputGroupAddon,
+  InputGroupInput,
 } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
 
@@ -121,7 +120,7 @@ export default function GlobalSettingsPage() {
           <Input
             type='number'
             id='cut_height'
-            label='Altura de corte (m):'
+            label='Altura da seção (m):'
             value={settings?.cut_height?.toString() || ''}
             onChange={(e) => {
               const val = e.target.value;

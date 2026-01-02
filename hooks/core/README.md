@@ -322,7 +322,7 @@ export function useSections() {
     customMethods: {
       createStandard: {
         rubyMethod: 'createStandardSections',
-        successMessage: 'Cortes padrões criados!',
+        successMessage: 'Seções padrões criados!',
         reloadAfter: true,
       },
 
@@ -366,7 +366,7 @@ handlers: {
   // Handler completamente customizado
   handleCreateStandardSectionsResult: (result, { toast, setData }) => {
     if (result.success) {
-      toast.success(`${result.count} cortes criados!`);
+      toast.success(`${result.count} Seções criados!`);
       // Recarrega dados
     }
   },
@@ -447,7 +447,7 @@ export function useSections() {
     customMethods: {
       createStandard: {
         rubyMethod: 'createStandardSections',
-        successMessage: 'Cortes padrões (A, B, C, D) criados!',
+        successMessage: 'Seções padrões (A, B, C, D) criados!',
         reloadAfter: true,
       },
 
@@ -474,7 +474,7 @@ export function useSections() {
           if (!params.name) return 'Nome é obrigatório';
           if (!params.directionType) return 'Tipo de direção é obrigatório';
         },
-        successMessage: 'Corte individual criado!',
+        successMessage: 'Seção individual criado!',
         reloadAfter: true,
       },
     },
@@ -520,7 +520,7 @@ export function SectionsPage() {
       {isLoading && <Loading />}
 
       <Button onClick={createStandard} disabled={isBusy}>
-        Criar Cortes Padrões
+        Criar Seções Padrões
       </Button>
 
       <Button onClick={() => createAutoViews('sala')} disabled={isBusy}>

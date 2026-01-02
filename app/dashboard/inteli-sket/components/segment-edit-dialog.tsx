@@ -98,7 +98,7 @@ export function SegmentEditDialog({
       <DialogContent className='sm:max-w-[550px] max-h-[90vh] flex flex-col'>
         <DialogHeader>
           <DialogTitle className='flex text-start gap-2'>
-            {isNew ? 'Novo Corte' : 'Editar Corte'}
+            {isNew ? 'Nova Seção' : 'Editar Seção'}
           </DialogTitle>
           <DialogDescription className='text-start text-sm text-muted-foreground'>
             Configure o nome, código (sufixo), estilo e camadas ativas para este

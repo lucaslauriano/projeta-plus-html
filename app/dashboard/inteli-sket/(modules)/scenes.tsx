@@ -356,6 +356,24 @@ function ScenesComponent() {
     toast.success('Configuração salva no JSON!');
   };
 
+  const menuItems = [
+    {
+      label: 'Criar grupo',
+      action: () => setIsGroupDialogOpen(true),
+      hasDivider: false,
+    },
+    {
+      label: 'Criar cena',
+      action: () => setIsSceneDialogOpen(true),
+      hasDivider: true,
+    },
+    {
+      label: 'Restaurar padrão',
+      action: loadDefault,
+      hasDivider: false,
+    },
+  ];
+
   return (
     <>
       <AddGroupDialog
@@ -427,16 +445,7 @@ function ScenesComponent() {
             {isLoading && <Loader2 className='w-4 h-4 animate-spin' />}
           </h2>
           <div className='flex items-center gap-2'>
-            <ViewConfigMenu
-              isBusy={isBusy}
-              entityLabel='Cena'
-              onAddGroup={() => setIsGroupDialogOpen(true)}
-              onAddItem={() => setIsSceneDialogOpen(true)}
-              onLoadFromJson={loadFromJson}
-              onLoadDefault={loadDefault}
-              onLoadFromFile={loadFromFile}
-              onSaveToJson={saveToJson}
-            />
+            <ViewConfigMenu menuItems={menuItems} />
           </div>
         </div>
 

@@ -157,7 +157,7 @@ export default function DetailsComponent() {
               <Input
                 id='suffix'
                 label='Sufixo da cena'
-                placeholder='Ex: planta, corte-aa...'
+                placeholder='Ex: planta, seção-aa...'
                 value={suffix}
                 onChange={(e) => setSuffix(e.target.value)}
                 onKeyPress={handleDialogKeyPress}
