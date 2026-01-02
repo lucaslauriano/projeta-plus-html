@@ -43,10 +43,12 @@ export function usePlanEditor(
     (plan: Plan) => {
       setEditingPlan(plan);
       setEditPlanName(plan.name || '');
-      setEditPlanCode(plan.code || plan.name?.toLowerCase().replace(/\s+/g, '_') || '');
+      setEditPlanCode(
+        plan.code || plan.name?.toLowerCase().replace(/\s+/g, '_') || ''
+      );
 
       // Plan já tem todas as configurações como segment
-      setEditPlanStyle(plan.style || availableStyles[0] || 'FM_PLANTAS');
+      setEditPlanStyle(plan.style || availableStyles[0] || 'PRO_PLANTAS');
       setEditCameraType(plan.cameraType || 'topo_ortogonal');
       setEditActiveLayers(plan.activeLayers || ['Layer0']);
     },
@@ -91,7 +93,9 @@ export function usePlanEditor(
             ? {
                 ...p,
                 name: editPlanName.trim(),
-                code: editPlanCode.trim() || editPlanName.trim().toLowerCase().replace(/\s+/g, '_'),
+                code:
+                  editPlanCode.trim() ||
+                  editPlanName.trim().toLowerCase().replace(/\s+/g, '_'),
                 style: editPlanStyle,
                 cameraType: editCameraType,
                 activeLayers: editActiveLayers,

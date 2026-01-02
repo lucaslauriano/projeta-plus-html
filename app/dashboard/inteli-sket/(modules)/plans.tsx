@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { PlanItem } from '@/components/PlanItem';
 import { Loader2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -21,6 +21,7 @@ import { LevelsManagerDialog } from '@/app/dashboard/inteli-sket/components/leve
 import { Button } from '@/components/ui/button';
 import { ViewConfigEditDialog } from '@/app/dashboard/inteli-sket/components/view-config-edit-dialog';
 import { BasePlansConfigDialog } from '@/app/dashboard/inteli-sket/components/base-plans-config-dialog';
+import { GroupNameEditDialog } from '@/app/dashboard/inteli-sket/components/group-name-edit-dialog';
 import { useBasePlans } from '@/hooks/useBasePlans';
 import { usePlansDialogs } from '@/hooks/usePlansDialogs';
 import { usePlanEditor } from '@/hooks/usePlanEditor';
@@ -105,6 +106,13 @@ function PlansComponent() {
   );
 
   // ========================================
+  // STATE - Group Edit Dialog
+  // ========================================
+  const [isGroupEditDialogOpen, setIsGroupEditDialogOpen] = useState(false);
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
+  const [editingGroupName, setEditingGroupName] = useState('');
+
+  // ========================================
   // HANDLERS - Group Management
   // ========================================
 
@@ -140,23 +148,39 @@ function PlansComponent() {
     toast.success('Grupo removido com sucesso!');
   };
 
-  const handleEditGroup = async (groupId: string) => {
+  const handleEditGroup = (groupId: string) => {
     const group = groups.find((g) => g.id === groupId);
     if (!group) return;
 
-    const newName = prompt('Digite o novo nome do grupo:', group.name);
-    if (!newName || newName.trim() === '') {
+    setEditingGroupId(groupId);
+    setEditingGroupName(group.name);
+    setIsGroupEditDialogOpen(true);
+  };
+
+  const handleConfirmEditGroup = async () => {
+    if (!editingGroupId || !editingGroupName.trim()) {
       toast.error('Nome inválido');
       return;
     }
 
-    if (newName.trim() === group.name) return;
+    const group = groups.find((g) => g.id === editingGroupId);
+    if (!group) return;
+
+    if (editingGroupName.trim() === group.name) {
+      setIsGroupEditDialogOpen(false);
+      return;
+    }
 
     setGroups(
-      groups.map((g) => (g.id === groupId ? { ...g, name: newName.trim() } : g))
+      groups.map((g) =>
+        g.id === editingGroupId ? { ...g, name: editingGroupName.trim() } : g
+      )
     );
     await saveToJson();
     toast.success('Grupo renomeado com sucesso!');
+    setIsGroupEditDialogOpen(false);
+    setEditingGroupId(null);
+    setEditingGroupName('');
   };
 
   // ========================================
@@ -173,7 +197,7 @@ function PlansComponent() {
       id: Date.now().toString(),
       name: planDialog.title.trim(),
       code: planDialog.title.trim().toLowerCase().replace(/\s+/g, '_'),
-      style: currentState?.style || 'FM_PLANTAS',
+      style: currentState?.style || 'PRO_PLANTAS',
       cameraType: currentState?.cameraType || 'topo_ortogonal',
       activeLayers: currentState?.activeLayers || [],
     };
@@ -311,6 +335,15 @@ function PlansComponent() {
         onKeyPress={handleGroupDialogKeyPress}
         onOpenChange={groupDialog.setOpen}
         onGroupNameChange={groupDialog.setName}
+      />
+
+      <GroupNameEditDialog
+        open={isGroupEditDialogOpen}
+        onOpenChange={setIsGroupEditDialogOpen}
+        groupName={editingGroupName}
+        onGroupNameChange={setEditingGroupName}
+        onConfirm={handleConfirmEditGroup}
+        disabled={isBusy}
       />
 
       <AddSceneDialog

@@ -58,7 +58,7 @@ export function usePlans() {
       {
         id: 'planta_baixa',
         name: 'Planta Baixa',
-        style: 'FM_PLANTAS',
+        style: 'PRO_PLANTAS',
         cameraType: 'topo_ortogonal',
         activeLayers: ['Layer0'],
       },

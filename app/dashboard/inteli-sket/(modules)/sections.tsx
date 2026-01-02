@@ -70,7 +70,7 @@ export default function SectionsComponent() {
   } | null>(null);
   const [segmentName, setSegmentName] = useState('');
   const [segmentCode, setSegmentCode] = useState('');
-  const [segmentStyle, setSegmentStyle] = useState('FM_VISTAS');
+  const [segmentStyle, setSegmentStyle] = useState('PRO_VISTAS');
   const [segmentLayers, setSegmentLayers] = useState<string[]>([]);
 
   const [isSelectScenesDialogOpen, setIsSelectScenesDialogOpen] =
@@ -138,7 +138,7 @@ export default function SectionsComponent() {
     setEditingSegment({ groupId });
     setSegmentName('');
     setSegmentCode('');
-    setSegmentStyle('FM_VISTAS');
+    setSegmentStyle('PRO_VISTAS');
     setSegmentLayers([]);
     setIsSegmentEditDialogOpen(true);
   };

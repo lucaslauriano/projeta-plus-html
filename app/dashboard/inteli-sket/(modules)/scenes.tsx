@@ -17,6 +17,7 @@ import {
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
 import { ViewConfigEditDialog } from '@/app/dashboard/inteli-sket/components/view-config-edit-dialog';
 import { GroupAccordion } from '@/app/dashboard/inteli-sket/components/group-accordion';
+import { GroupNameEditDialog } from '@/app/dashboard/inteli-sket/components/group-name-edit-dialog';
 
 type Scene = SceneGroup['segments'][number];
 
@@ -66,6 +67,10 @@ function ScenesComponent() {
   const [editCameraType, setEditCameraType] = useState('');
   const [editActiveLayers, setEditActiveLayers] = useState<string[]>([]);
 
+  const [isGroupEditDialogOpen, setIsGroupEditDialogOpen] = useState(false);
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
+  const [editingGroupName, setEditingGroupName] = useState('');
+
   const sortedGroups = useMemo(
     () => [...groups].sort((a, b) => a.name.localeCompare(b.name)),
     [groups]
@@ -106,7 +111,7 @@ function ScenesComponent() {
       id: Date.now().toString(),
       name: newSceneTitle.trim(),
       code: newSceneTitle.trim().toLowerCase().replace(/\s+/g, '_'),
-      style: currentState?.style || 'FM_VISTAS',
+      style: currentState?.style || 'PRO_VISTAS',
       cameraType: currentState?.cameraType || 'iso_perspectiva',
       activeLayers: currentState?.activeLayers || [],
     };
@@ -167,26 +172,39 @@ function ScenesComponent() {
     const group = groups.find((g) => g.id === groupId);
     if (!group) return;
 
-    const newName = prompt('Digite o novo nome do grupo:', group.name);
-    if (!newName || newName.trim() === '') {
+    setEditingGroupId(groupId);
+    setEditingGroupName(group.name);
+    setIsGroupEditDialogOpen(true);
+  };
+
+  const handleConfirmEditGroup = () => {
+    if (!editingGroupId || !editingGroupName.trim()) {
       toast.error('Nome inválido');
       return;
     }
 
-    if (newName.trim() === group.name) {
-      return; // Nenhuma mudança
+    const group = groups.find((g) => g.id === editingGroupId);
+    if (!group) return;
+
+    if (editingGroupName.trim() === group.name) {
+      setIsGroupEditDialogOpen(false);
+      return;
     }
 
     setGroups(
-      groups.map((g) => (g.id === groupId ? { ...g, name: newName.trim() } : g))
+      groups.map((g) =>
+        g.id === editingGroupId ? { ...g, name: editingGroupName.trim() } : g
+      )
     );
 
-    // Salvar no JSON após editar
     setTimeout(() => {
       saveToJson();
     }, 100);
 
     toast.success('Grupo renomeado com sucesso!');
+    setIsGroupEditDialogOpen(false);
+    setEditingGroupId(null);
+    setEditingGroupName('');
   };
 
   const handleDeleteScene = (groupId: string, segmentId: string) => {
@@ -274,7 +292,7 @@ function ScenesComponent() {
     );
 
     // Segment já tem todas as configurações
-    setEditSceneStyle(segment.style || availableStyles[0] || 'FM_VISTAS');
+    setEditSceneStyle(segment.style || availableStyles[0] || 'PRO_VISTAS');
     setEditCameraType(segment.cameraType || 'iso_perspectiva');
     setEditActiveLayers(segment.activeLayers || ['Layer0']);
 
@@ -347,6 +365,15 @@ function ScenesComponent() {
         onGroupNameChange={setNewGroupName}
         onAdd={handleAddGroup}
         onKeyPress={handleGroupDialogKeyPress}
+      />
+
+      <GroupNameEditDialog
+        open={isGroupEditDialogOpen}
+        onOpenChange={setIsGroupEditDialogOpen}
+        groupName={editingGroupName}
+        onGroupNameChange={setEditingGroupName}
+        onConfirm={handleConfirmEditGroup}
+        disabled={isBusy}
       />
 
       <AddSceneDialog

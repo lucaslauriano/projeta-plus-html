@@ -48,7 +48,7 @@ export const planActions = {
       id: Date.now().toString(),
       name: title.trim(),
       code: title.trim().toLowerCase().replace(/\s+/g, '_'),
-      style: currentState?.style || 'FM_PLANTAS',
+      style: currentState?.style || 'PRO_PLANTAS',
       cameraType: currentState?.cameraType || 'topo_ortogonal',
       activeLayers: currentState?.activeLayers || [],
     };

@@ -58,7 +58,7 @@ export function useScenes() {
       {
         id: 'geral',
         name: 'Geral',
-        style: 'FM_VISTAS',
+        style: 'PRO_VISTAS',
         cameraType: 'iso_perspectiva',
         activeLayers: ['Layer0'],
       },

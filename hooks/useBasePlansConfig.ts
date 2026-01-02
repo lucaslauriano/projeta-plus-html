@@ -26,8 +26,8 @@ export function useBasePlansConfig(
   savePlans: (plans: unknown, showToast?: boolean) => Promise<void>
 ) {
   const [config, setConfig] = useState<BasePlansConfig>({
-    base: { style: 'FM_VISTAS', layers: ['Layer0'] },
-    ceiling: { style: 'FM_VISTAS', layers: ['Layer0'] },
+    base: { style: 'PRO_VISTAS', layers: ['Layer0'] },
+    ceiling: { style: 'PRO_VISTAS', layers: ['Layer0'] },
   });
   const [isInitialized, setIsInitialized] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);

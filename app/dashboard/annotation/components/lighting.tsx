@@ -7,9 +7,9 @@ import { useCircuitConnection } from '@/hooks/useCircuitConnection';
 import { Input } from '@/components/ui/input';
 import {
   Tooltip,
+  TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
 import { useAnnotations } from '@/hooks/useAnnotations';

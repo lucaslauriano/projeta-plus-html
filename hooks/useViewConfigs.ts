@@ -488,7 +488,7 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
 
   const getAvailableStyles = useCallback(async () => {
     if (!isAvailable) {
-      setAvailableStyles(['FM_VISTAS', 'FM_PLANTAS', 'FM_CORTES', 'FM_3D']);
+      setAvailableStyles(['PRO_VISTAS', 'PRO_PLANTAS', 'PRO_CORTES', 'PRO_3D']);
       return;
     }
 
@@ -511,7 +511,7 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
   const getCurrentState = useCallback(async () => {
     if (!isAvailable) {
       setCurrentState({
-        style: 'FM_VISTAS',
+        style: 'PRO_VISTAS',
         cameraType: 'iso_perspectiva',
         activeLayers: ['Layer0'],
       });

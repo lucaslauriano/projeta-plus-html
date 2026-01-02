@@ -39,12 +39,14 @@ export function useSections() {
   });
   const [isBusy, setIsBusy] = useState(false);
   const [settings, setSettings] = useState<SectionsSettings>({
-    style: 'FM_VISTAS',
+    style: 'PRO_VISTAS',
     activeLayers: [],
   });
   const [availableStyles, setAvailableStyles] = useState<string[]>([]);
   const [availableLayers, setAvailableLayers] = useState<string[]>([]);
-  const [modelScenes, setModelScenes] = useState<Array<{ name: string; label?: string; description?: string }>>([]);
+  const [modelScenes, setModelScenes] = useState<
+    Array<{ name: string; label?: string; description?: string }>
+  >([]);
 
   // ========================================
   // UTILITY FUNCTIONS
@@ -381,7 +383,8 @@ export function useSections() {
       setIsBusy(false);
       if (result.success && result.layers) {
         // Call the callback if it exists
-        const callback = (window as any)._getCurrentActiveLayersFilteredCallback;
+        const callback = (window as any)
+          ._getCurrentActiveLayersFilteredCallback;
         if (callback) {
           callback(result.layers);
           delete (window as any)._getCurrentActiveLayersFilteredCallback;
@@ -393,85 +396,118 @@ export function useSections() {
     };
 
     // Groups handlers
-    (window as unknown as Record<string, unknown>).handleAddSectionsGroupResult =
-      (result: { success: boolean; message: string }) => {
-        setIsBusy(false);
-        if (result.success) {
-          toast.success(result.message);
-          getSections();
-        } else {
-          toast.error(result.message);
-        }
-      };
+    (
+      window as unknown as Record<string, unknown>
+    ).handleAddSectionsGroupResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        getSections();
+      } else {
+        toast.error(result.message);
+      }
+    };
 
-    (window as unknown as Record<string, unknown>).handleUpdateSectionsGroupResult =
-      (result: { success: boolean; message: string }) => {
-        setIsBusy(false);
-        if (result.success) {
-          toast.success(result.message);
-          getSections();
-        } else {
-          toast.error(result.message);
-        }
-      };
+    (
+      window as unknown as Record<string, unknown>
+    ).handleUpdateSectionsGroupResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        getSections();
+      } else {
+        toast.error(result.message);
+      }
+    };
 
-    (window as unknown as Record<string, unknown>).handleDeleteSectionsGroupResult =
-      (result: { success: boolean; message: string }) => {
-        setIsBusy(false);
-        if (result.success) {
-          toast.success(result.message);
-          getSections();
-        } else {
-          toast.error(result.message);
-        }
-      };
+    (
+      window as unknown as Record<string, unknown>
+    ).handleDeleteSectionsGroupResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        getSections();
+      } else {
+        toast.error(result.message);
+      }
+    };
 
     // Segments handlers
-    (window as unknown as Record<string, unknown>).handleAddSectionsSegmentResult =
-      (result: { success: boolean; message: string }) => {
-        setIsBusy(false);
-        if (result.success) {
-          toast.success(result.message);
-          getSections();
-        } else {
-          toast.error(result.message);
-        }
-      };
+    (
+      window as unknown as Record<string, unknown>
+    ).handleAddSectionsSegmentResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        getSections();
+      } else {
+        toast.error(result.message);
+      }
+    };
 
-    (window as unknown as Record<string, unknown>).handleUpdateSectionsSegmentResult =
-      (result: { success: boolean; message: string }) => {
-        setIsBusy(false);
-        if (result.success) {
-          toast.success(result.message);
-          getSections();
-        } else {
-          toast.error(result.message);
-        }
-      };
+    (
+      window as unknown as Record<string, unknown>
+    ).handleUpdateSectionsSegmentResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        getSections();
+      } else {
+        toast.error(result.message);
+      }
+    };
 
-    (window as unknown as Record<string, unknown>).handleDeleteSectionsSegmentResult =
-      (result: { success: boolean; message: string }) => {
-        setIsBusy(false);
-        if (result.success) {
-          toast.success(result.message);
-          getSections();
-        } else {
-          toast.error(result.message);
-        }
-      };
+    (
+      window as unknown as Record<string, unknown>
+    ).handleDeleteSectionsSegmentResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        getSections();
+      } else {
+        toast.error(result.message);
+      }
+    };
 
-    (window as unknown as Record<string, unknown>).handleDuplicateScenesWithSegmentResult =
-      (result: { success: boolean; message: string; count?: number }) => {
-        setIsBusy(false);
-        if (result.success) {
-          toast.success(result.message);
-        } else {
-          toast.error(result.message);
-        }
-      };
+    (
+      window as unknown as Record<string, unknown>
+    ).handleDuplicateScenesWithSegmentResult = (result: {
+      success: boolean;
+      message: string;
+      count?: number;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    };
 
     (window as unknown as Record<string, unknown>).handleGetModelScenesResult =
-      (result: { success: boolean; message?: string; scenes?: Array<{ name: string; label?: string; description?: string }> }) => {
+      (result: {
+        success: boolean;
+        message?: string;
+        scenes?: Array<{ name: string; label?: string; description?: string }>;
+      }) => {
         setIsBusy(false);
         if (result.success && result.scenes) {
           setModelScenes(result.scenes);
@@ -713,7 +749,7 @@ export function useSections() {
 
   const getAvailableStylesForSections = useCallback(() => {
     if (!isAvailable) {
-      setAvailableStyles(['FM_VISTAS', 'FM_PLANTAS']);
+      setAvailableStyles(['PRO_VISTAS', 'PRO_PLANTAS']);
       return;
     }
 
@@ -765,7 +801,9 @@ export function useSections() {
       }
 
       setIsBusy(true);
-      callSketchupMethodSafe('getCurrentActiveLayersFiltered', { availableLayers });
+      callSketchupMethodSafe('getCurrentActiveLayersFiltered', {
+        availableLayers,
+      });
     },
     [callSketchupMethodSafe, isAvailable]
   );
@@ -779,7 +817,10 @@ export function useSections() {
       }
 
       setIsBusy(true);
-      callSketchupMethodSafe('addSectionsGroup', { ...params, id: Date.now().toString() });
+      callSketchupMethodSafe('addSectionsGroup', {
+        ...params,
+        id: Date.now().toString(),
+      });
     },
     [callSketchupMethodSafe, isAvailable]
   );
@@ -812,27 +853,52 @@ export function useSections() {
 
   // Segments methods
   const addSegment = useCallback(
-    (groupId: string, params: { name: string; code: string; style: string; activeLayers: string[] }) => {
+    (
+      groupId: string,
+      params: {
+        name: string;
+        code: string;
+        style: string;
+        activeLayers: string[];
+      }
+    ) => {
       if (!isAvailable) {
         toast.info('Segmento adicionado (modo simulação)');
         return;
       }
 
       setIsBusy(true);
-      callSketchupMethodSafe('addSectionsSegment', { groupId, ...params, id: Date.now().toString() });
+      callSketchupMethodSafe('addSectionsSegment', {
+        groupId,
+        ...params,
+        id: Date.now().toString(),
+      });
     },
     [callSketchupMethodSafe, isAvailable]
   );
 
   const updateSegment = useCallback(
-    (groupId: string, segmentId: string, params: Partial<{ name: string; code: string; style: string; activeLayers: string[] }>) => {
+    (
+      groupId: string,
+      segmentId: string,
+      params: Partial<{
+        name: string;
+        code: string;
+        style: string;
+        activeLayers: string[];
+      }>
+    ) => {
       if (!isAvailable) {
         toast.info('Segmento atualizado (modo simulação)');
         return;
       }
 
       setIsBusy(true);
-      callSketchupMethodSafe('updateSectionsSegment', { groupId, id: segmentId, ...params });
+      callSketchupMethodSafe('updateSectionsSegment', {
+        groupId,
+        id: segmentId,
+        ...params,
+      });
     },
     [callSketchupMethodSafe, isAvailable]
   );
@@ -845,13 +911,21 @@ export function useSections() {
       }
 
       setIsBusy(true);
-      callSketchupMethodSafe('deleteSectionsSegment', { groupId, id: segmentId });
+      callSketchupMethodSafe('deleteSectionsSegment', {
+        groupId,
+        id: segmentId,
+      });
     },
     [callSketchupMethodSafe, isAvailable]
   );
 
   const duplicateScenesWithSegment = useCallback(
-    (params: { sceneNames: string[]; code: string; style: string; activeLayers: string[] }) => {
+    (params: {
+      sceneNames: string[];
+      code: string;
+      style: string;
+      activeLayers: string[];
+    }) => {
       if (!isAvailable) {
         toast.info('Cenas duplicadas (modo simulação)');
         return;
@@ -870,14 +944,16 @@ export function useSections() {
 
     setIsBusy(true);
     callSketchupMethodSafe('getModelScenes');
-    return new Promise<Array<{ name: string; label?: string; description?: string }>>((resolve) => {
+    return new Promise<
+      Array<{ name: string; label?: string; description?: string }>
+    >((resolve) => {
       const checkScenes = setInterval(() => {
         if (!isBusy) {
           clearInterval(checkScenes);
           resolve(modelScenes);
         }
       }, 100);
-      
+
       // Timeout após 5 segundos
       setTimeout(() => {
         clearInterval(checkScenes);
