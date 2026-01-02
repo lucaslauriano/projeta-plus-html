@@ -46,7 +46,7 @@ export function PlanItem({
     <DropdownMenu open={contextMenuOpen} onOpenChange={handleOpenChange}>
       <div className='flex w-full' onContextMenu={handleContextMenu}>
         <button
-          className='flex items-center justify-start gap-2 text-sm font-medium transition-colors flex-1 border-r-none rounded-r-none cursor-pointer h-8 rounded-md px-3 border bg-background shadow-xs hover:bg-accent/40 hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50'
+          className='flex items-center justify-start gap-2 text-sm font-medium transition-colors flex-1 border-r-none rounded-r-none cursor-pointer h-8 rounded-md px-3 border bg-background shadow-xs hover:bg-accent/40 hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 min-w-0'
           onClick={(e) => {
             e.stopPropagation();
             if (onLoadFromJson) {
@@ -54,11 +54,11 @@ export function PlanItem({
             }
           }}
         >
-          <FileText className='w-4 h-4 text-primary' />
-          <p className='text-sm font-medium'>{title}</p>
+          <FileText className='w-4 h-4 text-primary flex-shrink-0' />
+          <p className='text-sm font-medium truncate'>{title}</p>
         </button>
         <DropdownMenuTrigger asChild>
-          <button className='h-8 px-2 rounded-l-none border-l border bg-background shadow-xs hover:bg-accent/40 hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 rounded-md'>
+          <button className='h-8 px-2 rounded-l-none border-l border bg-background shadow-xs hover:bg-accent/40 hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 rounded-md truncate line-clamp-1'>
             <ChevronDown className='w-4 h-4 text-gray-500' />
           </button>
         </DropdownMenuTrigger>

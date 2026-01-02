@@ -59,7 +59,7 @@ export default function TagList({
                 >
                   <AccordionTrigger
                     iconPosition='left'
-                    className='hover:no-underline group data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none'
+                    className='hover:no-underline group data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none px-0 py-0'
                   >
                     <div className='flex items-center justify-between w-full pr-2 '>
                       <div className='flex items-center gap-2 font-medium text-sm'>
