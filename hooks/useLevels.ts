@@ -110,8 +110,8 @@ export function useLevels() {
           has_base: false,
           has_ceiling: false,
           name: 'Térreo',
-          base_cut_height: 1.6,
-          ceiling_cut_height: 1.55,
+          base_cut_height: 0.0,
+          ceiling_cut_height: 0.0,
         },
       ]);
       return;
@@ -130,8 +130,8 @@ export function useLevels() {
           has_base: false,
           has_ceiling: false,
           name: levels.length === 0 ? 'Térreo' : `Pavimento ${levels.length}`,
-          base_cut_height: heightMeters + 1.6,
-          ceiling_cut_height: heightMeters + 1.55,
+          base_cut_height: heightMeters,
+          ceiling_cut_height: heightMeters,
         };
         setLevels([...levels, newLevel]);
         toast.success('Nível adicionado (modo simulação)');
