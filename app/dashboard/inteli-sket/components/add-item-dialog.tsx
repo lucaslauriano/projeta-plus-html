@@ -1,28 +1,28 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
+  DialogTitle,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogContent,
+  DialogDescription,
 } from '@/components/ui/dialog';
 
 interface AddItemDialogProps {
   isOpen: boolean;
+  onAdd: () => void;
+  onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   onOpenChange: (open: boolean) => void;
+  onInputChange: (value: string) => void;
   title: string;
   description: string;
   inputLabel: string;
   inputPlaceholder: string;
   inputValue: string;
-  onInputChange: (value: string) => void;
-  onAdd: () => void;
-  onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   confirmButtonText?: string;
   cancelButtonText?: string;
 }
@@ -63,7 +63,7 @@ export function AddItemDialog({
             />
           </div>
         </div>
-        <DialogFooter className='flex justify-between gap-2'>
+        <DialogFooter>
           <Button
             size='sm'
             variant='outline'
@@ -82,5 +82,3 @@ export function AddItemDialog({
     </Dialog>
   );
 }
-
-

@@ -2,13 +2,9 @@
 
 import React, { useState, useMemo } from 'react';
 import { PlanItem } from '@/components/PlanItem';
-import { Loader2 } from 'lucide-react';
+import { Loader2, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { SceneGroup, useScenes } from '@/hooks/useScenes';
-import {
-  AddGroupDialog,
-  AddSceneDialog,
-} from '@/app/dashboard/inteli-sket/components/scene-group-dialogs';
 import {
   ScenesSkeleton,
   ScenesEmptyState,
@@ -18,10 +14,14 @@ import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-conf
 import { ViewConfigEditDialog } from '@/app/dashboard/inteli-sket/components/view-config-edit-dialog';
 import { GroupAccordion } from '@/app/dashboard/inteli-sket/components/group-accordion';
 import { GroupNameEditDialog } from '@/app/dashboard/inteli-sket/components/group-name-edit-dialog';
+import { AddItemDialog } from '@/app/dashboard/inteli-sket/components/add-item-dialog';
+import { AddItemWithGroupDialog } from '@/app/dashboard/inteli-sket/components/add-item-with-group-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
 
 type Scene = SceneGroup['segments'][number];
 
 function ScenesComponent() {
+  const { confirm, ConfirmDialog } = useConfirm();
   const {
     data,
     setData,
@@ -30,15 +30,15 @@ function ScenesComponent() {
     currentState,
     isBusy,
     isLoading,
+    saveToJson,
+    loadDefault,
+    getCurrentState,
+    applySceneConfig,
     // addScene,
     // updateScene,
     // deleteScene,
-    applySceneConfig,
-    saveToJson,
-    loadFromJson,
-    loadDefault,
-    loadFromFile,
-    getCurrentState,
+    // loadFromFile,
+    // loadFromJson,
   } = useScenes();
 
   const groups = data.groups;
@@ -141,7 +141,6 @@ function ScenesComponent() {
     setNewSceneTitle('');
     setIsSceneDialogOpen(false);
 
-    // Salvar no JSON após adicionar
     setTimeout(() => {
       saveToJson();
     }, 100);
@@ -149,18 +148,21 @@ function ScenesComponent() {
     toast.success('Cena adicionada com sucesso!');
   };
 
-  const handleDeleteGroup = (groupId: string) => {
+  const handleDeleteGroup = async (groupId: string) => {
     const group = groups.find((g) => g.id === groupId);
-    const confirmed = confirm(
-      `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${
-        group?.segments.length || 0
-      } cena(s)?`
-    );
+    const confirmed = await confirm({
+      title: 'Remover grupo',
+      description: `Deseja realmente remover o grupo "${
+        group?.name
+      }" e todas as suas ${group?.segments.length || 0} cena(s)?`,
+      confirmText: 'Remover',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
     if (!confirmed) return;
 
     setGroups(groups.filter((group) => group.id !== groupId));
 
-    // Salvar no JSON após deletar
     setTimeout(() => {
       saveToJson();
     }, 100);
@@ -207,8 +209,14 @@ function ScenesComponent() {
     setEditingGroupName('');
   };
 
-  const handleDeleteScene = (groupId: string, segmentId: string) => {
-    const confirmed = confirm('Deseja realmente remover esta cena?');
+  const handleDeleteScene = async (groupId: string, segmentId: string) => {
+    const confirmed = await confirm({
+      title: 'Remover cena',
+      description: 'Deseja realmente remover esta cena?',
+      confirmText: 'Remover',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
     if (!confirmed) return;
 
     setGroups(
@@ -225,7 +233,6 @@ function ScenesComponent() {
       })
     );
 
-    // Salvar no JSON após deletar
     setTimeout(() => {
       saveToJson();
     }, 100);
@@ -253,7 +260,6 @@ function ScenesComponent() {
       })
     );
 
-    // Salvar no JSON após duplicar
     setTimeout(() => {
       saveToJson();
     }, 100);
@@ -262,7 +268,6 @@ function ScenesComponent() {
   };
 
   const handleApplyScene = async (segment: Scene) => {
-    // Segment já tem todas as configurações necessárias
     await applySceneConfig(segment.name, {
       style: segment.style,
       cameraType: segment.cameraType,
@@ -291,7 +296,6 @@ function ScenesComponent() {
       segment.code || segment.name.toLowerCase().replace(/\s+/g, '_')
     );
 
-    // Segment já tem todas as configurações
     setEditSceneStyle(segment.style || availableStyles[0] || 'PRO_VISTAS');
     setEditCameraType(segment.cameraType || 'iso_perspectiva');
     setEditActiveLayers(segment.activeLayers || ['Layer0']);
@@ -342,13 +346,11 @@ function ScenesComponent() {
       ),
     }));
 
-    // Atualizar estado local
     setData({
       ...data,
       groups: updatedGroups,
     });
 
-    // Salvar no JSON (não mexe no modelo do SketchUp)
     await saveToJson();
 
     setIsEditDialogOpen(false);
@@ -376,13 +378,35 @@ function ScenesComponent() {
 
   return (
     <>
-      <AddGroupDialog
+      <AddItemDialog
+        title='Adicionar novo grupo'
+        description='Organize suas cenas em grupos personalizados.'
         isOpen={isGroupDialogOpen}
-        onOpenChange={setIsGroupDialogOpen}
-        groupName={newGroupName}
-        onGroupNameChange={setNewGroupName}
+        inputValue={newGroupName}
+        inputLabel='Nome do grupo'
+        inputPlaceholder='Ex: Arquitetônico'
         onAdd={handleAddGroup}
         onKeyPress={handleGroupDialogKeyPress}
+        onOpenChange={setIsGroupDialogOpen}
+        onInputChange={setNewGroupName}
+      />
+
+      <AddItemWithGroupDialog
+        groups={groups}
+        isOpen={isSceneDialogOpen}
+        itemValue={newSceneTitle}
+        selectedGroup={selectedGroup}
+        confirmButtonIcon={FileText}
+        title='Adicionar Nova Cena'
+        description='Crie uma nova cena e escolha em qual grupo ela ficará.'
+        confirmButtonText='Criar Cena'
+        itemLabel='Nome da Cena'
+        itemPlaceholder='Ex: Vista Frontal'
+        onAdd={handleAddScene}
+        onKeyPress={handleSceneDialogKeyPress}
+        onOpenChange={setIsSceneDialogOpen}
+        onItemValueChange={setNewSceneTitle}
+        onSelectedGroupChange={setSelectedGroup}
       />
 
       <GroupNameEditDialog
@@ -392,18 +416,6 @@ function ScenesComponent() {
         onGroupNameChange={setEditingGroupName}
         onConfirm={handleConfirmEditGroup}
         disabled={isBusy}
-      />
-
-      <AddSceneDialog
-        isOpen={isSceneDialogOpen}
-        onOpenChange={setIsSceneDialogOpen}
-        sceneTitle={newSceneTitle}
-        onSceneTitleChange={setNewSceneTitle}
-        selectedGroup={selectedGroup}
-        onSelectedGroupChange={setSelectedGroup}
-        groups={groups}
-        onAdd={handleAddScene}
-        onKeyPress={handleSceneDialogKeyPress}
       />
 
       <ViewConfigEditDialog
@@ -479,6 +491,8 @@ function ScenesComponent() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog />
     </>
   );
 }

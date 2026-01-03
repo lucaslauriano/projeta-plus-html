@@ -118,7 +118,7 @@ export function BasePlansConfigDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[550px] max-h-[90vh] flex flex-col'>
+      <DialogContent className='sm:max-w-[550px] h-[95vh] flex flex-col'>
         <DialogHeader>
           <DialogTitle className='flex text-start gap-2 '>
             Configurações Base e Forro
@@ -129,7 +129,11 @@ export function BasePlansConfigDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className='w-full flex flex-col flex-1 overflow-hidden'
+        >
           <TabsList className='grid w-full grid-cols-2'>
             <TabsTrigger value='base'>Planta Base</TabsTrigger>
             <TabsTrigger value='ceiling'>Planta de Forro</TabsTrigger>
@@ -137,43 +141,42 @@ export function BasePlansConfigDialog({
 
           <TabsContent
             value={activeTab}
-            className='flex flex-col gap-3 overflow-y-auto flex-1'
+            className='flex flex-col gap-3 overflow-y-auto flex-1 mt-2'
           >
             <div className='w-full flex items-end justify-between gap-x-3'>
-              <div className='space-y-1.5 items-center justify-center w-full'>
-                <label className='flex items-center gap-2 text-sm font-semibold text-foreground w-full'>
-                  Estilo:
-                </label>
-                <Select value={currentStyle} onValueChange={handleStyleChange}>
-                  <SelectTrigger className='w-full'>
-                    <SelectValue placeholder='Selecione um estilo' />
-                  </SelectTrigger>
-                  <SelectContent className='max-h-[200px]'>
-                    {availableStyles.map((styleOption) => (
-                      <SelectItem key={styleOption} value={styleOption}>
-                        {styleOption}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              {onImportStyle && (
-                <Button
-                  size='sm'
-                  variant='outline'
-                  onClick={onImportStyle}
-                  className='w-fit h-9'
-                >
-                  <Upload className='w-4 h-4' />
-                </Button>
-              )}
+              <Select
+                value={currentStyle}
+                onValueChange={handleStyleChange}
+                label='Estilo'
+              >
+                <SelectTrigger className='w-full'>
+                  <SelectValue placeholder='Selecione um estilo' />
+                </SelectTrigger>
+                <SelectContent className=''>
+                  {availableStyles.map((styleOption) => (
+                    <SelectItem key={styleOption} value={styleOption}>
+                      {styleOption}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {/* <div className='flex-1'>
+                <Input
+                  id='item-code'
+                  type='text'
+                  label='Código'
+                  placeholder='Ex: gnrl, draw, plans'
+                  value={itemCode || ''}
+                  onChange={(e) =>
+                    onItemCodeChange(
+                      e.target.value.toLowerCase().replace(/\s+/g, '_')
+                    )
+                  }
+                />
+              </div> */}
             </div>
 
             <div className='space-y-2'>
-              <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
-                Camadas Ativas
-              </label>
-
               <div className='relative'>
                 <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground' />
                 <Input
@@ -181,7 +184,7 @@ export function BasePlansConfigDialog({
                   placeholder='Filtrar camadas...'
                   value={layerFilter}
                   onChange={(e) => setLayerFilter(e.target.value)}
-                  className='pl-9 '
+                  className='pl-9'
                 />
                 {layerFilter && (
                   <X
@@ -227,7 +230,7 @@ export function BasePlansConfigDialog({
                   Estado Atual
                 </Button>
               </div>
-              <div className='space-y-1.5 max-h-[200px] overflow-y-auto p-3 bg-muted/30 rounded-md border border-border/50'>
+              <div className='space-y-1.5 max-h-[260px] overflow-y-auto p-3 bg-muted/30 rounded-md border border-border/50'>
                 {filteredLayers.length > 0 ? (
                   <div className='space-y-1.5'>
                     {filteredLayers.map((layer) => (

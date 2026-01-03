@@ -23,11 +23,11 @@ interface GroupNameEditDialogProps {
 
 export function GroupNameEditDialog({
   open,
-  onOpenChange,
-  groupName,
-  onGroupNameChange,
-  onConfirm,
   disabled = false,
+  groupName,
+  onConfirm,
+  onOpenChange,
+  onGroupNameChange,
 }: GroupNameEditDialogProps) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && groupName.trim()) {
@@ -38,13 +38,13 @@ export function GroupNameEditDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Editar Nome do Grupo</DialogTitle>
+        <DialogHeader className='items-start text-left'>
+          <DialogTitle>Editar nome do grupo</DialogTitle>
           <DialogDescription>Digite o novo nome para o grupo</DialogDescription>
         </DialogHeader>
         <div className='space-y-4 py-4'>
           <div className='space-y-2'>
-            <Label htmlFor='group-name'>Nome do Grupo</Label>
+            <Label htmlFor='group-name'>Nome do grupo</Label>
             <Input
               id='group-name'
               placeholder='Ex: Térreo, Pavimento 1...'

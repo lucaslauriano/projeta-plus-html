@@ -8,10 +8,6 @@ import { usePlans } from '@/hooks/usePlans';
 import type { PlanGroup } from '@/hooks/usePlans';
 import { GroupAccordion } from '@/app/dashboard/inteli-sket/components/group-accordion';
 import {
-  AddGroupDialog,
-  AddSceneDialog,
-} from '@/app/dashboard/inteli-sket/components/scene-group-dialogs';
-import {
   ScenesSkeleton,
   ScenesEmptyState,
   ScenesLoadingState,
@@ -22,13 +18,17 @@ import { Button } from '@/components/ui/button';
 import { ViewConfigEditDialog } from '@/app/dashboard/inteli-sket/components/view-config-edit-dialog';
 import { BasePlansConfigDialog } from '@/app/dashboard/inteli-sket/components/base-plans-config-dialog';
 import { GroupNameEditDialog } from '@/app/dashboard/inteli-sket/components/group-name-edit-dialog';
+import { AddItemDialog } from '@/app/dashboard/inteli-sket/components/add-item-dialog';
+import { AddItemWithGroupDialog } from '@/app/dashboard/inteli-sket/components/add-item-with-group-dialog';
 import { useBasePlans } from '@/hooks/useBasePlans';
 import { usePlansDialogs } from '@/hooks/usePlansDialogs';
 import { usePlanEditor } from '@/hooks/usePlanEditor';
 import type { Plan } from '@/hooks/usePlanEditor';
 import { useBasePlansConfig } from '@/hooks/useBasePlansConfig';
+import { useConfirm } from '@/hooks/useConfirm';
 
 function PlansComponent() {
+  const { confirm, ConfirmDialog } = useConfirm();
   const {
     data,
     isBusy,
@@ -136,11 +136,15 @@ function PlansComponent() {
 
   const handleDeleteGroup = async (groupId: string) => {
     const group = groups.find((g) => g.id === groupId);
-    const confirmed = confirm(
-      `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${
-        (group?.segments || []).length
-      } planta(s)?`
-    );
+    const confirmed = await confirm({
+      title: 'Remover grupo',
+      description: `Deseja realmente remover o grupo "${
+        group?.name
+      }" e todas as suas ${(group?.segments || []).length} planta(s)?`,
+      confirmText: 'Remover',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
     if (!confirmed) return;
 
     setGroups(groups.filter((g) => g.id !== groupId));
@@ -229,7 +233,13 @@ function PlansComponent() {
   };
 
   const handleDeletePlan = async (groupId: string, segmentId: string) => {
-    const confirmed = confirm('Deseja realmente remover esta planta?');
+    const confirmed = await confirm({
+      title: 'Remover planta',
+      description: 'Deseja realmente remover esta planta?',
+      confirmText: 'Remover',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
     if (!confirmed) return;
 
     setGroups(
@@ -330,7 +340,7 @@ function PlansComponent() {
     {
       label: 'Criar grupo',
       action: () => groupDialog.open(),
-      hasDivider: true,
+      hasDivider: false,
     },
     {
       label: 'Criar planta',
@@ -339,7 +349,7 @@ function PlansComponent() {
     },
     {
       label: 'Editar níveis',
-      action: () => levelsDialog.open(),
+      action: () => configDialog.open(),
       hasDivider: true,
     },
     {
@@ -351,13 +361,34 @@ function PlansComponent() {
 
   return (
     <>
-      <AddGroupDialog
-        onAdd={handleAddGroup}
+      <AddItemDialog
         isOpen={groupDialog.isOpen}
-        groupName={groupDialog.name}
-        onKeyPress={handleGroupDialogKeyPress}
         onOpenChange={groupDialog.setOpen}
-        onGroupNameChange={groupDialog.setName}
+        title='Adicionar novo grupo'
+        description='Organize suas plantas em grupos personalizados.'
+        inputLabel='Nome do grupo'
+        inputPlaceholder='Ex: Pavimento Térreo'
+        inputValue={groupDialog.name}
+        onInputChange={groupDialog.setName}
+        onAdd={handleAddGroup}
+        onKeyPress={handleGroupDialogKeyPress}
+      />
+
+      <AddItemWithGroupDialog
+        groups={groups}
+        isOpen={planDialog.isOpen}
+        itemValue={planDialog.title}
+        selectedGroup={planDialog.selectedGroup}
+        confirmButtonIcon={Plus}
+        title='Adicionar nova planta'
+        description='Organize suas plantas em grupos personalizados.'
+        itemLabel='Nome da planta'
+        itemPlaceholder='Ex: Planta de Arquitetura'
+        onAdd={handleAddPlan}
+        onKeyPress={handlePlanDialogKeyPress}
+        onOpenChange={planDialog.setOpen}
+        onItemValueChange={planDialog.setTitle}
+        onSelectedGroupChange={planDialog.setSelectedGroup}
       />
 
       <GroupNameEditDialog
@@ -367,18 +398,6 @@ function PlansComponent() {
         onGroupNameChange={setEditingGroupName}
         onConfirm={handleConfirmEditGroup}
         disabled={isBusy}
-      />
-
-      <AddSceneDialog
-        onAdd={handleAddPlan}
-        groups={groups}
-        isOpen={planDialog.isOpen}
-        onKeyPress={handlePlanDialogKeyPress}
-        sceneTitle={planDialog.title}
-        onOpenChange={planDialog.setOpen}
-        selectedGroup={planDialog.selectedGroup}
-        onSceneTitleChange={planDialog.setTitle}
-        onSelectedGroupChange={planDialog.setSelectedGroup}
       />
 
       <ViewConfigEditDialog
@@ -486,6 +505,8 @@ function PlansComponent() {
           />
         )}
       </div>
+
+      <ConfirmDialog />
     </>
   );
 }
