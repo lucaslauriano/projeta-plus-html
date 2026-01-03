@@ -43,6 +43,7 @@ export function LevelsManagerDialog({
     removeLevel,
     createBaseScene,
     createCeilingScene,
+    ConfirmDialog,
   } = useLevels();
 
   const [heightInput, setHeightInput] = useState('0.00');
@@ -200,6 +201,7 @@ export function LevelsManagerDialog({
           )}
         </div>
       </DialogContent>
+      <ConfirmDialog />
     </Dialog>
   );
 }

@@ -69,19 +69,11 @@ export function FurnitureReports() {
     const selected = categories.filter(
       (cat) => categoryPrefs[cat]?.show !== false
     );
-    console.log('[Forniture] Categories:', categories);
-    console.log('[Forniture] CategoryPrefs:', categoryPrefs);
-    console.log('[Forniture] Selected categories:', selected);
     setSelectedCategories(selected);
   }, [categories, categoryPrefs]);
 
   // Carrega dados das categorias selecionadas
   useEffect(() => {
-    console.log(
-      '[Forniture] Loading data for selected categories:',
-      selectedCategories
-    );
-    console.log('[Forniture] Current categoryData:', categoryData);
     selectedCategories.forEach((category) => {
       if (!categoryData[category]) {
         console.log('[Forniture] Fetching data for category:', category);

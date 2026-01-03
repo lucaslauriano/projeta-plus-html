@@ -65,7 +65,7 @@ const navigation = [
     icon: Proportions,
   },
   { name: 'Settings', href: '/dashboard/user-settings', icon: Settings },
-  // { name: 'Tema', href: '/dashboard/theme-preview', icon: Monitor },
+  { name: 'Tema', href: '/dashboard/theme-preview', icon: Monitor },
 ];
 
 interface DashboardLayoutProps {

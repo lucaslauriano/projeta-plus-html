@@ -12,6 +12,7 @@ import { useSketchupState } from './useSketchupState';
 import { useSketchupHandlers } from './useSketchupHandlers';
 import { useSketchupMock } from './useSketchupMock';
 import { validateRequired } from '../utils/validationUtils';
+import { useConfirm } from '../useConfirm';
 
 export interface UseSketchupEntityReturn<TData, TMethods> {
   // State
@@ -54,6 +55,7 @@ export function useSketchupEntity<TData = unknown, TMethods = unknown>(
   config: EntityConfig<TData, TMethods>
 ): UseSketchupEntityReturn<TData, TMethods> {
   const { callSketchupMethod, isAvailable } = useSketchup();
+  const { confirm, ConfirmDialog } = useConfirm();
 
   // State management
   const {
@@ -176,9 +178,15 @@ export function useSketchupEntity<TData = unknown, TMethods = unknown>(
       const method = (config.methods as Record<string, string>).delete;
       if (!method) return;
 
-      const confirmed = confirm(
-        `Deseja realmente remover ${config.entityNameSingular || 'este item'}?`
-      );
+      const confirmed = await confirm({
+        title: `Remover ${config.entityNameSingular || 'item'}`,
+        description: `Deseja realmente remover ${
+          config.entityNameSingular || 'este item'
+        }?`,
+        confirmText: 'Remover',
+        cancelText: 'Cancelar',
+        variant: 'destructive',
+      });
       if (!confirmed) return;
 
       if (isMockMode) {
@@ -190,6 +198,7 @@ export function useSketchupEntity<TData = unknown, TMethods = unknown>(
       await callSketchupMethod(method, { id });
     },
     [
+      confirm,
       config.methods,
       config.entityNameSingular,
       isMockMode,
@@ -288,11 +297,17 @@ export function useSketchupEntity<TData = unknown, TMethods = unknown>(
   }, [config.methods, isMockMode, setIsBusy, callSketchupMethod]);
 
   // Clear all data
-  const clearAll = useCallback(() => {
-    const confirmed = confirm('Deseja realmente limpar todos os dados?');
+  const clearAll = useCallback(async () => {
+    const confirmed = await confirm({
+      title: 'Limpar todos os dados',
+      description: 'Deseja realmente limpar todos os dados?',
+      confirmText: 'Limpar',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
     if (!confirmed) return;
     resetState();
-  }, [resetState]);
+  }, [confirm, resetState]);
 
   // Create custom methods from config
   const customMethods = useMemo(() => {
@@ -400,5 +415,8 @@ export function useSketchupEntity<TData = unknown, TMethods = unknown>(
 
     // Custom methods
     ...customMethods,
+
+    // Dialog component
+    ConfirmDialog,
   } as UseSketchupEntityReturn<TData, TMethods>;
 }

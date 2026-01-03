@@ -435,11 +435,7 @@ function PlansComponent() {
             Plantas {isLoading && <Loader2 className='w-4 h-4 animate-spin' />}
           </h2>
           <div className='flex items-center gap-2'>
-            <ViewConfigMenu
-              isBusy={isBusy}
-              menuItems={menuItems}
-              entityLabel='Planta'
-            />
+            <ViewConfigMenu menuItems={menuItems} />
           </div>
         </div>
 

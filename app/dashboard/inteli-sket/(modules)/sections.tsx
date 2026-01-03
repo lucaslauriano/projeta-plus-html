@@ -14,6 +14,7 @@ import { SectionsConfigDialog } from '@/app/dashboard/inteli-sket/components/sec
 import { SegmentEditDialog } from '@/app/dashboard/inteli-sket/components/segment-edit-dialog';
 import { SelectScenesDialog } from '@/app/dashboard/inteli-sket/components/select-scenes-dialog';
 import { Segment } from 'next/dist/server/app-render/types';
+import { useConfirm } from '@/hooks/useConfirm';
 
 export default function SectionsComponent() {
   const {
@@ -43,7 +44,10 @@ export default function SectionsComponent() {
     deleteSegment,
     duplicateScenesWithSegment,
     getModelScenes,
+    ConfirmDialog: SectionsConfirmDialog,
   } = useSections();
+
+  const { confirm, ConfirmDialog: LocalConfirmDialog } = useConfirm();
 
   const [isIndividualDialogOpen, setIsIndividualDialogOpen] = useState(false);
   const [individualSectionName, setIndividualSectionName] = useState('');
@@ -172,8 +176,15 @@ export default function SectionsComponent() {
     setEditingSegment(null);
   };
 
-  const handleDeleteSegment = (groupId: string, segmentId: string) => {
-    if (confirm('Deseja realmente remover este segmento?')) {
+  const handleDeleteSegment = async (groupId: string, segmentId: string) => {
+    const confirmed = await confirm({
+      title: 'Remover segmento',
+      description: 'Deseja realmente remover este segmento?',
+      confirmText: 'Remover',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
+    if (confirmed) {
       deleteSegment(groupId, segmentId);
     }
   };
@@ -330,8 +341,15 @@ export default function SectionsComponent() {
             // TODO: Implementar edição de grupo
             console.log('Editar grupo:', groupId);
           }}
-          onDeleteGroup={(groupId) => {
-            if (confirm('Deseja realmente remover este grupo?')) {
+          onDeleteGroup={async (groupId) => {
+            const confirmed = await confirm({
+              title: 'Remover grupo',
+              description: 'Deseja realmente remover este grupo?',
+              confirmText: 'Remover',
+              cancelText: 'Cancelar',
+              variant: 'destructive',
+            });
+            if (confirmed) {
               deleteGroup(groupId);
             }
           }}
@@ -350,6 +368,9 @@ export default function SectionsComponent() {
           )}
         />
       </div>
+
+      <SectionsConfirmDialog />
+      <LocalConfirmDialog />
     </div>
   );
 }

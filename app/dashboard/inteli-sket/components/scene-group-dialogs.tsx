@@ -10,7 +10,7 @@ import {
   SelectContent,
   SelectTrigger,
 } from '@/components/ui/select';
-import { Folder, FileText } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import {
   Dialog,
   DialogTitle,
@@ -19,6 +19,7 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { AddItemDialog } from './add-item-dialog';
 
 interface AddGroupDialogProps {
   isOpen: boolean;
@@ -38,45 +39,19 @@ export function AddGroupDialog({
   onKeyPress,
 }: AddGroupDialogProps) {
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[425px]'>
-        <DialogHeader>
-          <DialogTitle>Adicionar Novo Grupo</DialogTitle>
-          <DialogDescription>
-            Organize suas cenas em grupos personalizados.
-          </DialogDescription>
-        </DialogHeader>
-        <div className='grid gap-4 py-4'>
-          <div className='space-y-2'>
-            <Input
-              id='group-name'
-              label='Nome do Grupo'
-              placeholder='Ex: Arquitetônico'
-              value={groupName}
-              onChange={(e) => onGroupNameChange(e.target.value)}
-              onKeyPress={onKeyPress}
-              autoFocus
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button
-            size='sm'
-            variant='outline'
-            onClick={() => {
-              onOpenChange(false);
-              onGroupNameChange('');
-            }}
-          >
-            Cancelar
-          </Button>
-          <Button onClick={onAdd} size='sm'>
-            <Folder className='w-4 h-4 mr-2' />
-            Criar Grupo
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <AddItemDialog
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      title='Adicionar Novo Grupo'
+      description='Organize suas cenas em grupos personalizados.'
+      inputLabel='Nome do Grupo'
+      inputPlaceholder='Ex: Arquitetônico'
+      inputValue={groupName}
+      onInputChange={onGroupNameChange}
+      onAdd={onAdd}
+      onKeyPress={onKeyPress}
+      confirmButtonText='Criar Grupo'
+    />
   );
 }
 
@@ -106,13 +81,13 @@ export function AddSceneDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-[425px]'>
-        <DialogHeader>
+        <DialogHeader className='items-start text-left'>
           <DialogTitle>Adicionar Nova Cena</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className='text-left'>
             Crie uma nova cena e escolha em qual grupo ela ficará.
           </DialogDescription>
         </DialogHeader>
-        <div className='grid gap-4 py-4'>
+        <div className='grid gap-4 py-2'>
           <div className='space-y-2'>
             <Input
               id='scene-title'
@@ -143,8 +118,9 @@ export function AddSceneDialog({
             </Select>
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className='flex justify-between gap-2'>
           <Button
+            size='sm'
             variant='outline'
             onClick={() => {
               onOpenChange(false);
@@ -153,7 +129,7 @@ export function AddSceneDialog({
           >
             Cancelar
           </Button>
-          <Button onClick={onAdd}>
+          <Button onClick={onAdd} size='sm'>
             <FileText className='w-4 h-4 mr-2' />
             Criar Cena
           </Button>

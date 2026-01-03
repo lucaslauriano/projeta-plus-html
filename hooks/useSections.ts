@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useSketchup } from '@/contexts/SketchupContext';
+import { useConfirm } from './useConfirm';
 
 export interface Section {
   id: string;
@@ -34,6 +35,7 @@ export interface SectionsSettings {
 
 export function useSections() {
   const { callSketchupMethod, isAvailable } = useSketchup();
+  const { confirm, ConfirmDialog } = useConfirm();
   const [data, setData] = useState<SectionsData>({
     groups: [],
   });
@@ -604,7 +606,13 @@ export function useSections() {
 
   const deleteSection = useCallback(
     async (name: string) => {
-      const confirmed = confirm(`Deseja realmente remover a seção "${name}"?`);
+      const confirmed = await confirm({
+        title: 'Remover seção',
+        description: `Deseja realmente remover a seção "${name}"?`,
+        confirmText: 'Remover',
+        cancelText: 'Cancelar',
+        variant: 'destructive',
+      });
       if (!confirmed) return;
 
       if (!isAvailable) {
@@ -615,7 +623,7 @@ export function useSections() {
       setIsBusy(true);
       callSketchupMethodSafe('deleteSection', { name });
     },
-    [callSketchupMethodSafe, isAvailable]
+    [confirm, callSketchupMethodSafe, isAvailable]
   );
 
   const createStandardSections = useCallback(() => {
@@ -717,13 +725,19 @@ export function useSections() {
     callSketchupMethodSafe('importSectionsToModel', data);
   }, [callSketchupMethodSafe, data, isAvailable]);
 
-  const clearAll = useCallback(() => {
-    const confirmed = confirm('Deseja realmente limpar todas as seções?');
+  const clearAll = useCallback(async () => {
+    const confirmed = await confirm({
+      title: 'Limpar todas as seções',
+      description: 'Deseja realmente limpar todas as seções?',
+      confirmText: 'Limpar',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
     if (!confirmed) return;
 
     setData({ groups: [] });
     toast.info('Seções limpas');
-  }, []);
+  }, [confirm]);
 
   const getSectionsSettings = useCallback(() => {
     if (!isAvailable) {
@@ -1016,6 +1030,7 @@ export function useSections() {
     addGroup,
     updateGroup,
     deleteGroup,
+    ConfirmDialog,
     addSegment,
     updateSegment,
     deleteSegment,

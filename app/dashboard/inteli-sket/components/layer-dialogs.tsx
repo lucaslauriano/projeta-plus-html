@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Folder, Tag } from 'lucide-react';
+import { Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { AddItemDialog } from './add-item-dialog';
 
 interface LayerDialogsProps {
   // Folder Dialog
@@ -60,59 +61,33 @@ export default function LayerDialogs({
 }: LayerDialogsProps) {
   return (
     <>
-      <Dialog open={isFolderDialogOpen} onOpenChange={setIsFolderDialogOpen}>
-        <DialogContent className='sm:max-w-[425px]'>
-          <DialogHeader>
-            <DialogTitle>Adicionar Nova Pasta</DialogTitle>
-            <DialogDescription>
-              Organize suas tags em pastas personalizadas.
-            </DialogDescription>
-          </DialogHeader>
-          <div className='grid gap-4 py-4'>
-            <div className='space-y-2'>
-              <Input
-                id='folder-name'
-                label='Nome da Pasta'
-                placeholder='Ex: Estrutura'
-                value={newFolderName}
-                onChange={(e) => setNewFolderName(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    handleAddFolder();
-                  }
-                }}
-                autoFocus
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              size='sm'
-              variant='outline'
-              onClick={() => {
-                setIsFolderDialogOpen(false);
-                setNewFolderName('');
-              }}
-            >
-              Cancelar
-            </Button>
-            <Button size='sm' onClick={handleAddFolder}>
-              <Folder className='w-4 h-4 mr-2' />
-              Criar Pasta
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AddItemDialog
+        isOpen={isFolderDialogOpen}
+        onOpenChange={setIsFolderDialogOpen}
+        title='Adicionar Nova Pasta'
+        description='Organize suas tags em pastas personalizadas.'
+        inputLabel='Nome da Pasta'
+        inputPlaceholder='Ex: Estrutura'
+        inputValue={newFolderName}
+        onInputChange={setNewFolderName}
+        onAdd={handleAddFolder}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            handleAddFolder();
+          }
+        }}
+        confirmButtonText='Criar Pasta'
+      />
 
       <Dialog open={isTagDialogOpen} onOpenChange={setIsTagDialogOpen}>
         <DialogContent className='sm:max-w-[425px]'>
-          <DialogHeader>
+          <DialogHeader className='items-start text-left'>
             <DialogTitle>Adicionar Nova Tag</DialogTitle>
             <DialogDescription>
               Crie tags com cores personalizadas para organizar seu modelo.
             </DialogDescription>
           </DialogHeader>
-          <div className='grid gap-4 py-4'>
+          <div className='grid gap-4 py-2'>
             <div className='space-y-2'>
               <Input
                 id='tag-name'
@@ -158,7 +133,7 @@ export default function LayerDialogs({
               </Select>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className='flex justify-between gap-2'>
             <Button
               size='sm'
               variant='outline'

@@ -72,7 +72,6 @@ export function useElectricalReports() {
     const cleanup = registerHandlers({
       handleGetElectricalReportTypesResult: (response) => {
         const result = response as GetReportTypesResult;
-        console.log('[ElectricalReports] Got types:', result);
         setIsBusy(false);
         if (result.success) {
           const types = result.types || [];
@@ -88,7 +87,6 @@ export function useElectricalReports() {
 
       handleGetElectricalReportDataResult: (response) => {
         const result = response as ElectricalReportData;
-        console.log('[ElectricalReports] Got report data:', result);
         setIsBusy(false);
         if (result.success) {
           setReportData(result.data || []);
@@ -130,17 +128,12 @@ export function useElectricalReports() {
   // ========================================
 
   const getReportTypes = useCallback(async () => {
-    console.log('[ElectricalReports] Requesting report types...');
     setIsBusy(true);
     await callSketchupMethod('getElectricalReportTypes', {});
   }, [callSketchupMethod]);
 
   const getReportData = useCallback(
     async (reportType: string) => {
-      console.log(
-        '[ElectricalReports] Requesting report data for:',
-        reportType
-      );
       setIsBusy(true);
       await callSketchupMethod('getElectricalReportData', { reportType });
     },
@@ -261,10 +254,6 @@ export function useElectricalReports() {
         isInitialMount.current = false;
         return;
       }
-      console.log(
-        '[ElectricalReports] Selected type changed, loading data:',
-        selectedReportType
-      );
       setIsBusy(true);
       callSketchupMethod('getElectricalReportData', {
         reportType: selectedReportType,

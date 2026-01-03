@@ -85,14 +85,12 @@ export function useFurnitureReports() {
   // ========================================
 
   const getFurnitureTypes = useCallback(async () => {
-    console.log('[FurnitureReports] Requesting furniture types...');
     setIsBusy(true);
     await callSketchupMethod('getFurnitureTypes', {});
   }, [callSketchupMethod]);
 
   const getCategoryData = useCallback(
     async (category: string) => {
-      console.log('[FurnitureReports] Requesting category data for:', category);
       setIsBusy(true);
       await callSketchupMethod('getCategoryData', { category });
     },
@@ -117,7 +115,6 @@ export function useFurnitureReports() {
 
       handleGetCategoryDataResult: (response) => {
         const result = response as GetCategoryDataResult;
-        console.log('[FurnitureReports] Got category data:', result);
         setIsBusy(false);
         if (result.success) {
           setCategoryData((prev) => ({
@@ -276,14 +273,18 @@ export function useFurnitureReports() {
   );
 
   const exportXLSX = useCallback(
-    async (categories: string[], format: 'csv' | 'xlsx' = 'xlsx', isConsolidated: boolean = true) => {
+    async (
+      categories: string[],
+      format: 'csv' | 'xlsx' = 'xlsx',
+      isConsolidated: boolean = true
+    ) => {
       try {
         setIsBusy(true);
-        
+
         // Determinar nome do arquivo baseado no contexto
         const fileExtension = format;
         let defaultFileName: string;
-        
+
         if (isConsolidated || categories.length > 1) {
           // Exportação consolidada ou múltiplas categorias
           defaultFileName = `furniture_report_consolidated.${fileExtension}`;
@@ -292,7 +293,7 @@ export function useFurnitureReports() {
           const categoryName = categories[0].replace(/[^a-zA-Z0-9]/g, '_');
           defaultFileName = `${categoryName}.${fileExtension}`;
         }
-        
+
         // Primeiro solicita ao usuário onde salvar o arquivo
         const pathResult = await new Promise<{
           success: boolean;

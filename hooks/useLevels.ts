@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useSketchup } from '@/contexts/SketchupContext';
+import { useConfirm } from './useConfirm';
 
 export type Level = {
   number: number;
@@ -16,6 +17,7 @@ export type Level = {
 
 export function useLevels() {
   const { callSketchupMethod, isLoading, isAvailable } = useSketchup();
+  const { confirm, ConfirmDialog } = useConfirm();
   const [levels, setLevels] = useState<Level[]>([]);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
 
@@ -130,23 +132,33 @@ export function useLevels() {
           has_base: false,
           has_ceiling: false,
           name: levels.length === 0 ? 'Térreo' : `Pavimento ${levels.length}`,
-          base_cut_height: heightMeters + 1.6,
-          ceiling_cut_height: heightMeters + 1.55,
+          base_cut_height: heightMeters,
+          ceiling_cut_height: heightMeters,
         };
         setLevels([...levels, newLevel]);
         toast.success('Nível adicionado (modo simulação)');
         return;
       }
 
+      const heightStr = heightMeters.toString();
+
       setPendingAction('add');
-      await callSketchupMethod('addLevel', { height: heightMeters.toString() });
+      await callSketchupMethod('addLevel', { height: heightStr });
     },
     [callSketchupMethod, isAvailable, levels]
   );
 
   const removeLevel = useCallback(
     async (number: number) => {
-      if (!confirm('Deseja realmente remover este nível?')) return;
+      const confirmed = await confirm({
+        title: 'Remover nível',
+        description: 'Deseja realmente remover este nível?',
+        confirmText: 'Remover',
+        cancelText: 'Cancelar',
+        variant: 'destructive',
+      });
+
+      if (!confirmed) return;
 
       if (!isAvailable) {
         setLevels(levels.filter((l) => l.number !== number));
@@ -157,7 +169,7 @@ export function useLevels() {
       setPendingAction('remove');
       await callSketchupMethod('removeLevel', { number: number.toString() });
     },
-    [callSketchupMethod, isAvailable, levels]
+    [confirm, callSketchupMethod, isAvailable, levels]
   );
 
   const createBaseScene = useCallback(
@@ -216,5 +228,6 @@ export function useLevels() {
     removeLevel,
     createBaseScene,
     createCeilingScene,
+    ConfirmDialog,
   };
 }

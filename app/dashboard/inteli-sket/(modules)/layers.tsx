@@ -191,11 +191,7 @@ export default function LayersComponent() {
               Etiquetas
             </h2>
           </div>
-          <ViewConfigMenu
-            isBusy={isBusy}
-            menuItems={menuItems}
-            entityLabel='Tag'
-          />
+          <ViewConfigMenu menuItems={menuItems} />
         </div>
 
         <div className='flex items-center justify-center w-full'>

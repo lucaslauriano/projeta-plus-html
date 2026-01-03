@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useSketchup } from '@/contexts/SketchupContext';
+import { useConfirm } from './useConfirm';
 
 export interface ViewConfig {
   id: string;
@@ -67,6 +68,7 @@ interface UseViewConfigsOptions {
 
 export function useViewConfigs(options: UseViewConfigsOptions) {
   const { callSketchupMethod, isAvailable } = useSketchup();
+  const { confirm, ConfirmDialog } = useConfirm();
   const [data, setData] = useState<ViewConfigsData>({
     groups: [],
     [options.entityName]: [],
@@ -403,9 +405,13 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
 
   const deleteItem = useCallback(
     async (name: string) => {
-      const confirmed = confirm(
-        `Deseja realmente remover a ${options.entityNameSingular} "${name}"?`
-      );
+      const confirmed = await confirm({
+        title: `Remover ${options.entityNameSingular}`,
+        description: `Deseja realmente remover a ${options.entityNameSingular} "${name}"?`,
+        confirmText: 'Remover',
+        cancelText: 'Cancelar',
+        variant: 'destructive',
+      });
       if (!confirmed) return;
 
       if (!isAvailable) {
@@ -421,7 +427,7 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
       setPendingAction('delete');
       await callSketchupMethod(options.rubyMethods.delete, { name });
     },
-    [callSketchupMethod, isAvailable, options]
+    [confirm, callSketchupMethod, isAvailable, options]
   );
 
   const applyConfig = useCallback(
@@ -523,11 +529,18 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
     await callSketchupMethod(options.rubyMethods.getCurrentState);
   }, [callSketchupMethod, isAvailable, options]);
 
-  const clearAll = useCallback(() => {
-    if (!confirm('Deseja realmente limpar todos os dados?')) return;
+  const clearAll = useCallback(async () => {
+    const confirmed = await confirm({
+      title: 'Limpar todos os dados',
+      description: 'Deseja realmente limpar todos os dados?',
+      confirmText: 'Limpar',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
+    if (!confirmed) return;
     setData({ groups: [], [options.entityName]: [] });
     toast.info('Dados limpos');
-  }, [options]);
+  }, [confirm, options]);
 
   const isBusy = isAvailable && (isLoading || Boolean(pendingAction));
 
@@ -559,6 +572,7 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
     getCurrentState,
     applyConfig,
     getAvailableStyles,
+    ConfirmDialog,
     getAvailableLayers,
   };
 }
