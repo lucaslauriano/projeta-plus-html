@@ -112,8 +112,8 @@ export function useLevels() {
           has_base: false,
           has_ceiling: false,
           name: 'Térreo',
-          base_cut_height: 1.6,
-          ceiling_cut_height: 1.55,
+          base_cut_height: 0.0,
+          ceiling_cut_height: 0.0,
         },
       ]);
       return;
