@@ -11,7 +11,7 @@ import {
   SelectContent,
   SelectTrigger,
 } from '@/components/ui/select';
-import { Upload, Search, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import {
   Dialog,
   DialogTitle,
@@ -27,16 +27,19 @@ interface BasePlansConfigDialogProps {
   onOpenChange: (open: boolean) => void;
   availableStyles: string[];
   availableLayers: string[];
-  onImportStyle?: () => void;
   onSave: () => void;
   baseStyle: string;
   baseLayers: string[];
+  baseCode?: string;
   ceilingStyle: string;
   ceilingLayers: string[];
+  ceilingCode?: string;
   onBaseStyleChange: (style: string) => void;
   onBaseLayersChange: (layers: string[]) => void;
+  onBaseCodeChange?: (code: string) => void;
   onCeilingStyleChange: (style: string) => void;
   onCeilingLayersChange: (layers: string[]) => void;
+  onCeilingCodeChange?: (code: string) => void;
   onApplyCurrentState: () => void;
   isBusy?: boolean;
 }
@@ -46,16 +49,19 @@ export function BasePlansConfigDialog({
   onOpenChange,
   availableStyles,
   availableLayers,
-  onImportStyle,
   baseStyle,
   onSave,
   baseLayers,
+  baseCode,
   ceilingStyle,
   ceilingLayers,
+  ceilingCode,
   onBaseStyleChange,
   onBaseLayersChange,
+  onBaseCodeChange,
   onCeilingStyleChange,
   onCeilingLayersChange,
+  onCeilingCodeChange,
   onApplyCurrentState,
   isBusy = false,
 }: BasePlansConfigDialogProps) {
@@ -77,12 +83,21 @@ export function BasePlansConfigDialog({
 
   const currentStyle = activeTab === 'base' ? baseStyle : ceilingStyle;
   const currentLayers = activeTab === 'base' ? baseLayers : ceilingLayers;
+  const currentCode = activeTab === 'base' ? baseCode : ceilingCode;
 
   const handleStyleChange = (style: string) => {
     if (activeTab === 'base') {
       onBaseStyleChange(style);
     } else {
       onCeilingStyleChange(style);
+    }
+  };
+
+  const handleCodeChange = (code: string) => {
+    if (activeTab === 'base' && onBaseCodeChange) {
+      onBaseCodeChange(code);
+    } else if (activeTab === 'ceiling' && onCeilingCodeChange) {
+      onCeilingCodeChange(code);
     }
   };
 
@@ -144,36 +159,39 @@ export function BasePlansConfigDialog({
             className='flex flex-col gap-3 overflow-y-auto flex-1 mt-2'
           >
             <div className='w-full flex items-end justify-between gap-x-3'>
-              <Select
-                value={currentStyle}
-                onValueChange={handleStyleChange}
-                label='Estilo'
-              >
-                <SelectTrigger className='w-full'>
-                  <SelectValue placeholder='Selecione um estilo' />
-                </SelectTrigger>
-                <SelectContent className=''>
-                  {availableStyles.map((styleOption) => (
-                    <SelectItem key={styleOption} value={styleOption}>
-                      {styleOption}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {/* <div className='flex-1'>
+              <div className='flex-1'>
+                <Select
+                  value={currentStyle}
+                  onValueChange={handleStyleChange}
+                  label='Estilo'
+                >
+                  <SelectTrigger className='w-full'>
+                    <SelectValue placeholder='Selecione um estilo' />
+                  </SelectTrigger>
+                  <SelectContent className=''>
+                    {availableStyles.map((styleOption) => (
+                      <SelectItem key={styleOption} value={styleOption}>
+                        {styleOption}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className='flex-1'>
                 <Input
                   id='item-code'
                   type='text'
                   label='Código'
-                  placeholder='Ex: gnrl, draw, plans'
-                  value={itemCode || ''}
+                  placeholder='Ex: base, ceiling'
+                  value={currentCode || ''}
                   onChange={(e) =>
-                    onItemCodeChange(
+                    handleCodeChange(
                       e.target.value.toLowerCase().replace(/\s+/g, '_')
                     )
                   }
                 />
-              </div> */}
+              </div>
             </div>
 
             <div className='space-y-2'>

@@ -61,12 +61,16 @@ function PlansComponent() {
   const {
     baseStyle,
     baseLayers,
+    baseCode,
     ceilingStyle,
     ceilingLayers,
+    ceilingCode,
     updateBaseStyle,
     updateBaseLayers,
+    updateBaseCode,
     updateCeilingStyle,
     updateCeilingLayers,
+    updateCeilingCode,
     saveConfig,
   } = useBasePlansConfig(
     basePlansData,
@@ -436,15 +440,19 @@ function PlansComponent() {
         isBusy={isBusy || isBusyPlans}
         baseStyle={baseStyle}
         baseLayers={baseLayers}
+        baseCode={baseCode}
         onOpenChange={configDialog.setOpen}
         ceilingStyle={ceilingStyle}
         ceilingLayers={ceilingLayers}
+        ceilingCode={ceilingCode}
         availableStyles={bp_availableStyles}
         availableLayers={bp_availableLayerss}
         onBaseStyleChange={updateBaseStyle}
         onBaseLayersChange={updateBaseLayers}
+        onBaseCodeChange={updateBaseCode}
         onCeilingStyleChange={updateCeilingStyle}
         onCeilingLayersChange={updateCeilingLayers}
+        onCeilingCodeChange={updateCeilingCode}
         onApplyCurrentState={() => toast.info('Aplicando estado atual...')}
       />
 
