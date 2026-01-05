@@ -98,9 +98,9 @@ export function SegmentEditDialog({
       <DialogContent className='sm:max-w-[550px] max-h-[90vh] flex flex-col'>
         <DialogHeader>
           <DialogTitle className='flex text-start gap-2'>
-            {isNew ? 'Nova Seção' : 'Editar Seção'}
+            {isNew ? 'Nova Seção' : 'Configurações da Seção'}
           </DialogTitle>
-          <DialogDescription className='text-start text-sm text-muted-foreground'>
+          <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
             Configure o nome, código (sufixo), estilo e camadas ativas para este
             segmento de seções
           </DialogDescription>
@@ -108,57 +108,45 @@ export function SegmentEditDialog({
 
         <div className='flex flex-col gap-3 overflow-y-auto flex-1'>
           {/* Nome */}
-          <div className='space-y-1.5'>
-            <Label htmlFor='segment-name' className='text-sm font-semibold'>
-              Nome
-            </Label>
+          <div className='flex  gap-2'>
             <Input
               id='segment-name'
+              label='Nome'
               type='text'
               placeholder='Ex: Humanizado, Técnico...'
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
+              className='flex-1'
             />
-          </div>
 
-          {/* Code (Sufixo) */}
-          <div className='space-y-1.5'>
-            <Label htmlFor='segment-code' className='text-sm font-semibold'>
-              Code (Sufixo)
-            </Label>
-            <Input
-              id='segment-code'
-              type='text'
-              placeholder='Ex: hmzd, tec, ext...'
-              value={code}
-              onChange={(e) => onCodeChange(e.target.value)}
-            />
-            <p className='text-xs text-muted-foreground'>
-              Este código será adicionado como sufixo nas cenas duplicadas. Ex:
-              a_
-              {code || 'code'}
-            </p>
+            <div className='w-1/2'>
+              {/* Code (Sufixo) */}
+              <Input
+                id='segment-code'
+                label='Código'
+                type='text'
+                placeholder='Ex: hmzd, tec, ext...'
+                value={code}
+                tooltip={`Este código será adicionado como sufixo nas cenas duplicadas. Ex: a_
+                ${code || 'code'}`}
+                onChange={(e) => onCodeChange(e.target.value)}
+              />
+            </div>
           </div>
-
           {/* Estilo */}
           <div className='w-full flex items-end justify-between gap-x-3'>
-            <div className='space-y-1.5 items-center justify-center w-full'>
-              <Label htmlFor='segment-style' className='text-sm font-semibold'>
-                Estilo
-              </Label>
-              <Select value={style} onValueChange={onStyleChange}>
-                <SelectTrigger className='w-full'>
-                  <SelectValue placeholder='Selecione um estilo' />
-                </SelectTrigger>
-                <SelectContent className='max-h-[200px]'>
-                  {availableStyles.map((styleOption) => (
-                    <SelectItem key={styleOption} value={styleOption}>
-                      {styleOption}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <Select value={style} onValueChange={onStyleChange} label='Estilo'>
+              <SelectTrigger className='w-full'>
+                <SelectValue placeholder='Selecione um estilo' />
+              </SelectTrigger>
+              <SelectContent className='max-h-[200px]'>
+                {availableStyles.map((styleOption) => (
+                  <SelectItem key={styleOption} value={styleOption}>
+                    {styleOption}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {onImportStyle && (
               <Button
                 size='sm'

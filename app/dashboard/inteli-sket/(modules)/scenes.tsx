@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { PlanItem } from '@/components/PlanItem';
-import { Loader2, FileText } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SceneGroup, useScenes } from '@/hooks/useScenes';
 import {
@@ -76,7 +76,7 @@ function ScenesComponent() {
     [groups]
   );
 
-  const handleAddGroup = () => {
+  const handleAddGroup = async () => {
     if (!newGroupName.trim()) {
       toast.error('Digite um nome para o grupo');
       return;
@@ -89,19 +89,21 @@ function ScenesComponent() {
     };
 
     const updatedGroups = [...groups, newGroup];
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
 
     setGroups(updatedGroups);
     setNewGroupName('');
     setIsGroupDialogOpen(false);
 
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    await saveToJson(updatedData);
 
     toast.success('Grupo adicionado com sucesso!');
   };
 
-  const handleAddScene = () => {
+  const handleAddScene = async () => {
     if (!newSceneTitle.trim()) {
       toast.error('Digite um título para a cena');
       return;
@@ -143,12 +145,15 @@ function ScenesComponent() {
       setGroups(updatedGroups);
     }
 
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
+
     setNewSceneTitle('');
     setIsSceneDialogOpen(false);
 
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    await saveToJson(updatedData);
 
     toast.success('Cena adicionada com sucesso!');
   };
@@ -166,11 +171,15 @@ function ScenesComponent() {
     });
     if (!confirmed) return;
 
-    setGroups(groups.filter((group) => group.id !== groupId));
+    const updatedGroups = groups.filter((group) => group.id !== groupId);
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
 
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    setGroups(updatedGroups);
+
+    await saveToJson(updatedData);
 
     toast.success('Grupo removido com sucesso!');
   };
@@ -184,7 +193,7 @@ function ScenesComponent() {
     setIsGroupEditDialogOpen(true);
   };
 
-  const handleConfirmEditGroup = () => {
+  const handleConfirmEditGroup = async () => {
     if (!editingGroupId || !editingGroupName.trim()) {
       toast.error('Nome inválido');
       return;
@@ -198,15 +207,17 @@ function ScenesComponent() {
       return;
     }
 
-    setGroups(
-      groups.map((g) =>
-        g.id === editingGroupId ? { ...g, name: editingGroupName.trim() } : g
-      )
+    const updatedGroups = groups.map((g) =>
+      g.id === editingGroupId ? { ...g, name: editingGroupName.trim() } : g
     );
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
 
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    setGroups(updatedGroups);
+
+    await saveToJson(updatedData);
 
     toast.success('Grupo renomeado com sucesso!');
     setIsGroupEditDialogOpen(false);
@@ -224,56 +235,60 @@ function ScenesComponent() {
     });
     if (!confirmed) return;
 
-    setGroups(
-      groups.map((group) => {
-        if (group.id === groupId) {
-          return {
-            ...group,
-            segments: group.segments.filter(
-              (segment) => segment.id !== segmentId
-            ),
-          };
-        }
-        return group;
-      })
-    );
+    const updatedGroups = groups.map((group) => {
+      if (group.id === groupId) {
+        return {
+          ...group,
+          segments: group.segments.filter(
+            (segment) => segment.id !== segmentId
+          ),
+        };
+      }
+      return group;
+    });
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
 
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    setGroups(updatedGroups);
+
+    await saveToJson(updatedData);
 
     toast.success('Cena removida com sucesso!');
   };
 
-  const handleDuplicateScene = (groupId: string, segment: Scene) => {
-    setGroups(
-      groups.map((g) => {
-        if (g.id === groupId) {
-          return {
-            ...g,
-            segments: [
-              ...g.segments,
-              {
-                ...segment,
-                id: Date.now().toString(),
-                name: `${segment.name} (cópia)`,
-              },
-            ],
-          };
-        }
-        return g;
-      })
-    );
+  const handleDuplicateScene = async (groupId: string, segment: Scene) => {
+    const updatedGroups = groups.map((g) => {
+      if (g.id === groupId) {
+        return {
+          ...g,
+          segments: [
+            ...g.segments,
+            {
+              ...segment,
+              id: Date.now().toString(),
+              name: `${segment.name} (cópia)`,
+            },
+          ],
+        };
+      }
+      return g;
+    });
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
 
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    setGroups(updatedGroups);
+
+    await saveToJson(updatedData);
 
     toast.success('Cena duplicada!');
   };
 
   const handleApplyScene = async (segment: Scene) => {
-    await applySceneConfig(segment.name, {
+    await applySceneConfig(segment.name, segment.code, {
       style: segment.style,
       cameraType: segment.cameraType,
       activeLayers: segment.activeLayers,
@@ -327,7 +342,7 @@ function ScenesComponent() {
     setEditActiveLayers([]);
   };
 
-  const handleSaveEditScene = async () => {
+  const handleSaveEditScene = useCallback(async () => {
     if (!editSceneName.trim() || !editingScene) {
       toast.error('Digite um nome para a cena');
       return;
@@ -351,17 +366,32 @@ function ScenesComponent() {
       ),
     }));
 
-    setData({
+    const updatedData = {
       ...data,
       groups: updatedGroups,
-    });
+    };
 
-    await saveToJson();
+    // Atualizar o estado
+    setData(updatedData);
+
+    // Passar os dados atualizados diretamente para evitar problema de closure
+    await saveToJson(updatedData);
 
     setIsEditDialogOpen(false);
     setEditingScene(null);
     toast.success('Configuração salva no JSON!');
-  };
+  }, [
+    editSceneName,
+    editingScene,
+    groups,
+    data,
+    editSceneCode,
+    editSceneStyle,
+    editCameraType,
+    editActiveLayers,
+    setData,
+    saveToJson,
+  ]);
 
   const menuItems = [
     {

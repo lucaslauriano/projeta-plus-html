@@ -74,7 +74,7 @@ export function ExportXLSXModal({
             <FileSpreadsheet className='w-5 h-5' />
             Exportar Consolidado
           </DialogTitle>
-          <DialogDescription className='flex text-start items-center justify-start'>
+          <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
             Selecione as categorias e o formato de arquivo
           </DialogDescription>
         </DialogHeader>

@@ -296,7 +296,7 @@ function PlansComponent() {
 
   const handleApplyPlan = async (segment: Plan) => {
     // Segment já tem todas as configurações necessárias
-    await applyPlanConfig(segment.name!, {
+    await applyPlanConfig(segment.name!, segment.code, {
       style: segment.style,
       cameraType: segment.cameraType,
       activeLayers: segment.activeLayers,

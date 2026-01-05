@@ -431,7 +431,11 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
   );
 
   const applyConfig = useCallback(
-    async (name: string, config: Partial<ViewConfig>) => {
+    async (
+      name: string,
+      code: string | undefined,
+      config: Partial<ViewConfig>
+    ) => {
       if (!isAvailable) {
         toast.info('Configuração aplicada (modo simulação)');
         return;
@@ -440,24 +444,28 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
       setPendingAction('applyConfig');
       await callSketchupMethod(options.rubyMethods.applyConfig, {
         name,
+        code,
         config,
       });
     },
     [callSketchupMethod, isAvailable, options]
   );
 
-  const saveToJson = useCallback(async () => {
-    if (!isAvailable) {
-      toast.info('Configurações salvas (modo simulação)');
-      return;
-    }
+  const saveToJson = useCallback(
+    async (dataToSave?: unknown) => {
+      if (!isAvailable) {
+        toast.info('Configurações salvas (modo simulação)');
+        return;
+      }
 
-    setPendingAction('save');
-    await callSketchupMethod(
-      options.rubyMethods.saveToJson,
-      data as unknown as Record<string, unknown>
-    );
-  }, [callSketchupMethod, data, isAvailable, options]);
+      setPendingAction('save');
+      await callSketchupMethod(
+        options.rubyMethods.saveToJson,
+        (dataToSave || data) as unknown as Record<string, unknown>
+      );
+    },
+    [callSketchupMethod, data, isAvailable, options]
+  );
 
   const loadFromJson = useCallback(async () => {
     if (!isAvailable) {

@@ -40,7 +40,9 @@ export function GroupNameEditDialog({
       <DialogContent>
         <DialogHeader className='items-start text-left'>
           <DialogTitle>Editar nome do grupo</DialogTitle>
-          <DialogDescription>Digite o novo nome para o grupo</DialogDescription>
+          <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
+            Digite o novo nome para o grupo
+          </DialogDescription>
         </DialogHeader>
         <div className='py-2'>
           <Input

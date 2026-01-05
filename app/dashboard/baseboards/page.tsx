@@ -34,7 +34,7 @@ export default function BaseboardsDashboardPage() {
           description='Clique no título para acessar e no bloco desejado para importá-lo'
         />
 
-        <PageContent className='space-y-4'>
+        <PageContent className='space-y-4 pb-2'>
           <div className='flex gap-2 justify-end'>
             <Button
               variant='outline'
@@ -74,7 +74,7 @@ export default function BaseboardsDashboardPage() {
                   value={group.id}
                   className='border border-b rounded-xl overflow-hidden bg-muted/20'
                 >
-                  <AccordionTrigger className='px-4 py-3 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70'>
+                  <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70'>
                     <div className='flex items-center gap-2 font-semibold text-sm'>
                       <Folder className='w-4 h-4 text-gray-500' />
                       {group.title}

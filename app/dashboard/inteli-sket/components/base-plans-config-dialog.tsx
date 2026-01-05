@@ -138,7 +138,7 @@ export function BasePlansConfigDialog({
           <DialogTitle className='flex text-start gap-2 '>
             Configurações Base e Forro
           </DialogTitle>
-          <DialogDescription className='text-start text-sm text-muted-foreground'>
+          <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
             Configure os estilos e camadas que serão usados nas plantas de base
             e forro
           </DialogDescription>

@@ -64,7 +64,9 @@ export function AddItemWithGroupDialog({
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader className='items-start text-left'>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
+            {description}
+          </DialogDescription>
         </DialogHeader>
         <div className='grid gap-4 py-2'>
           <div className='space-y-2'>

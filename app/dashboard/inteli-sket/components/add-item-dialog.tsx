@@ -46,7 +46,7 @@ export function AddItemDialog({
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader className='items-start text-left'>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription className='text-left'>
+          <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
             {description}
           </DialogDescription>
         </DialogHeader>

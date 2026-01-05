@@ -31,7 +31,9 @@ export function DeleteConfirmDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogDescription className='text-start text-xs text-muted-foreground'>
+            {description}
+          </DialogDescription>
         </DialogHeader>
         <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
           <Button

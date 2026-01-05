@@ -155,7 +155,7 @@ export function ViewConfigEditDialog({
 
           <div className='w-full flex items-end justify-between gap-x-3'>
             <Select label='Estilo' value={style} onValueChange={onStyleChange}>
-              <SelectTrigger id='item-style-trigger'>
+              <SelectTrigger className='w-full'>
                 <SelectValue placeholder='Selecione um estilo' />
               </SelectTrigger>
               <SelectContent>

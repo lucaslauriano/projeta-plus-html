@@ -102,7 +102,7 @@ export function SelectScenesDialog({
           <DialogTitle className='flex text-start gap-2'>
             Selecionar Cenas para Duplicar
           </DialogTitle>
-          <DialogDescription className='text-start text-sm text-muted-foreground'>
+          <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
             Selecione as cenas que deseja duplicar com as configurações do
             segmento
           </DialogDescription>

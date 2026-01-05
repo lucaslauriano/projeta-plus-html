@@ -60,7 +60,7 @@ export function DuplicateSceneDialog({
       <DialogContent className='sm:max-w-[425px] flex flex-col gap-4'>
         <DialogHeader className='items-start text-left'>
           <DialogTitle>Duplicar cena</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
             Selecione um estilo e adicione um sufixo para duplicar a cena atual.
           </DialogDescription>
         </DialogHeader>

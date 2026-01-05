@@ -51,7 +51,7 @@ export default function AddLayerWithGroupDialogs({
         <DialogContent className='sm:max-w-[425px]'>
           <DialogHeader className='items-start text-left'>
             <DialogTitle>Criar nova tag</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
               Crie tags com cores personalizadas para organizar seu modelo.
             </DialogDescription>
           </DialogHeader>

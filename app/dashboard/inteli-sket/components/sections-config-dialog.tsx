@@ -92,7 +92,7 @@ export function SectionsConfigDialog({
           <DialogTitle className='flex text-start gap-2 '>
             Configurações de seções
           </DialogTitle>
-          <DialogDescription className='text-start text-sm text-muted-foreground'>
+          <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
             Configure os estilos e camadas que serão usados na criação de todas
             as seções (Seções Gerais, Seções por Ambiente e Seções Individuais)
           </DialogDescription>

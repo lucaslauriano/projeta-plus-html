@@ -6,19 +6,6 @@ import type { ViewConfigSegment } from '@/types/global';
 
 export type Plan = ViewConfigSegment;
 
-type PlanConfig = {
-  id: string;
-  name: string;
-  style: string;
-  cameraType: string;
-  activeLayers: string[];
-};
-
-type PlansData = {
-  groups: unknown[];
-  plans: PlanConfig[];
-};
-
 export function usePlanEditor(
   data: { groups: unknown; plans: unknown[] },
   availableStyles: string[],
@@ -30,7 +17,7 @@ export function usePlanEditor(
     activeLayers: string[];
   } | null,
   setData: (data: unknown) => void,
-  saveToJson: () => Promise<void>
+  saveToJson: (dataToSave?: unknown) => Promise<void>
 ) {
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [editPlanName, setEditPlanName] = useState('');
@@ -46,8 +33,6 @@ export function usePlanEditor(
       setEditPlanCode(
         plan.code || plan.name?.toLowerCase().replace(/\s+/g, '_') || ''
       );
-
-      // Plan já tem todas as configurações como segment
       setEditPlanStyle(plan.style || availableStyles[0] || 'PRO_PLANTAS');
       setEditCameraType(plan.cameraType || 'topo_ortogonal');
       setEditActiveLayers(plan.activeLayers || ['Layer0']);
@@ -104,12 +89,17 @@ export function usePlanEditor(
         ),
       }));
 
-      setData({
+      const updatedData = {
         ...data,
         groups: updatedGroups,
-      });
+      };
 
-      await saveToJson();
+      console.log('updatedData', updatedData);
+
+      setData(updatedData);
+
+      // Passar os dados atualizados diretamente para evitar problema de closure
+      await saveToJson(updatedData);
 
       setEditingPlan(null);
       toast.success('Configuração salva no JSON!');

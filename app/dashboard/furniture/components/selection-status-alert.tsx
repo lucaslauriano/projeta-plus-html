@@ -35,7 +35,7 @@ function SelectionStatusAlert({
             : 'text-blue-900 dark:text-blue-100'
         )}
       >
-        {isSelected ? 'Componente selecionado' : 'Nenhum componente válido'}
+        {isSelected ? 'Componente selecionado' : 'Nenhum componente válido!'}
       </AlertTitle>
       <AlertDescription
         className={cn(
@@ -51,4 +51,3 @@ function SelectionStatusAlert({
 }
 
 export default SelectionStatusAlert;
-

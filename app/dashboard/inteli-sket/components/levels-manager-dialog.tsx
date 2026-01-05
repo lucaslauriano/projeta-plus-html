@@ -73,7 +73,7 @@ export function LevelsManagerDialog({
               <DialogTitle className='flex text-start gap-2 text-xl'>
                 Gerenciador de Níveis
               </DialogTitle>
-              <DialogDescription className='text-start text-sm text-muted-foreground'>
+              <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
                 Configure os níveis do projeto e crie as cenas de planta baixa e
                 forro
               </DialogDescription>

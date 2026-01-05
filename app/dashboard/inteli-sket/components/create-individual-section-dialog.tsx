@@ -54,7 +54,7 @@ export function CreateIndividualSectionDialog({
       <DialogContent>
         <DialogHeader className='items-start text-left'>
           <DialogTitle>Criar seção individual</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
             Configure o nome e a direção do seção
           </DialogDescription>
         </DialogHeader>
@@ -74,7 +74,7 @@ export function CreateIndividualSectionDialog({
               value={direction}
               onValueChange={onDirectionChange}
             >
-              <SelectTrigger id='section-direction'>
+              <SelectTrigger className='w-full'>
                 <SelectValue placeholder='Selecione a direção' />
               </SelectTrigger>
               <SelectContent>
