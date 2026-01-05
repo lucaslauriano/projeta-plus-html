@@ -52,7 +52,7 @@ export function CreateIndividualSectionDialog({
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className='items-start text-left'>
           <DialogTitle>Criar seção individual</DialogTitle>
           <DialogDescription>
             Configure o nome e a direção do seção
@@ -60,17 +60,20 @@ export function CreateIndividualSectionDialog({
         </DialogHeader>
         <div className='space-y-4 py-4'>
           <div className='space-y-2'>
-            <Label htmlFor='section-name'>Nome da seção</Label>
             <Input
               id='section-name'
+              label='Nome da seção'
               placeholder='Ex: Cozinha, Banheiro...'
               value={sectionName}
               onChange={(e) => onSectionNameChange(e.target.value)}
             />
           </div>
           <div className='space-y-2'>
-            <Label htmlFor='section-direction'>Direção</Label>
-            <Select value={direction} onValueChange={onDirectionChange}>
+            <Select
+              label='Direção'
+              value={direction}
+              onValueChange={onDirectionChange}
+            >
               <SelectTrigger id='section-direction'>
                 <SelectValue placeholder='Selecione a direção' />
               </SelectTrigger>
@@ -83,15 +86,21 @@ export function CreateIndividualSectionDialog({
             </Select>
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
           <Button
             size='sm'
             variant='outline'
+            className='flex-1'
             onClick={() => onOpenChange(false)}
           >
             Cancelar
           </Button>
-          <Button onClick={onConfirm} size='sm' disabled={disabled}>
+          <Button
+            onClick={onConfirm}
+            size='sm'
+            disabled={disabled}
+            className='flex-1'
+          >
             Criar
           </Button>
         </DialogFooter>

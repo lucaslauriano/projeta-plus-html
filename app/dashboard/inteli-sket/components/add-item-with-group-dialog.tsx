@@ -53,7 +53,7 @@ export function AddItemWithGroupDialog({
   onItemValueChange,
   onSelectedGroupChange,
   groups,
-  groupLabel = 'Grupo (Opcional)',
+  groupLabel = 'Grupo',
   selectedGroup,
   confirmButtonText = 'Criar',
   confirmButtonIcon: Icon,
@@ -83,7 +83,7 @@ export function AddItemWithGroupDialog({
               {groupLabel}
             </label>
             <Select value={selectedGroup} onValueChange={onSelectedGroupChange}>
-              <SelectTrigger className='h-11 rounded-xl border-2 w-full'>
+              <SelectTrigger>
                 <SelectValue placeholder='Sem Grupo' />
               </SelectTrigger>
               <SelectContent>
@@ -97,10 +97,11 @@ export function AddItemWithGroupDialog({
             </Select>
           </div>
         </div>
-        <DialogFooter className='flex justify-between gap-2'>
+        <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
           <Button
             size='sm'
             variant='outline'
+            className='flex-1'
             onClick={() => {
               onOpenChange(false);
               onItemValueChange('');
@@ -108,7 +109,7 @@ export function AddItemWithGroupDialog({
           >
             {cancelButtonText}
           </Button>
-          <Button onClick={onAdd} size='sm'>
+          <Button onClick={onAdd} size='sm' className='flex-1'>
             {Icon && <Icon className='w-4 h-4 mr-2' />}
             {confirmButtonText}
           </Button>

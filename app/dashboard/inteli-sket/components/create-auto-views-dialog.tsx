@@ -13,7 +13,6 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 
 interface CreateAutoViewsDialogProps {
   open: boolean;
@@ -41,33 +40,37 @@ export function CreateAutoViewsDialog({
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
+        <DialogHeader className='text-start'>
           <DialogTitle>Criar Seções por Ambiente</DialogTitle>
           <DialogDescription>
             Selecione um objeto no modelo e informe o nome do ambiente
           </DialogDescription>
         </DialogHeader>
-        <div className='space-y-4 py-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='environment-name'>Nome do Ambiente</Label>
-            <Input
-              id='environment-name'
-              placeholder='Ex: cozinha, banheiro...'
-              value={environmentName}
-              onChange={(e) => onEnvironmentNameChange(e.target.value)}
-            />
-          </div>
+        <div className='space-y-4 py-2'>
+          <Input
+            id='environment-name'
+            label='Nome do Ambiente'
+            placeholder='Ex: cozinha, banheiro...'
+            value={environmentName}
+            onChange={(e) => onEnvironmentNameChange(e.target.value)}
+          />
         </div>
-        <DialogFooter>
+        <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
           <Button
             size='sm'
             variant='outline'
             onClick={() => onOpenChange(false)}
+            className='flex-1'
           >
             Cancelar
           </Button>
-          <Button size='sm' onClick={onConfirm} disabled={disabled}>
-            Criar Vistas
+          <Button
+            size='sm'
+            onClick={onConfirm}
+            disabled={disabled}
+            className='flex-1'
+          >
+            Criar
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -135,7 +135,6 @@ export function useLayers() {
           // Manter todas as tags existentes
           prev.tags.forEach((tag) => rootTagMap.set(tag.name, tag));
 
-          // Adicionar apenas novas tags do modelo
           newData.tags.forEach((newTag) => {
             if (!rootTagMap.has(newTag.name)) {
               rootTagMap.set(newTag.name, newTag);

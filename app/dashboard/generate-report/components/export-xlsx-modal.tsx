@@ -163,15 +163,19 @@ export function ExportXLSXModal({
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
           <Button
+            size='sm'
             variant='outline'
+            className='flex-1'
             onClick={() => onOpenChange(false)}
             disabled={isBusy}
           >
             Cancelar
           </Button>
           <Button
+            size='sm'
+            className='flex-1'
             onClick={handleExport}
             disabled={selectedCategories.length === 0 || isBusy}
           >

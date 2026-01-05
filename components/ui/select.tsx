@@ -139,7 +139,7 @@ function SelectTrigger({
       data-slot='select-trigger'
       data-size={size}
       className={cn(
-        'flex h-9 w-full rounded-md bg-background dark:bg-background/10 px-3 py-1 text-sm transition-colors',
+        'flex h-8 w-full rounded-md bg-background dark:bg-background/10 px-3 py-1 text-sm transition-colors',
         ' border border-border',
         'flex items-center justify-between gap-2',
         'file:border-0 file:bg-transparent file:text-sm file:font-medium',

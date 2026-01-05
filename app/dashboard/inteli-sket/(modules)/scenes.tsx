@@ -107,6 +107,11 @@ function ScenesComponent() {
       return;
     }
 
+    if (!selectedGroup.trim() || selectedGroup === 'root') {
+      toast.error('Selecione um grupo para a cena');
+      return;
+    }
+
     const newSegment = {
       id: Date.now().toString(),
       name: newSceneTitle.trim(),
@@ -379,7 +384,7 @@ function ScenesComponent() {
   return (
     <>
       <AddItemDialog
-        title='Adicionar novo grupo'
+        title='Criar novo grupo'
         description='Organize suas cenas em grupos personalizados.'
         isOpen={isGroupDialogOpen}
         inputValue={newGroupName}
@@ -396,11 +401,9 @@ function ScenesComponent() {
         isOpen={isSceneDialogOpen}
         itemValue={newSceneTitle}
         selectedGroup={selectedGroup}
-        confirmButtonIcon={FileText}
-        title='Adicionar Nova Cena'
+        title='Criar nova cena'
         description='Crie uma nova cena e escolha em qual grupo ela ficará.'
-        confirmButtonText='Criar Cena'
-        itemLabel='Nome da Cena'
+        itemLabel='Nome da cena'
         itemPlaceholder='Ex: Vista Frontal'
         onAdd={handleAddScene}
         onKeyPress={handleSceneDialogKeyPress}

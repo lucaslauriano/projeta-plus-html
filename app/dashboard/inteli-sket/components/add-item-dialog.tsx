@@ -63,10 +63,11 @@ export function AddItemDialog({
             />
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
           <Button
             size='sm'
             variant='outline'
+            className='flex-1'
             onClick={() => {
               onOpenChange(false);
               onInputChange('');
@@ -74,7 +75,7 @@ export function AddItemDialog({
           >
             {cancelButtonText}
           </Button>
-          <Button onClick={onAdd} size='sm'>
+          <Button onClick={onAdd} size='sm' className='flex-1'>
             {confirmButtonText}
           </Button>
         </DialogFooter>

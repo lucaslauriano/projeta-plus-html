@@ -17,7 +17,11 @@ import {
 interface SelectScenesDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  availableScenes: Array<{ name: string; label?: string; description?: string }>;
+  availableScenes: Array<{
+    name: string;
+    label?: string;
+    description?: string;
+  }>;
   selectedScenes: string[];
   onSelectedScenesChange: (scenes: string[]) => void;
   onConfirm: () => void;
@@ -34,7 +38,9 @@ export function SelectScenesDialog({
   isBusy = false,
 }: SelectScenesDialogProps) {
   const [sceneFilter, setSceneFilter] = useState('');
-  const [activeQuickFilter, setActiveQuickFilter] = useState<string | null>(null);
+  const [activeQuickFilter, setActiveQuickFilter] = useState<string | null>(
+    null
+  );
 
   const filteredScenes = useMemo(() => {
     let scenes = availableScenes;
@@ -42,14 +48,12 @@ export function SelectScenesDialog({
     // Aplicar filtro rápido primeiro
     if (activeQuickFilter === 'ABCD') {
       // Cenas que terminam com A, B, C ou D (opcionalmente seguidas de números)
-      scenes = scenes.filter((scene) => 
+      scenes = scenes.filter((scene) =>
         /[_\s]?[ABCD](?:\d+)?$/i.test(scene.name)
       );
     } else if (activeQuickFilter === 'SUFFIX') {
       // Cenas que contêm "_" seguido de uma ou mais letras
-      scenes = scenes.filter((scene) => 
-        /_[A-Za-z]+(?:\d+)?$/.test(scene.name)
-      );
+      scenes = scenes.filter((scene) => /_[A-Za-z]+(?:\d+)?$/.test(scene.name));
     }
 
     // Aplicar filtro de busca por texto
@@ -106,8 +110,16 @@ export function SelectScenesDialog({
 
         <div className='flex flex-col gap-3 overflow-y-auto flex-1'>
           <div className='relative'>
-            <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground' />
             <Input
+              leftIcon={<Search className='w-4 h-4 text-muted-foreground' />}
+              rightIcon={
+                sceneFilter && (
+                  <X
+                    className='w-4 h-4 text-muted-foreground cursor-pointer'
+                    onClick={() => setSceneFilter('')}
+                  />
+                )
+              }
               type='text'
               placeholder='Filtrar cenas...'
               value={sceneFilter}
@@ -198,6 +210,7 @@ export function SelectScenesDialog({
             Cancelar
           </Button>
           <Button
+            size='sm'
             className='flex-1'
             onClick={onConfirm}
             disabled={isBusy || selectedScenes.length === 0}
@@ -209,4 +222,3 @@ export function SelectScenesDialog({
     </Dialog>
   );
 }
-

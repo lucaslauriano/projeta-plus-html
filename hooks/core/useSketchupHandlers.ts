@@ -99,7 +99,7 @@ export function useSketchupHandlers<TData>(
           config.onAdd!(result, context);
           onReload?.();
         } else {
-          context.toast.error(result.message || 'Erro ao adicionar');
+          context.toast.error(result.message || 'Erro ao criar');
         }
       };
     }

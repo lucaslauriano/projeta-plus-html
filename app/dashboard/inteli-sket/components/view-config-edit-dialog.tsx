@@ -193,8 +193,16 @@ export function ViewConfigEditDialog({
             </label>
 
             <div className='relative'>
-              <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground' />
               <Input
+                leftIcon={<Search className='w-4 h-4 text-muted-foreground' />}
+                rightIcon={
+                  layerFilter && (
+                    <X
+                      className='w-4 h-4 text-muted-foreground cursor-pointer'
+                      onClick={() => setLayerFilter('')}
+                    />
+                  )
+                }
                 type='text'
                 placeholder='Filtrar camadas...'
                 value={layerFilter}
@@ -267,9 +275,9 @@ export function ViewConfigEditDialog({
         </div>
         <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
           <Button
+            size='sm'
             variant='outline'
             onClick={onCancel}
-            size='sm'
             className='flex-1'
           >
             Cancelar

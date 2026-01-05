@@ -67,7 +67,7 @@ export function GroupAccordion<T extends { id: string }>({
                     onAddSegment(group.id);
                   }}
                   className='opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer pointer-events-auto hover:text-foreground'
-                  title='Adicionar segmento'
+                  title='Criar segmento'
                   role='button'
                   tabIndex={0}
                   onKeyDown={(e) => {

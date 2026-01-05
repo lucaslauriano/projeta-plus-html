@@ -196,20 +196,24 @@ export function BasePlansConfigDialog({
 
             <div className='space-y-2'>
               <div className='relative'>
-                <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground' />
                 <Input
+                  leftIcon={
+                    <Search className='w-4 h-4 text-muted-foreground' />
+                  }
+                  rightIcon={
+                    layerFilter && (
+                      <X
+                        className='w-4 h-4 text-muted-foreground cursor-pointer'
+                        onClick={() => setLayerFilter('')}
+                      />
+                    )
+                  }
                   type='text'
                   placeholder='Filtrar camadas...'
                   value={layerFilter}
                   onChange={(e) => setLayerFilter(e.target.value)}
                   className='pl-9'
                 />
-                {layerFilter && (
-                  <X
-                    className='absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground cursor-pointer'
-                    onClick={() => setLayerFilter('')}
-                  />
-                )}
               </div>
 
               <div className='flex items-center gap-2 flex-wrap mt-4'>
@@ -288,7 +292,7 @@ export function BasePlansConfigDialog({
           >
             Fechar
           </Button>
-          <Button className='flex-1' onClick={onSave}>
+          <Button className='flex-1' onClick={onSave} size='sm'>
             Salvar
           </Button>
         </DialogFooter>

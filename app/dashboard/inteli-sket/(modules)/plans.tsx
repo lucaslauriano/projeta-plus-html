@@ -201,6 +201,14 @@ function PlansComponent() {
       return;
     }
 
+    if (
+      !planDialog.selectedGroup.trim() ||
+      planDialog.selectedGroup === 'root'
+    ) {
+      toast.error('Selecione um grupo para a planta');
+      return;
+    }
+
     const newSegment = {
       id: Date.now().toString(),
       name: planDialog.title.trim(),
@@ -368,7 +376,7 @@ function PlansComponent() {
       <AddItemDialog
         isOpen={groupDialog.isOpen}
         onOpenChange={groupDialog.setOpen}
-        title='Adicionar novo grupo'
+        title='Criar novo grupo'
         description='Organize suas plantas em grupos personalizados.'
         inputLabel='Nome do grupo'
         inputPlaceholder='Ex: Pavimento Térreo'
@@ -383,8 +391,7 @@ function PlansComponent() {
         isOpen={planDialog.isOpen}
         itemValue={planDialog.title}
         selectedGroup={planDialog.selectedGroup}
-        confirmButtonIcon={Plus}
-        title='Adicionar nova planta'
+        title='Criar nova planta'
         description='Organize suas plantas em grupos personalizados.'
         itemLabel='Nome da planta'
         itemPlaceholder='Ex: Planta de Arquitetura'

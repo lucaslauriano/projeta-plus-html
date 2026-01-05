@@ -33,11 +33,21 @@ export function DeleteConfirmDialog({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <DialogFooter>
-          <Button variant='outline' onClick={onCancel}>
+        <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
+          <Button
+            size='sm'
+            variant='outline'
+            onClick={onCancel}
+            className='flex-1'
+          >
             Cancelar
           </Button>
-          <Button variant='destructive' onClick={onConfirm}>
+          <Button
+            size='sm'
+            variant='destructive'
+            onClick={onConfirm}
+            className='flex-1'
+          >
             Confirmar
           </Button>
         </DialogFooter>

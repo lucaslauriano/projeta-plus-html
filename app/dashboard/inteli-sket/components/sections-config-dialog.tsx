@@ -90,7 +90,7 @@ export function SectionsConfigDialog({
       <DialogContent className='sm:max-w-[550px] max-h-[90vh] flex flex-col'>
         <DialogHeader>
           <DialogTitle className='flex text-start gap-2 '>
-            Configurações de Seções
+            Configurações de seções
           </DialogTitle>
           <DialogDescription className='text-start text-sm text-muted-foreground'>
             Configure os estilos e camadas que serão usados na criação de todas
@@ -100,23 +100,18 @@ export function SectionsConfigDialog({
 
         <div className='flex flex-col gap-3 overflow-y-auto flex-1'>
           <div className='w-full flex items-end justify-between gap-x-3'>
-            <div className='space-y-1.5 items-center justify-center w-full'>
-              <label className='flex items-center gap-2 text-sm font-semibold text-foreground w-full'>
-                Estilo:
-              </label>
-              <Select value={style} onValueChange={onStyleChange}>
-                <SelectTrigger className='w-full'>
-                  <SelectValue placeholder='Selecione um estilo' />
-                </SelectTrigger>
-                <SelectContent className='max-h-[200px]'>
-                  {availableStyles.map((styleOption) => (
-                    <SelectItem key={styleOption} value={styleOption}>
-                      {styleOption}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <Select value={style} onValueChange={onStyleChange} label='Estilo'>
+              <SelectTrigger className='w-full'>
+                <SelectValue placeholder='Selecione um estilo' />
+              </SelectTrigger>
+              <SelectContent className='max-h-[200px]'>
+                {availableStyles.map((styleOption) => (
+                  <SelectItem key={styleOption} value={styleOption}>
+                    {styleOption}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {onImportStyle && (
               <Button
                 size='sm'
@@ -130,25 +125,24 @@ export function SectionsConfigDialog({
           </div>
 
           <div className='space-y-2'>
-            <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
-              Camadas Ativas
-            </label>
-
-            <div className='relative'>
-              <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground' />
+            <div className=''>
               <Input
+                leftIcon={<Search className='w-4 h-4 text-muted-foreground' />}
                 type='text'
-                placeholder='Filtrar camadas...'
+                label='Camadas ativas'
+                placeholder='Filtrar camadas'
                 value={layerFilter}
                 onChange={(e) => setLayerFilter(e.target.value)}
                 className='pl-9 '
+                rightIcon={
+                  layerFilter && (
+                    <X
+                      className='w-4 h-4 text-muted-foreground cursor-pointer'
+                      onClick={() => setLayerFilter('')}
+                    />
+                  )
+                }
               />
-              {layerFilter && (
-                <X
-                  className='absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground cursor-pointer'
-                  onClick={() => setLayerFilter('')}
-                />
-              )}
             </div>
 
             <div className='flex items-center gap-2 flex-wrap mt-4'>
@@ -220,13 +214,13 @@ export function SectionsConfigDialog({
         <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
           <Button
             size='sm'
-            className='flex-1'
             variant='outline'
+            className='flex-1'
             onClick={() => onOpenChange(false)}
           >
             Fechar
           </Button>
-          <Button className='flex-1' onClick={onSave}>
+          <Button className='flex-1' onClick={onSave} size='sm'>
             Salvar
           </Button>
         </DialogFooter>

@@ -42,24 +42,23 @@ export function GroupNameEditDialog({
           <DialogTitle>Editar nome do grupo</DialogTitle>
           <DialogDescription>Digite o novo nome para o grupo</DialogDescription>
         </DialogHeader>
-        <div className='space-y-4 py-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='group-name'>Nome do grupo</Label>
-            <Input
-              id='group-name'
-              placeholder='Ex: Térreo, Pavimento 1...'
-              value={groupName}
-              onChange={(e) => onGroupNameChange(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoFocus
-            />
-          </div>
+        <div className='py-2'>
+          <Input
+            id='group-name'
+            placeholder='Ex: Térreo, Pavimento 1...'
+            value={groupName}
+            label='Nome do grupo'
+            onChange={(e) => onGroupNameChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            autoFocus
+          />
         </div>
-        <DialogFooter>
+        <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
           <Button
             size='sm'
             variant='outline'
             onClick={() => onOpenChange(false)}
+            className='flex-1'
           >
             Cancelar
           </Button>
@@ -67,6 +66,7 @@ export function GroupNameEditDialog({
             onClick={onConfirm}
             size='sm'
             disabled={disabled || !groupName.trim()}
+            className='flex-1'
           >
             Salvar
           </Button>

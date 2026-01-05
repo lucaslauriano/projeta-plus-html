@@ -111,7 +111,7 @@ export function LevelsManagerDialog({
               ) : (
                 <Plus className='w-4 h-4 ' />
               )}
-              Adicionar
+              Criar
             </Button>
           </div>
 

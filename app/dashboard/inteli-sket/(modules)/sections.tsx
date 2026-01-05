@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Grid3x3 } from 'lucide-react';
+import { Grid3x3, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { PlanItem } from '@/components/PlanItem';
@@ -13,8 +13,11 @@ import { CreateIndividualSectionDialog } from '@/app/dashboard/inteli-sket/compo
 import { SectionsConfigDialog } from '@/app/dashboard/inteli-sket/components/sections-config-dialog';
 import { SegmentEditDialog } from '@/app/dashboard/inteli-sket/components/segment-edit-dialog';
 import { SelectScenesDialog } from '@/app/dashboard/inteli-sket/components/select-scenes-dialog';
+import { AddItemDialog } from '@/app/dashboard/inteli-sket/components/add-item-dialog';
+import { AddItemWithGroupDialog } from '@/app/dashboard/inteli-sket/components/add-item-with-group-dialog';
 import { Segment } from 'next/dist/server/app-render/types';
 import { useConfirm } from '@/hooks/useConfirm';
+import { toast } from 'sonner';
 
 export default function SectionsComponent() {
   const {
@@ -90,6 +93,13 @@ export default function SectionsComponent() {
       activeLayers: string[];
     };
   } | null>(null);
+
+  const [isGroupDialogOpen, setIsGroupDialogOpen] = useState(false);
+  const [newGroupName, setNewGroupName] = useState('');
+  const [isSectionDialogOpen, setIsSectionDialogOpen] = useState(false);
+  const [newSectionName, setNewSectionName] = useState('');
+  const [selectedGroupForSection, setSelectedGroupForSection] =
+    useState<string>('root');
 
   useEffect(() => {
     setConfigStyle(settings.style);
@@ -222,20 +232,67 @@ export default function SectionsComponent() {
     setSelectedScenes([]);
   };
 
+  const handleAddGroup = () => {
+    if (!newGroupName.trim()) {
+      toast.error('Digite um nome para o grupo');
+      return;
+    }
+
+    addGroup({ name: newGroupName.trim() });
+    setNewGroupName('');
+    setIsGroupDialogOpen(false);
+    toast.success('Grupo adicionado com sucesso!');
+  };
+
+  const handleAddSectionToGroup = () => {
+    if (!newSectionName.trim()) {
+      toast.error('Digite um nome para a seção');
+      return;
+    }
+
+    const params = {
+      name: newSectionName.trim(),
+      code: newSectionName.trim().toLowerCase().replace(/\s+/g, '_'),
+      style: settings.style || 'PRO_VISTAS',
+      activeLayers: settings.activeLayers || [],
+    };
+
+    if (selectedGroupForSection === 'root') {
+      // Criar novo grupo com a seção
+      addGroup({
+        name: newSectionName.trim(),
+      });
+      // Usar o último grupo criado (assumindo que addGroup retorna ou atualiza data.groups)
+      setTimeout(() => {
+        const lastGroup = data.groups[data.groups.length - 1];
+        if (lastGroup) {
+          addSegment(lastGroup.id, params);
+        }
+      }, 100);
+    } else {
+      addSegment(selectedGroupForSection, params);
+    }
+
+    setNewSectionName('');
+    setSelectedGroupForSection('root');
+    setIsSectionDialogOpen(false);
+    toast.success('Seção adicionada com sucesso!');
+  };
+
   const menuItems = [
     {
       label: 'Criar grupo',
-      action: () => alert('TODO:Criar grupo'),
+      action: () => setIsGroupDialogOpen(true),
       hasDivider: false,
     },
     {
       label: 'Criar seção',
-      action: () => alert('TODO:Criar seção'),
+      action: () => setIsSectionDialogOpen(true),
       hasDivider: false,
     },
     {
       label: 'Editar seções',
-      action: () => alert('TODO:Editar seções'),
+      action: handleOpenConfig,
       hasDivider: true,
     },
     {
@@ -300,6 +357,43 @@ export default function SectionsComponent() {
         onSelectedScenesChange={setSelectedScenes}
         onConfirm={handleConfirmDuplication}
         isBusy={isBusy}
+      />
+
+      <AddItemDialog
+        isOpen={isGroupDialogOpen}
+        onOpenChange={setIsGroupDialogOpen}
+        title='Criar novo grupo'
+        description='Organize suas seções em grupos personalizados.'
+        inputLabel='Nome do grupo'
+        inputPlaceholder='Ex: Cortes Longitudinais'
+        inputValue={newGroupName}
+        onInputChange={setNewGroupName}
+        onAdd={handleAddGroup}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            handleAddGroup();
+          }
+        }}
+      />
+
+      <AddItemWithGroupDialog
+        isOpen={isSectionDialogOpen}
+        onOpenChange={setIsSectionDialogOpen}
+        title='Criar nova seção'
+        description='Crie uma nova seção e escolha em qual grupo ela ficará.'
+        itemLabel='Nome da seção'
+        itemPlaceholder='Ex: Corte AA'
+        itemValue={newSectionName}
+        onItemValueChange={setNewSectionName}
+        selectedGroup={selectedGroupForSection}
+        onSelectedGroupChange={setSelectedGroupForSection}
+        groups={data.groups}
+        onAdd={handleAddSectionToGroup}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            handleAddSectionToGroup();
+          }
+        }}
       />
 
       <div className='flex flex-col gap-2 w-full'>

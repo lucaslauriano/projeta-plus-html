@@ -17,15 +17,25 @@ function Input({
   tooltip,
   error,
   ref,
+  leftIcon,
+  rightIcon,
   ...props
 }: React.ComponentProps<'input'> & {
   label?: string;
   tooltip?: string;
   error?: string;
   ref?: React.Ref<HTMLInputElement>;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }) {
   const inputElement = (
-    <>
+    <div className='relative flex items-center gap-2'>
+      {leftIcon && (
+        <div className='absolute left-3 top-1/2 -translate-y-1/2'>
+          {leftIcon}
+        </div>
+      )}
+
       <input
         id={props.id}
         type={type}
@@ -36,8 +46,13 @@ function Input({
         ref={ref}
         {...props}
       />
+      {rightIcon && (
+        <div className='absolute right-3 top-1/2 -translate-y-1/2'>
+          {rightIcon}
+        </div>
+      )}
       {error && <p className='text-sm text-destructive pt-1'>{error}</p>}
-    </>
+    </div>
   );
 
   if (!label) {

@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useLayers } from '@/hooks/useLayers';
 import TagList from '@/app/dashboard/inteli-sket/components/TagList';
-import LayerDialogs from '@/app/dashboard/inteli-sket/components/layer-dialogs';
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
+import { AddItemDialog } from '@/app/dashboard/inteli-sket/components/add-item-dialog';
+import AddLayerWithGroupDialogs from '@/app/dashboard/inteli-sket/components/add-layer-with-group-dialogs';
 
 export default function LayersComponent() {
   const {
@@ -43,6 +44,12 @@ export default function LayersComponent() {
     name: string;
     type: 'tag' | 'folder';
   } | null>(null);
+
+  const [loadCustomConfirmOpen, setLoadCustomConfirmOpen] = useState(false);
+  const [loadModelConfirmOpen, setLoadModelConfirmOpen] = useState(false);
+  const [saveCustomConfirmOpen, setSaveCustomConfirmOpen] = useState(false);
+  const [restoreDefaultConfirmOpen, setRestoreDefaultConfirmOpen] =
+    useState(false);
 
   const handleAddFolder = async () => {
     if (await addFolder(newFolderName)) {
@@ -104,22 +111,22 @@ export default function LayersComponent() {
     },
     {
       label: 'Importar personalizado',
-      action: () => loadMyTags(),
+      action: () => setLoadCustomConfirmOpen(true),
       hasDivider: false,
     },
     {
       label: 'Importar do modelo',
-      action: () => loadLayers(),
+      action: () => setLoadModelConfirmOpen(true),
       hasDivider: true,
     },
     {
       label: 'Salvar personalizado',
-      action: () => saveToJson(),
+      action: () => setSaveCustomConfirmOpen(true),
       hasDivider: false,
     },
     {
       label: 'Restaurar padrão',
-      action: () => loadDefaultTags(),
+      action: () => setRestoreDefaultConfirmOpen(true),
       hasDivider: false,
     },
     {
@@ -153,26 +160,87 @@ export default function LayersComponent() {
         title='Limpar todas as etiquetas'
         onConfirm={clearAll}
         description='Tem certeza que deseja remover todas as pastas e etiquetas? Esta ação não pode ser desfeita.'
-        confirmText='Limpar tudo'
+        confirmText='Limpar'
         onOpenChange={setClearAllConfirmOpen}
       />
 
       <ConfirmDialog
-        open={importConfirmOpen}
-        onOpenChange={setImportConfirmOpen}
         title='Aplicar no Modelo'
-        description={`Deseja aplicar ${countTags()} etiqueta(s) no modelo SketchUp?`}
         confirmText='Aplicar'
+        description={`Deseja aplicar ${countTags()} etiqueta(s) no modelo SketchUp?`}
+        open={importConfirmOpen}
         onConfirm={importToModel}
+        onOpenChange={setImportConfirmOpen}
       />
 
-      <LayerDialogs
+      <ConfirmDialog
+        title='Importar Personalizado'
+        description='Deseja carregar suas etiquetas personalizadas salvas? As etiquetas atuais serão substituídas.'
+        confirmText='Importar'
+        open={loadCustomConfirmOpen}
+        onOpenChange={setLoadCustomConfirmOpen}
+        onConfirm={() => {
+          loadMyTags();
+          setLoadCustomConfirmOpen(false);
+        }}
+      />
+
+      <ConfirmDialog
+        title='Importar do Modelo'
+        description='Deseja importar as etiquetas (layers/tags) do modelo SketchUp atual? As etiquetas atuais serão substituídas.'
+        confirmText='Importar'
+        open={loadModelConfirmOpen}
+        onOpenChange={setLoadModelConfirmOpen}
+        onConfirm={() => {
+          loadLayers();
+          setLoadModelConfirmOpen(false);
+        }}
+      />
+
+      <ConfirmDialog
+        title='Salvar Personalizado'
+        description={`Deseja salvar suas ${countTags()} etiqueta(s) atuais como configuração personalizada?`}
+        confirmText='Salvar'
+        open={saveCustomConfirmOpen}
+        onOpenChange={setSaveCustomConfirmOpen}
+        onConfirm={() => {
+          saveToJson();
+          setSaveCustomConfirmOpen(false);
+        }}
+      />
+
+      <ConfirmDialog
+        title='Restaurar Padrão'
+        description='Deseja restaurar as etiquetas padrão? Todas as etiquetas atuais serão substituídas.'
+        confirmText='Restaurar'
+        variant='destructive'
+        open={restoreDefaultConfirmOpen}
+        onOpenChange={setRestoreDefaultConfirmOpen}
+        onConfirm={() => {
+          loadDefaultTags();
+          setRestoreDefaultConfirmOpen(false);
+        }}
+      />
+
+      <AddItemDialog
+        title='Criar nova pasta'
+        inputLabel='Nome da Pasta'
+        description='Organize suas tags em pastas personalizadas.'
+        inputPlaceholder='Ex: Estrutura'
+        isOpen={isFolderDialogOpen}
+        inputValue={newFolderName}
+        onAdd={handleAddFolder}
+        onOpenChange={setIsFolderDialogOpen}
+        onInputChange={setNewFolderName}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            handleAddFolder();
+          }
+        }}
+      />
+
+      <AddLayerWithGroupDialogs
         folders={data.folders}
-        isFolderDialogOpen={isFolderDialogOpen}
-        setIsFolderDialogOpen={setIsFolderDialogOpen}
-        newFolderName={newFolderName}
-        setNewFolderName={setNewFolderName}
-        handleAddFolder={handleAddFolder}
         isTagDialogOpen={isTagDialogOpen}
         setIsTagDialogOpen={setIsTagDialogOpen}
         newTagName={newTagName}
