@@ -40,7 +40,7 @@ interface BasePlansConfigDialogProps {
   onCeilingStyleChange: (style: string) => void;
   onCeilingLayersChange: (layers: string[]) => void;
   onCeilingCodeChange?: (code: string) => void;
-  onApplyCurrentState: () => void;
+  onApplyCurrentState: (availableLayers: string[]) => void;
   isBusy?: boolean;
 }
 
@@ -244,7 +244,7 @@ export function BasePlansConfigDialog({
                   size='sm'
                   onClick={() => {
                     setFilterType('current');
-                    onApplyCurrentState();
+                    onApplyCurrentState(availableLayers as string[]);
                   }}
                   disabled={isBusy}
                   className='h-8 text-xs rounded-4xl'

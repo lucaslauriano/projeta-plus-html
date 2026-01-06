@@ -39,7 +39,7 @@ interface ViewConfigEditDialogProps {
   onSelectNoLayers: () => void;
   onSelectAllLayers: () => void;
   onCameraTypeChange: (type: string) => void;
-  onApplyCurrentState: () => void;
+  onApplyCurrentState: (availableLayers: string[]) => void;
   onActiveLayersChange: (layers: string[]) => void;
   allowedCameraTypes: string[];
   onItemTitleChange?: (title: string) => void;
@@ -237,7 +237,7 @@ export function ViewConfigEditDialog({
               <Button
                 variant='outline'
                 size='sm'
-                onClick={onApplyCurrentState}
+                onClick={() => onApplyCurrentState(availableLayers as string[])}
                 disabled={isBusy}
                 className='h-8 text-xs flex-1'
               >

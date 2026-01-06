@@ -161,9 +161,6 @@ export function SelectScenesDialog({
             >
               Nenhum
             </Button>
-            <span className='text-xs text-muted-foreground ml-auto'>
-              {selectedScenes.length} selecionada(s)
-            </span>
           </div>
 
           <div className='space-y-1.5 max-h-[300px] overflow-y-auto p-3 bg-muted/30 rounded-md border border-border/50'>

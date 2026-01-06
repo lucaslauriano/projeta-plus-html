@@ -1001,6 +1001,7 @@ export function useSections() {
 
   return {
     data,
+    setData,
     isBusy,
     isAvailable,
     getSections,

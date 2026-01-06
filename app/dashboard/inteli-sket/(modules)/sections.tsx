@@ -5,7 +5,7 @@ import { Grid3x3, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { PlanItem } from '@/components/PlanItem';
-import { useSections } from '@/hooks/useSections';
+import { SectionGroup, useSections } from '@/hooks/useSections';
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
 import { GroupAccordion } from '@/app/dashboard/inteli-sket/components/group-accordion';
 import { CreateAutoViewsDialog } from '@/app/dashboard/inteli-sket/components/create-auto-views-dialog';
@@ -18,10 +18,12 @@ import { AddItemWithGroupDialog } from '@/app/dashboard/inteli-sket/components/a
 import { Segment } from 'next/dist/server/app-render/types';
 import { useConfirm } from '@/hooks/useConfirm';
 import { toast } from 'sonner';
+import { SceneGroup } from '@/hooks/useScenes';
 
 export default function SectionsComponent() {
   const {
     data,
+    setData,
     isBusy,
     isAvailable,
     createStandardSections,
@@ -106,6 +108,18 @@ export default function SectionsComponent() {
     setConfigLayers(settings.activeLayers);
   }, [settings]);
 
+  const setGroups = (
+    newGroups: SectionGroup[] | ((prev: SectionGroup[]) => SectionGroup[])
+  ) => {
+    const updatedGroups =
+      typeof newGroups === 'function' ? newGroups(data.groups) : newGroups;
+
+    setData({
+      ...data,
+      groups: updatedGroups,
+    });
+  };
+
   const handleCreateIndividualSection = () => {
     if (!individualSectionName.trim()) {
       return;
@@ -155,6 +169,29 @@ export default function SectionsComponent() {
     setSegmentStyle('PRO_VISTAS');
     setSegmentLayers([]);
     setIsSegmentEditDialogOpen(true);
+  };
+
+  const handleDuplicateSegment = async (groupId: string, segment: Segment) => {
+    const updatedGroups = data.groups.map((g) => {
+      if (g.id === groupId) {
+        return {
+          ...g,
+          segments: [...g.segments, segment],
+        };
+      }
+      return g;
+    });
+
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
+
+    setData(updatedData);
+
+    await saveToJson();
+
+    toast.success('Segmento duplicado!');
   };
 
   const handleEditSegment = (groupId: string, segment: Segment) => {
@@ -456,7 +493,7 @@ export default function SectionsComponent() {
               title={segment.name}
               onEdit={() => handleEditSegment(groupId, segment)}
               onLoadFromJson={() => handleOpenDuplicateDialog(groupId, segment)}
-              onDuplicate={() => handleOpenDuplicateDialog(groupId, segment)}
+              onDuplicate={() => handleDuplicateSegment(groupId, segment)}
               onDelete={() => handleDeleteSegment(groupId, segment.id)}
             />
           )}
