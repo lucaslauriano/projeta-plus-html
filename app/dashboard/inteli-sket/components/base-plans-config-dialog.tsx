@@ -11,7 +11,7 @@ import {
   SelectContent,
   SelectTrigger,
 } from '@/components/ui/select';
-import { Upload, Search, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import {
   Dialog,
   DialogTitle,
@@ -27,17 +27,20 @@ interface BasePlansConfigDialogProps {
   onOpenChange: (open: boolean) => void;
   availableStyles: string[];
   availableLayers: string[];
-  onImportStyle?: () => void;
   onSave: () => void;
   baseStyle: string;
   baseLayers: string[];
+  baseCode?: string;
   ceilingStyle: string;
   ceilingLayers: string[];
+  ceilingCode?: string;
   onBaseStyleChange: (style: string) => void;
   onBaseLayersChange: (layers: string[]) => void;
+  onBaseCodeChange?: (code: string) => void;
   onCeilingStyleChange: (style: string) => void;
   onCeilingLayersChange: (layers: string[]) => void;
-  onApplyCurrentState: () => void;
+  onCeilingCodeChange?: (code: string) => void;
+  onApplyCurrentState: (availableLayers: string[]) => void;
   isBusy?: boolean;
 }
 
@@ -46,16 +49,19 @@ export function BasePlansConfigDialog({
   onOpenChange,
   availableStyles,
   availableLayers,
-  onImportStyle,
   baseStyle,
   onSave,
   baseLayers,
+  baseCode,
   ceilingStyle,
   ceilingLayers,
+  ceilingCode,
   onBaseStyleChange,
   onBaseLayersChange,
+  onBaseCodeChange,
   onCeilingStyleChange,
   onCeilingLayersChange,
+  onCeilingCodeChange,
   onApplyCurrentState,
   isBusy = false,
 }: BasePlansConfigDialogProps) {
@@ -77,12 +83,21 @@ export function BasePlansConfigDialog({
 
   const currentStyle = activeTab === 'base' ? baseStyle : ceilingStyle;
   const currentLayers = activeTab === 'base' ? baseLayers : ceilingLayers;
+  const currentCode = activeTab === 'base' ? baseCode : ceilingCode;
 
   const handleStyleChange = (style: string) => {
     if (activeTab === 'base') {
       onBaseStyleChange(style);
     } else {
       onCeilingStyleChange(style);
+    }
+  };
+
+  const handleCodeChange = (code: string) => {
+    if (activeTab === 'base' && onBaseCodeChange) {
+      onBaseCodeChange(code);
+    } else if (activeTab === 'ceiling' && onCeilingCodeChange) {
+      onCeilingCodeChange(code);
     }
   };
 
@@ -98,38 +113,37 @@ export function BasePlansConfigDialog({
     }
   };
 
-  const handleSelectAllFiltered = () => {
+  const handleFilterSelection = (type: 'all' | 'none') => {
     const updateLayers =
       activeTab === 'base' ? onBaseLayersChange : onCeilingLayersChange;
     const layers = activeTab === 'base' ? baseLayers : ceilingLayers;
-    const newActiveLayers = [...new Set([...layers, ...filteredLayers])];
-    updateLayers(newActiveLayers);
-  };
 
-  const handleSelectNoneFiltered = () => {
-    const updateLayers =
-      activeTab === 'base' ? onBaseLayersChange : onCeilingLayersChange;
-    const layers = activeTab === 'base' ? baseLayers : ceilingLayers;
-    const newActiveLayers = layers.filter(
-      (layer) => !filteredLayers.includes(layer)
-    );
+    const newActiveLayers =
+      type === 'all'
+        ? [...new Set([...layers, ...filteredLayers])]
+        : layers.filter((layer) => !filteredLayers.includes(layer));
+
     updateLayers(newActiveLayers);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[550px] max-h-[90vh] flex flex-col'>
+      <DialogContent className='sm:max-w-[550px] h-[95vh] flex flex-col'>
         <DialogHeader>
           <DialogTitle className='flex text-start gap-2 '>
             Configurações Base e Forro
           </DialogTitle>
-          <DialogDescription className='text-start text-sm text-muted-foreground'>
+          <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
             Configure os estilos e camadas que serão usados nas plantas de base
             e forro
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className='w-full flex flex-col flex-1 overflow-hidden'
+        >
           <TabsList className='grid w-full grid-cols-2'>
             <TabsTrigger value='base'>Planta Base</TabsTrigger>
             <TabsTrigger value='ceiling'>Planta de Forro</TabsTrigger>
@@ -137,18 +151,19 @@ export function BasePlansConfigDialog({
 
           <TabsContent
             value={activeTab}
-            className='flex flex-col gap-3 overflow-y-auto flex-1'
+            className='flex flex-col gap-3 overflow-y-auto flex-1 mt-2'
           >
             <div className='w-full flex items-end justify-between gap-x-3'>
-              <div className='space-y-1.5 items-center justify-center w-full'>
-                <label className='flex items-center gap-2 text-sm font-semibold text-foreground w-full'>
-                  Estilo:
-                </label>
-                <Select value={currentStyle} onValueChange={handleStyleChange}>
+              <div className='flex-1'>
+                <Select
+                  value={currentStyle}
+                  onValueChange={handleStyleChange}
+                  label='Estilo'
+                >
                   <SelectTrigger className='w-full'>
                     <SelectValue placeholder='Selecione um estilo' />
                   </SelectTrigger>
-                  <SelectContent className='max-h-[200px]'>
+                  <SelectContent className=''>
                     {availableStyles.map((styleOption) => (
                       <SelectItem key={styleOption} value={styleOption}>
                         {styleOption}
@@ -157,38 +172,43 @@ export function BasePlansConfigDialog({
                   </SelectContent>
                 </Select>
               </div>
-              {onImportStyle && (
-                <Button
-                  size='sm'
-                  variant='outline'
-                  onClick={onImportStyle}
-                  className='w-fit h-9'
-                >
-                  <Upload className='w-4 h-4' />
-                </Button>
-              )}
+
+              <div className='flex-1'>
+                <Input
+                  id='item-code'
+                  type='text'
+                  label='Código'
+                  placeholder='Ex: base, ceiling'
+                  value={currentCode || ''}
+                  onChange={(e) =>
+                    handleCodeChange(
+                      e.target.value.toLowerCase().replace(/\s+/g, '_')
+                    )
+                  }
+                />
+              </div>
             </div>
 
             <div className='space-y-2'>
-              <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
-                Camadas Ativas
-              </label>
-
               <div className='relative'>
-                <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground' />
                 <Input
+                  leftIcon={
+                    <Search className='w-4 h-4 text-muted-foreground' />
+                  }
+                  rightIcon={
+                    layerFilter && (
+                      <X
+                        className='w-4 h-4 text-muted-foreground cursor-pointer'
+                        onClick={() => setLayerFilter('')}
+                      />
+                    )
+                  }
                   type='text'
                   placeholder='Filtrar camadas...'
                   value={layerFilter}
                   onChange={(e) => setLayerFilter(e.target.value)}
-                  className='pl-9 '
+                  className='pl-9'
                 />
-                {layerFilter && (
-                  <X
-                    className='absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground cursor-pointer'
-                    onClick={() => setLayerFilter('')}
-                  />
-                )}
               </div>
 
               <div className='flex items-center gap-2 flex-wrap mt-4'>
@@ -197,7 +217,7 @@ export function BasePlansConfigDialog({
                   size='sm'
                   onClick={() => {
                     setFilterType('all');
-                    handleSelectAllFiltered();
+                    handleFilterSelection('all');
                   }}
                   className='h-8 text-xs rounded-4xl'
                 >
@@ -208,7 +228,7 @@ export function BasePlansConfigDialog({
                   size='sm'
                   onClick={() => {
                     setFilterType('none');
-                    handleSelectNoneFiltered();
+                    handleFilterSelection('none');
                   }}
                   className='h-8 text-xs rounded-4xl'
                 >
@@ -219,7 +239,7 @@ export function BasePlansConfigDialog({
                   size='sm'
                   onClick={() => {
                     setFilterType('current');
-                    onApplyCurrentState();
+                    onApplyCurrentState(availableLayers as string[]);
                   }}
                   disabled={isBusy}
                   className='h-8 text-xs rounded-4xl'
@@ -227,7 +247,7 @@ export function BasePlansConfigDialog({
                   Estado Atual
                 </Button>
               </div>
-              <div className='space-y-1.5 max-h-[200px] overflow-y-auto p-3 bg-muted/30 rounded-md border border-border/50'>
+              <div className='space-y-1.5 max-h-[260px] overflow-y-auto p-3 bg-muted/30 rounded-md border border-border/50'>
                 {filteredLayers.length > 0 ? (
                   <div className='space-y-1.5'>
                     {filteredLayers.map((layer) => (
@@ -260,13 +280,14 @@ export function BasePlansConfigDialog({
 
         <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
           <Button
+            size='sm'
             className='flex-1'
             variant='outline'
             onClick={() => onOpenChange(false)}
           >
             Fechar
           </Button>
-          <Button className='flex-1' onClick={onSave}>
+          <Button className='flex-1' onClick={onSave} size='sm'>
             Salvar
           </Button>
         </DialogFooter>

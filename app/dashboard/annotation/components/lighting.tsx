@@ -3,16 +3,16 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import { useLightingAnnotation } from '@/hooks/useLightingAnnotation';
 import { useCircuitConnection } from '@/hooks/useCircuitConnection';
 import { Input } from '@/components/ui/input';
 import {
   Tooltip,
+  TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
+import { useAnnotations } from '@/hooks/useAnnotations';
 
 const AnnotationLightingContent = dynamic(
   () => Promise.resolve(AnnotationLightingInner),
@@ -26,12 +26,12 @@ export default function AnnotationLighting() {
 }
 
 function AnnotationLightingInner() {
-  const [circuitText, setCircuitText] = useState('C1');
+  const [circuitText, setCircuitText] = useState('');
   const {
     startLightingAnnotation,
     isLoading: isLightingLoading,
     defaults,
-  } = useLightingAnnotation();
+  } = useAnnotations();
 
   const { startCircuitConnection, isLoading: isCircuitLoading } =
     useCircuitConnection();
@@ -52,6 +52,10 @@ function AnnotationLightingInner() {
     startCircuitConnection();
   };
 
+  const lightingTooltip = `Anote os circuitos digitando o valor no campo, 
+                            clique para registrar e selecione as faces dos interruptores,
+                            utilizando as setas para ajustar a direção.`;
+
   return (
     <div className='w-full max-w-lg mx-auto space-y-5'>
       <div className='space-y-3 rounded-xl'>
@@ -62,14 +66,13 @@ function AnnotationLightingInner() {
               placeholder='Ex: C1 ou A'
               label='Código do Circuito'
               value={circuitText}
-              tooltip='Anotar os circuitos digitando o valor no campo, clicando para
-                  registrar e selecionando as faces dos interruptores,
-                  utilizando as setas para alterar a direção.'
+              tooltip={lightingTooltip}
               onChange={(e) => setCircuitText(e.target.value)}
               required
             />
             <Button
               type='submit'
+              size='sm'
               disabled={isLightingLoading}
               className='w-full'
             >
@@ -92,10 +95,13 @@ function AnnotationLightingInner() {
                       <Info className='w-4 h-4 text-muted-foreground' />
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent className='max-w-xs'>
+                  <TooltipContent>
                     <p className='text-sm'>
-                      Ligar os circuitos clicando no botão e selecionando os
-                      códigos correspondentes criados anteriormente.
+                      Conecte os circuitos clicando no botão e selecionando os
+                      códigos correspondentes criados anteriormente. Use as
+                      teclas de direção para ajustar a posição, + / − para
+                      aumentar ou diminuir a curvatura.
+                      {/* e Shift para alternarentre curva e linhas retas. */}
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -103,7 +109,7 @@ function AnnotationLightingInner() {
             </div>
             <form onSubmit={handleCircuitConnectionSubmit}>
               <Button
-                size='lg'
+                size='sm'
                 type='submit'
                 disabled={isCircuitLoading}
                 className='w-full'

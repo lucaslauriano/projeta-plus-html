@@ -1,23 +1,17 @@
 'use client';
 
 import { useViewConfigs, ViewConfig } from './useViewConfigs';
+import type { ViewConfigGroup, ViewConfigSegment } from '@/types/global';
 
 export type Scene = ViewConfig;
 
-export interface SceneGroup {
-  id: string;
-  name: string;
-  scenes: Array<{
-    id: string;
-    title: string;
-    segments: unknown[];
-  }>;
-  [key: string]: unknown;
-}
+export type SceneSegment = ViewConfigSegment;
+
+export type SceneGroup = ViewConfigGroup;
 
 export interface ScenesData {
   groups: SceneGroup[];
-  scenes: Scene[];
+  scenes?: Scene[]; // Deprecated, for backward compatibility
 }
 
 export interface CurrentState {
@@ -64,7 +58,7 @@ export function useScenes() {
       {
         id: 'geral',
         name: 'Geral',
-        style: 'FM_VISTAS',
+        style: 'PRO_VISTAS',
         cameraType: 'iso_perspectiva',
         activeLayers: ['Layer0'],
       },

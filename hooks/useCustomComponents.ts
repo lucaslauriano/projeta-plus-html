@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import { useConfirm } from './useConfirm';
 
 interface CustomComponentItem {
   id: string;
@@ -31,6 +32,7 @@ interface CustomComponentResult {
 }
 
 export function useCustomComponents() {
+  const { confirm, ConfirmDialog } = useConfirm();
   const [data, setData] = useState<CustomComponentsData>({
     groups: [],
   });
@@ -133,13 +135,20 @@ export function useCustomComponents() {
   );
 
   const deleteComponent = useCallback(
-    (blockPath: string) => {
-      if (confirm('Deseja realmente remover este componente?')) {
+    async (blockPath: string) => {
+      const confirmed = await confirm({
+        title: 'Remover componente',
+        description: 'Deseja realmente remover este componente?',
+        confirmText: 'Remover',
+        cancelText: 'Cancelar',
+        variant: 'destructive',
+      });
+      if (confirmed) {
         setIsBusy(true);
         callSketchupMethod('deleteCustomComponent', { path: blockPath });
       }
     },
-    [callSketchupMethod]
+    [confirm, callSketchupMethod]
   );
 
   const openCustomFolder = useCallback(() => {
@@ -171,5 +180,6 @@ export function useCustomComponents() {
     deleteComponent,
     openCustomFolder,
     syncFolder,
+    ConfirmDialog,
   };
 }

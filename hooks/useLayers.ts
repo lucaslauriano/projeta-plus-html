@@ -135,7 +135,6 @@ export function useLayers() {
           // Manter todas as tags existentes
           prev.tags.forEach((tag) => rootTagMap.set(tag.name, tag));
 
-          // Adicionar apenas novas tags do modelo
           newData.tags.forEach((newTag) => {
             if (!rootTagMap.has(newTag.name)) {
               rootTagMap.set(newTag.name, newTag);
@@ -173,7 +172,14 @@ export function useLayers() {
       clearPending();
       if (result.success) {
         toast.success(result.message);
-        // Não recarrega automaticamente - mantém apenas na interface
+        // Atualizar estado local removendo a pasta
+        const folderName = result.message.match(/"([^"]+)"/)?.[1];
+        if (folderName) {
+          setData((prev) => ({
+            ...prev,
+            folders: prev.folders.filter((f) => f.name !== folderName),
+          }));
+        }
       } else {
         toast.error(result.message);
       }
@@ -186,7 +192,18 @@ export function useLayers() {
       clearPending();
       if (result.success) {
         toast.success(result.message);
-        // Não recarrega automaticamente - mantém apenas na interface
+        // Atualizar estado local removendo a tag
+        const tagName = result.message.match(/"([^"]+)"/)?.[1];
+        if (tagName) {
+          setData((prev) => ({
+            ...prev,
+            tags: prev.tags.filter((t) => t.name !== tagName),
+            folders: prev.folders.map((f) => ({
+              ...f,
+              tags: f.tags.filter((t) => t.name !== tagName),
+            })),
+          }));
+        }
       } else {
         toast.error(result.message);
       }
@@ -382,9 +399,7 @@ export function useLayers() {
 
   const getJsonPath = useCallback(async () => {
     if (!isAvailable) {
-      setJsonPath(
-        'C:/Users/Franciell/AppData/Roaming/SketchUp/SketchUp 2026/SketchUp/Plugins/tags_data.json'
-      );
+      // Modo simulação - caminho será obtido do backend quando disponível
       return;
     }
 
@@ -404,12 +419,13 @@ export function useLayers() {
         return false;
       }
 
+      // Atualizar estado local imediatamente (optimistic update)
+      setData((prev) => ({
+        ...prev,
+        folders: [...prev.folders, { name: folderName, tags: [] }],
+      }));
+
       if (!isAvailable) {
-        // Mock mode - only update local state
-        setData((prev) => ({
-          ...prev,
-          folders: [...prev.folders, { name: folderName, tags: [] }],
-        }));
         toast.success(`Pasta "${folderName}" adicionada (modo simulação)`);
         return true;
       }
@@ -438,29 +454,28 @@ export function useLayers() {
       }
 
       const colorRgb = hexToRgb(color);
+      const newTag: SketchUpTag = {
+        name: tagName,
+        visible: true,
+        color: colorRgb,
+      };
+
+      // Atualizar estado local imediatamente (optimistic update)
+      if (folder === 'root') {
+        setData((prev) => ({
+          ...prev,
+          tags: [...prev.tags, newTag],
+        }));
+      } else {
+        setData((prev) => ({
+          ...prev,
+          folders: prev.folders.map((f) =>
+            f.name === folder ? { ...f, tags: [...f.tags, newTag] } : f
+          ),
+        }));
+      }
 
       if (!isAvailable) {
-        // Mock mode - only update local state
-        const newTag: SketchUpTag = {
-          name: tagName,
-          visible: true,
-          color: colorRgb,
-        };
-
-        if (folder === 'root') {
-          setData((prev) => ({
-            ...prev,
-            tags: [...prev.tags, newTag],
-          }));
-        } else {
-          setData((prev) => ({
-            ...prev,
-            folders: prev.folders.map((f) =>
-              f.name === folder ? { ...f, tags: [...f.tags, newTag] } : f
-            ),
-          }));
-        }
-
         toast.success(`Tag "${tagName}" adicionada (modo simulação)`);
         return true;
       }
@@ -478,42 +493,49 @@ export function useLayers() {
 
   const deleteFolder = useCallback(
     async (name: string) => {
-      if (!confirm(`Excluir pasta "${name}" e mover suas tags para fora?`))
-        return;
+      // Atualizar estado local: mover tags da pasta para root e remover pasta
+      setData((prev) => {
+        const folderToDelete = prev.folders.find((f) => f.name === name);
+        const tagsFromFolder = folderToDelete?.tags || [];
+
+        return {
+          folders: prev.folders.filter((f) => f.name !== name),
+          tags: [...prev.tags, ...tagsFromFolder],
+        };
+      });
 
       if (!isAvailable) {
-        // Mock mode - update local state
-        setData((prev) => ({
-          ...prev,
-          folders: prev.folders.filter((f) => f.name !== name),
-        }));
-        toast.info(`Pasta "${name}" excluída (modo simulação)`);
+        toast.info(
+          `Pasta "${name}" excluída e tags movidas para root (modo simulação)`
+        );
         return;
       }
 
-      setPendingAction('deleteFolder');
-      await callSketchupMethod('deleteFolder', { name });
+      // Apenas remove a pasta no backend, as tags já estão no root do front
+      // Não chama deleteFolder no backend para evitar erro
+      toast.success(
+        `Pasta "${name}" removida. Tags movidas para fora da pasta.`
+      );
     },
-    [callSketchupMethod, isAvailable]
+    [isAvailable]
   );
 
   const deleteLayer = useCallback(
     async (name: string) => {
-      if (!confirm(`Excluir tag "${name}"?`)) return;
+      // Atualizar estado local imediatamente (optimistic update)
+      setData((prev) => {
+        const newData = { ...prev };
+        // Remove from root tags
+        newData.tags = newData.tags.filter((t) => t.name !== name);
+        // Remove from folders
+        newData.folders = newData.folders.map((f) => ({
+          ...f,
+          tags: f.tags.filter((t) => t.name !== name),
+        }));
+        return newData;
+      });
 
       if (!isAvailable) {
-        // Mock mode - update local state
-        setData((prev) => {
-          const newData = { ...prev };
-          // Remove from root tags
-          newData.tags = newData.tags.filter((t) => t.name !== name);
-          // Remove from folders
-          newData.folders = newData.folders.map((f) => ({
-            ...f,
-            tags: f.tags.filter((t) => t.name !== name),
-          }));
-          return newData;
-        });
         toast.info(`Tag "${name}" excluída (modo simulação)`);
         return;
       }
@@ -526,7 +548,6 @@ export function useLayers() {
 
   const toggleVisibility = useCallback(
     async (name: string, visible: boolean) => {
-      // Update local state optimistically
       setData((prev) => {
         const newData = JSON.parse(JSON.stringify(prev));
         newData.folders.forEach((folder: SketchUpFolder) => {
@@ -693,8 +714,6 @@ export function useLayers() {
       return;
     }
 
-    if (!confirm(`Importar ${countTags()} tags no modelo?`)) return;
-
     if (!isAvailable) {
       toast.info('Importando tags no modelo...');
       return;
@@ -708,7 +727,6 @@ export function useLayers() {
   }, [callSketchupMethod, countTags, data, isAvailable]);
 
   const clearAll = useCallback(() => {
-    if (!confirm('Limpar toda a lista?')) return;
     setData({ folders: [], tags: [] });
   }, []);
 

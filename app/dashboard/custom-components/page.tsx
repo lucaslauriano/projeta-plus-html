@@ -60,8 +60,8 @@ export default function CustomComponentsPage() {
           {/* Action Buttons */}
           <div className='grid grid-cols-3 gap-2'>
             <Button
-              variant='default'
               size='sm'
+              variant='default'
               onClick={() => uploadComponent('Geral')}
               disabled={isBusy}
               className='flex items-center gap-2'
@@ -71,8 +71,8 @@ export default function CustomComponentsPage() {
             </Button>
 
             <Button
-              variant='outline'
               size='sm'
+              variant='outline'
               onClick={syncFolder}
               disabled={isBusy}
               className='flex items-center gap-2'
@@ -82,8 +82,8 @@ export default function CustomComponentsPage() {
             </Button>
 
             <Button
-              variant='outline'
               size='sm'
+              variant='outline'
               onClick={openCustomFolder}
               className='flex items-center gap-2'
             >
@@ -183,8 +183,8 @@ export default function CustomComponentsPage() {
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button
-                                variant='ghost'
                                 size='sm'
+                                variant='ghost'
                                 className='h-8 w-8 p-0 text-destructive hover:text-destructive'
                                 disabled={isBusy}
                               >

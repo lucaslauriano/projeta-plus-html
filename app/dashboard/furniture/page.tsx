@@ -25,7 +25,6 @@ import { cn } from '@/lib/utils';
 import { useFurniture } from '@/hooks/useFurniture';
 import { DEFAULT_TYPES, DIMENSION_FORMAT_OPTIONS } from '@/lib/consts';
 import PageContent from '@/components/ui/page-content';
-import { Label } from '@/components/ui/label';
 
 type DimensionFormat = (typeof DIMENSION_FORMAT_OPTIONS)[number]['value'];
 
@@ -300,15 +299,15 @@ export default function FurnitureDashboardPage() {
           }
         />
 
-        <PageContent>
+        <PageContent className='space-y-4 pb-2'>
           <SelectionStatusAlert isSelected={isSelected} />
 
           <div className='mb-6'>
             <Button
+              size='sm'
               type='button'
-              size='lg'
               onClick={() => captureSelectedComponent()}
-              disabled={isBusy}
+              disabled={isBusy || !isSelected}
               className='w-full flex items-center justify-center space-2'
             >
               <Target className='h-4 w-4' />
@@ -320,48 +319,47 @@ export default function FurnitureDashboardPage() {
             <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
               <div className='flex items-center justify-between mb-3'>
                 <div className='space-y-1'>
-                  <h3 className='text-sm font-semibold text-foreground'>
-                    Dimensões
-                  </h3>
-                  <p className='text-xs text-muted-foreground'>
-                    Redimensionamento automático.
-                  </p>
+                  <div className='text-sm text-foreground flex items-center gap-2 justify-between pb-2'>
+                    <span>
+                      <div className='flex items-center justify-between'>
+                        <p className='text-sm font-semibold text-foreground'>
+                          Dimensões
+                        </p>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type='button'
+                              className='p-2 rounded-lg hover:bg-accent/50 transition-colors'
+                            >
+                              <InfoIcon className='h-4 w-4 text-muted-foreground' />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side='left'
+                            className='max-w-[200px] p-4 bg-popover border-border'
+                          >
+                            <p className='text-xs text-muted-foreground'>
+                              Atenção com a posição do componente no modelo. A
+                              largura é sempre o eixo X e a profundidade o eixo
+                              Y. A altura é o eixo Z.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+
+                      <p className='text-xs text-muted-foreground'>
+                        As dimensões serão aplicadas automaticamente ao digitar.
+                      </p>
+                    </span>
+                  </div>
                 </div>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type='button'
-                      className='p-2 rounded-lg hover:bg-accent/50 transition-colors'
-                    >
-                      <InfoIcon className='h-4 w-4 text-muted-foreground' />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side='left'
-                    className='max-w-[200px] p-4 bg-popover border-border'
-                  >
-                    <p className='text-xs text-muted-foreground'>
-                      As dimensões são aplicadas automaticamente enquanto você
-                      digita. Não é necessário salvar. Cuidado com a posição do
-                      componente no modelo. A largura é sempre o eixo X e a
-                      profundidade o eixo Y. A altura é o eixo Z.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
               </div>
 
               <div className='space-y-3'>
                 <div className='space-y-2'>
-                  <div className='flex items-center space-2'>
-                    <label
-                      htmlFor='keep-width'
-                      className='text-sm font-semibold text-foreground'
-                    >
-                      Largura (cm):
-                    </label>
-                  </div>
                   <Input
                     id='width'
+                    label='Largura (cm)'
                     type='text'
                     value={width}
                     onChange={(e) => setFurnitureField('width', e.target.value)}
@@ -371,16 +369,9 @@ export default function FurnitureDashboardPage() {
                 </div>
 
                 <div className='space-y-2'>
-                  <div className='flex items-center space-2'>
-                    <label
-                      htmlFor='keep-depth'
-                      className='text-sm font-semibold text-foreground'
-                    >
-                      Profundidade (cm):
-                    </label>
-                  </div>
                   <Input
                     id='depth'
+                    label='Profundidade (cm)'
                     type='text'
                     value={depth}
                     onChange={(e) => setFurnitureField('depth', e.target.value)}
@@ -390,16 +381,9 @@ export default function FurnitureDashboardPage() {
                 </div>
 
                 <div className='space-y-2'>
-                  <div className='flex items-center space-2'>
-                    <label
-                      htmlFor='keep-height'
-                      className='text-sm font-semibold text-foreground'
-                    >
-                      Altura (cm):
-                    </label>
-                  </div>
                   <Input
                     id='height'
+                    label='Altura (cm)'
                     type='text'
                     value={height}
                     onChange={(e) =>
@@ -412,14 +396,9 @@ export default function FurnitureDashboardPage() {
               </div>
 
               <div>
-                <Label
-                  htmlFor='dimensionFormat'
-                  className='flex justify-between '
-                >
-                  Formato da dimensão
-                </Label>
                 <Select
                   value={dimensionFormat}
+                  label='Formato da dimensão'
                   onValueChange={(selected) =>
                     setFurnitureField(
                       'dimensionFormat',
@@ -428,7 +407,7 @@ export default function FurnitureDashboardPage() {
                   }
                   disabled={isBusy}
                 >
-                  <SelectTrigger className='h-11 rounded-xl border-2'>
+                  <SelectTrigger className='w-full'>
                     <SelectValue placeholder='Selecione o formato' />
                   </SelectTrigger>
                   <SelectContent>
@@ -496,17 +475,15 @@ export default function FurnitureDashboardPage() {
               />
 
               <div>
-                <label className='block text-sm font-semibold mb-2 text-foreground'>
-                  Tipo
-                </label>
                 <Select
                   value={type}
+                  label='Tipo'
                   onValueChange={(selected) =>
                     setFurnitureField('type', selected)
                   }
                   disabled={isBusy}
                 >
-                  <SelectTrigger className='h-11 rounded-xl border-2'>
+                  <SelectTrigger className='w-full'>
                     <SelectValue placeholder='Selecione o tipo' />
                   </SelectTrigger>
                   <SelectContent>
@@ -561,18 +538,6 @@ export default function FurnitureDashboardPage() {
                 disabled={isBusy}
                 placeholder='Ex: https://...'
               />
-            </div>
-
-            <div className='space-y-4 p-4 bg-muted/30 rounded-xl border border-border/50'>
-              <div className='space-y-1 mb-3'>
-                <h3 className='text-sm font-semibold text-foreground'>
-                  Observações
-                </h3>
-                <p className='text-xs text-muted-foreground'>
-                  Informações adicionais e notas
-                </p>
-              </div>
-
               <div className='space-y-2'>
                 <label
                   htmlFor='observations'
@@ -590,9 +555,9 @@ export default function FurnitureDashboardPage() {
                   placeholder='Informações adicionais...'
                   rows={4}
                   className={cn(
-                    'flex w-full rounded-xl border-2 border-border bg-background px-4 py-3 text-sm font-medium transition-all',
+                    'flex w-full rounded-xl border-1 border-border bg-background px-4 py-3 text-sm transition-all',
                     'placeholder:text-muted-foreground/60',
-                    'focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20',
+                    'focus:outline-none focus:ring-0 ',
                     'disabled:cursor-not-allowed disabled:opacity-50',
                     'resize-none'
                   )}
@@ -600,9 +565,9 @@ export default function FurnitureDashboardPage() {
               </div>
             </div>
 
-            <div className='flex flex-col space-y-3 p-1'>
+            <div className='flex flex-col space-y-2 p-1'>
               <Button
-                size='lg'
+                size='sm'
                 type='submit'
                 disabled={isBusy || !isSelected}
                 className='w-full flex items-center justify-center space-2'
@@ -613,6 +578,7 @@ export default function FurnitureDashboardPage() {
 
               <Button
                 type='button'
+                size='sm'
                 variant='outline'
                 disabled={isBusy}
                 onClick={() => {

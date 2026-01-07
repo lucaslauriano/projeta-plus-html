@@ -11,7 +11,7 @@ import {
   SelectContent,
   SelectTrigger,
 } from '@/components/ui/select';
-import { Upload, Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import {
   Dialog,
   DialogTitle,
@@ -20,9 +20,10 @@ import {
   DialogContent,
 } from '@/components/ui/dialog';
 
-interface ViewConfigEditDialogProps {
+interface ViewConfigDialogProps {
   title: string;
   itemTitle: string;
+  itemCode?: string;
   style: string;
   isOpen: boolean;
   onSave: () => void;
@@ -38,10 +39,11 @@ interface ViewConfigEditDialogProps {
   onSelectNoLayers: () => void;
   onSelectAllLayers: () => void;
   onCameraTypeChange: (type: string) => void;
-  onApplyCurrentState: () => void;
+  onApplyCurrentState: (availableLayers: string[]) => void;
   onActiveLayersChange: (layers: string[]) => void;
   allowedCameraTypes: string[];
-  onItemTitleChange?: (title: string) => void; // Nova prop para editar nome
+  onItemTitleChange?: (title: string) => void;
+  onItemCodeChange?: (code: string) => void;
 }
 
 const CAMERA_TYPE_LABELS: Record<string, string> = {
@@ -53,9 +55,10 @@ const CAMERA_TYPE_LABELS: Record<string, string> = {
   topo_ortogonal: '⬇️ Vista de Topo + Ortogonal',
 };
 
-export function ViewConfigEditDialog({
+export function ViewConfigDialog({
   title,
   itemTitle,
+  itemCode,
   isOpen,
   style,
   isBusy = false,
@@ -67,15 +70,16 @@ export function ViewConfigEditDialog({
   onSave,
   onCancel,
   onOpenChange,
-  onImportStyle,
   onStyleChange,
+  // onImportStyle,
   // onSelectNoLayers,
   // onSelectAllLayers,
   onCameraTypeChange,
   onActiveLayersChange,
   onApplyCurrentState,
-  onItemTitleChange, // Nova prop
-}: ViewConfigEditDialogProps) {
+  onItemTitleChange,
+  onItemCodeChange,
+}: ViewConfigDialogProps) {
   const [layerFilter, setLayerFilter] = useState('');
 
   const filteredLayers = useMemo(() => {
@@ -110,63 +114,67 @@ export function ViewConfigEditDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[500px] max-h-[90vh] flex flex-col'>
+      <DialogContent className='sm:max-w-[500px] h-[95vh] flex flex-col'>
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2'>{title}</DialogTitle>
         </DialogHeader>
-        <div className='flex flex-col gap-3 py-2 overflow-y-auto flex-1'>
-          {/* Campo para editar o nome */}
-          {onItemTitleChange && (
-            <div className='space-y-1.5'>
-              <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
-                Nome:
-              </label>
-              <Input
-                type='text'
-                placeholder='Nome da configuração'
-                value={itemTitle}
-                onChange={(e) => onItemTitleChange(e.target.value)}
-                className='h-9 rounded-xl border-2'
-              />
+        <div className='flex flex-col gap-2 py-2 overflow-y-auto flex-1'>
+          {(onItemTitleChange || onItemCodeChange) && (
+            <div className='flex gap-3'>
+              {onItemTitleChange && (
+                <div className='flex-1'>
+                  <Input
+                    id='item-title'
+                    label='Nome'
+                    type='text'
+                    placeholder='Nome da configuração'
+                    value={itemTitle}
+                    onChange={(e) => onItemTitleChange(e.target.value)}
+                  />
+                </div>
+              )}
+
+              {onItemCodeChange && (
+                <div className='flex-1'>
+                  <Input
+                    id='item-code'
+                    type='text'
+                    label='Código'
+                    placeholder='Ex: gnrl, draw, plans'
+                    value={itemCode || ''}
+                    onChange={(e) =>
+                      onItemCodeChange(
+                        e.target.value.toLowerCase().replace(/\s+/g, '_')
+                      )
+                    }
+                  />
+                </div>
+              )}
             </div>
           )}
 
           <div className='w-full flex items-end justify-between gap-x-3'>
-            <div className='space-y-1.5 w-2/3 items-center justify-center'>
-              <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
-                Estilo:
-              </label>
-              <Select value={style} onValueChange={onStyleChange}>
-                <SelectTrigger className='h-9 rounded-xl border-2 w-full'>
-                  <SelectValue placeholder='Selecione um estilo' />
-                </SelectTrigger>
-                <SelectContent className='max-h-[200px]'>
-                  {availableStyles.map((styleOption) => (
-                    <SelectItem key={styleOption} value={styleOption}>
-                      {styleOption}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {onImportStyle && (
-              <Button
-                size='sm'
-                variant='outline'
-                onClick={onImportStyle}
-                className='w-fit h-9'
-              >
-                <Upload className='w-4 h-4' />
-              </Button>
-            )}
+            <Select label='Estilo' value={style} onValueChange={onStyleChange}>
+              <SelectTrigger className='w-full'>
+                <SelectValue placeholder='Selecione um estilo' />
+              </SelectTrigger>
+              <SelectContent>
+                {availableStyles.map((styleOption) => (
+                  <SelectItem key={styleOption} value={styleOption}>
+                    {styleOption}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className='space-y-1.5'>
-            <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
-              Tipo de Câmera:
-            </label>
-            <Select value={cameraType} onValueChange={onCameraTypeChange}>
-              <SelectTrigger className='h-9 rounded-xl border-2 w-full'>
+            <Select
+              value={cameraType}
+              onValueChange={onCameraTypeChange}
+              label='Tipo de Câmera'
+            >
+              <SelectTrigger>
                 <SelectValue placeholder='Selecione o tipo de câmera' />
               </SelectTrigger>
               <SelectContent>
@@ -181,19 +189,32 @@ export function ViewConfigEditDialog({
 
           <div className='space-y-2'>
             <label className='flex items-center gap-2 text-sm font-semibold text-foreground'>
-              Camadas Ativas ({availableLayers.length} disponíveis
-              {layerFilter && `, ${filteredLayers.length} filtradas`}):
+              Camadas Ativas
             </label>
 
             <div className='relative'>
-              <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground' />
               <Input
+                leftIcon={<Search className='w-4 h-4 text-muted-foreground' />}
+                rightIcon={
+                  layerFilter && (
+                    <X
+                      className='w-4 h-4 text-muted-foreground cursor-pointer'
+                      onClick={() => setLayerFilter('')}
+                    />
+                  )
+                }
                 type='text'
                 placeholder='Filtrar camadas...'
                 value={layerFilter}
                 onChange={(e) => setLayerFilter(e.target.value)}
-                className='pl-9 h-9 rounded-xl border-2'
+                className='pl-9'
               />
+              {layerFilter && (
+                <X
+                  className='absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground cursor-pointer'
+                  onClick={() => setLayerFilter('')}
+                />
+              )}
             </div>
 
             <div className='flex items-center gap-2 flex-wrap'>
@@ -201,7 +222,7 @@ export function ViewConfigEditDialog({
                 variant='outline'
                 size='sm'
                 onClick={handleSelectAllFiltered}
-                className='h-8 text-xs'
+                className='h-8 text-xs flex-1'
               >
                 Todos
               </Button>
@@ -209,21 +230,21 @@ export function ViewConfigEditDialog({
                 variant='outline'
                 size='sm'
                 onClick={handleSelectNoneFiltered}
-                className='h-8 text-xs'
+                className='h-8 text-xs flex-1'
               >
                 Nenhum
               </Button>
               <Button
                 variant='outline'
                 size='sm'
-                onClick={onApplyCurrentState}
+                onClick={() => onApplyCurrentState(availableLayers as string[])}
                 disabled={isBusy}
-                className='h-8 text-xs'
+                className='h-8 text-xs flex-1'
               >
                 Estado Atual
               </Button>
             </div>
-            <div className='space-y-1.5 max-h-[150px] overflow-y-auto p-3 bg-muted/30 rounded-xl border border-border/50'>
+            <div className=' max-h-[188px] overflow-y-auto p-3 bg-muted/30 rounded-xl border border-border/50'>
               {filteredLayers.length > 0 ? (
                 <div className='space-y-1.5'>
                   {filteredLayers.map((layer) => (
@@ -252,11 +273,18 @@ export function ViewConfigEditDialog({
             </div>
           </div>
         </div>
-        <DialogFooter>
-          <Button variant='outline' onClick={onCancel}>
+        <DialogFooter className='!flex !flex-row !justify-between gap-2 w-full'>
+          <Button
+            size='sm'
+            variant='outline'
+            onClick={onCancel}
+            className='flex-1'
+          >
             Cancelar
           </Button>
-          <Button onClick={onSave}>Salvar</Button>
+          <Button onClick={onSave} size='sm' className='flex-1'>
+            Salvar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

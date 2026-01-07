@@ -2,25 +2,9 @@
 
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
+import type { ViewConfigSegment } from '@/types/global';
 
-export type Plan = {
-  id: string;
-  title: string;
-  segments: unknown[];
-};
-
-type PlanConfig = {
-  id: string;
-  name: string;
-  style: string;
-  cameraType: string;
-  activeLayers: string[];
-};
-
-type PlansData = {
-  groups: unknown[];
-  plans: PlanConfig[];
-};
+export type Plan = ViewConfigSegment;
 
 export function usePlanEditor(
   data: { groups: unknown; plans: unknown[] },
@@ -33,10 +17,11 @@ export function usePlanEditor(
     activeLayers: string[];
   } | null,
   setData: (data: unknown) => void,
-  saveToJson: () => Promise<void>
+  saveToJson: (dataToSave?: unknown) => Promise<void>
 ) {
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   const [editPlanName, setEditPlanName] = useState('');
+  const [editPlanCode, setEditPlanCode] = useState('');
   const [editPlanStyle, setEditPlanStyle] = useState('');
   const [editCameraType, setEditCameraType] = useState('');
   const [editActiveLayers, setEditActiveLayers] = useState<string[]>([]);
@@ -44,25 +29,15 @@ export function usePlanEditor(
   const openEditor = useCallback(
     (plan: Plan) => {
       setEditingPlan(plan);
-      setEditPlanName(plan.title);
-
-      const planConfig = (data.plans as PlanConfig[]).find(
-        (p) => p.id === plan.id || p.name === plan.title
+      setEditPlanName(plan.name || '');
+      setEditPlanCode(
+        plan.code || plan.name?.toLowerCase().replace(/\s+/g, '_') || ''
       );
-
-      if (planConfig) {
-        setEditPlanStyle(
-          planConfig.style || availableStyles[0] || 'FM_PLANTAS'
-        );
-        setEditCameraType(planConfig.cameraType || 'topo_ortogonal');
-        setEditActiveLayers(planConfig.activeLayers || ['Layer0']);
-      } else {
-        setEditPlanStyle(availableStyles[0] || 'FM_PLANTAS');
-        setEditCameraType('topo_ortogonal');
-        setEditActiveLayers(['Layer0']);
-      }
+      setEditPlanStyle(plan.style || availableStyles[0] || 'PRO_PLANTAS');
+      setEditCameraType(plan.cameraType || 'topo_ortogonal');
+      setEditActiveLayers(plan.activeLayers || ['Layer0']);
     },
-    [data.plans, availableStyles]
+    [availableStyles]
   );
 
   const closeEditor = useCallback(() => {
@@ -94,51 +69,37 @@ export function usePlanEditor(
         return false;
       }
 
-      const updatedPlans = (data.plans as PlanConfig[]).map((p) => {
-        if (p.id === editingPlan.id || p.name === editingPlan.title) {
-          return {
-            ...p,
-            name: editPlanName.trim(),
-            style: editPlanStyle,
-            cameraType: editCameraType,
-            activeLayers: editActiveLayers,
-          };
-        }
-        return p;
-      });
-
-      const planExists = (data.plans as PlanConfig[]).some(
-        (p) => p.id === editingPlan.id || p.name === editingPlan.title
-      );
-
-      if (!planExists) {
-        updatedPlans.push({
-          id: editingPlan.id,
-          name: editPlanName.trim(),
-          style: editPlanStyle,
-          cameraType: editCameraType,
-          activeLayers: editActiveLayers,
-        });
-      }
-
       const updatedGroups = (
-        groups as Array<{
-          id: string;
-          plans: Plan[];
-        }>
+        groups as Array<{ id: string; segments: Plan[] }>
       ).map((g) => ({
         ...g,
-        plans: g.plans.map((p: Plan) =>
-          p.id === editingPlan.id ? { ...p, title: editPlanName.trim() } : p
+        segments: (g.segments || []).map((p: Plan) =>
+          p.id === editingPlan.id
+            ? {
+                ...p,
+                name: editPlanName.trim(),
+                code:
+                  editPlanCode.trim() ||
+                  editPlanName.trim().toLowerCase().replace(/\s+/g, '_'),
+                style: editPlanStyle,
+                cameraType: editCameraType,
+                activeLayers: editActiveLayers,
+              }
+            : p
         ),
       }));
 
-      setData({
+      const updatedData = {
+        ...data,
         groups: updatedGroups,
-        plans: updatedPlans,
-      });
+      };
 
-      await saveToJson();
+      console.log('updatedData', updatedData);
+
+      setData(updatedData);
+
+      // Passar os dados atualizados diretamente para evitar problema de closure
+      await saveToJson(updatedData);
 
       setEditingPlan(null);
       toast.success('Configuração salva no JSON!');
@@ -146,11 +107,12 @@ export function usePlanEditor(
     },
     [
       editPlanName,
+      editPlanCode,
       editingPlan,
       editPlanStyle,
       editCameraType,
       editActiveLayers,
-      data.plans,
+      data,
       setData,
       saveToJson,
     ]
@@ -159,10 +121,12 @@ export function usePlanEditor(
   return {
     editingPlan,
     editPlanName,
+    editPlanCode,
     editPlanStyle,
     editCameraType,
     editActiveLayers,
     setEditPlanName,
+    setEditPlanCode,
     setEditPlanStyle,
     setEditCameraType,
     setEditActiveLayers,

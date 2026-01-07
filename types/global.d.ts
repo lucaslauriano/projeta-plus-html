@@ -63,6 +63,47 @@ interface FurnitureReportResponse {
   message?: string;
 }
 
+interface FurnitureTypesResult {
+  success: boolean;
+  types?: string[];
+  message?: string;
+}
+
+interface ElectricalReportTypesResult {
+  success: boolean;
+  types?: string[];
+  message?: string;
+}
+
+interface CategoryDataResult {
+  success: boolean;
+  data?: unknown;
+  message?: string;
+}
+
+interface CategoryPreferencesResult {
+  success: boolean;
+  preferences?: unknown;
+  message?: string;
+}
+
+interface ColumnPreferencesResult {
+  success: boolean;
+  preferences?: unknown;
+  message?: string;
+}
+
+interface ExportResult {
+  success: boolean;
+  path?: string;
+  message?: string;
+}
+
+interface FurnitureItemOperationResult {
+  success: boolean;
+  message?: string;
+}
+
 export interface RoomDefaults {
   scale?: string;
   font?: string;
@@ -97,6 +138,17 @@ export interface ViewConfig {
   activeLayers: string[];
 }
 
+export interface ViewConfigSegment extends ViewConfig {
+  code?: string;
+}
+
+export interface ViewConfigGroup {
+  id: string;
+  name: string;
+  segments: ViewConfigSegment[];
+  [key: string]: unknown;
+}
+
 export interface BasePlan {
   id: string;
   name: string;
@@ -105,8 +157,8 @@ export interface BasePlan {
 }
 
 export interface ViewConfigsData {
-  groups?: unknown[];
-  scenes?: ViewConfig[];
+  groups: ViewConfigGroup[];
+  scenes?: ViewConfig[]; // Deprecated, for backward compatibility
   plans?: ViewConfig[];
 }
 
@@ -195,6 +247,11 @@ declare global {
       loadDefaultSections: () => void;
       loadSectionsFromFile: () => void;
       importSectionsToModel: (payload: string) => void;
+      // Electrical Reports
+      getElectricalReportTypes: () => void;
+      getElectricalReportData: (payload: string) => void;
+      exportElectricalCSV: (payload: string) => void;
+      exportElectricalXLSX: (payload: string) => void;
     };
     changeLanguage: (langCode: string) => void;
     loadGlobalSettings: () => void;
@@ -208,14 +265,14 @@ declare global {
     receiveAllSettingsFromRuby?: (settings: GlobalSettings) => void;
     handleRoomAnnotationResult?: (result: RoomAnnotationResult) => void;
     handleSectionAnnotationResult?: (result: RoomAnnotationResult) => void;
-    handleViewIndicationResult?: (result: RoomAnnotationResult) => void;
+    handleViewAnnotationResult?: (result: RoomAnnotationResult) => void;
     handleLightingDefaults?: (defaults: LightingDefaults) => void;
     handleLightingAnnotationResult?: (result: RoomAnnotationResult) => void;
     handleCircuitConnectionResult?: (result: RoomAnnotationResult) => void;
     handleCeilingDefaults?: (defaults: CeilingDefaults) => void;
     handleCeilingAnnotationResult?: (result: RoomAnnotationResult) => void;
     handleHeightDefaults?: (defaults: HeightDefaults) => void;
-    handleHeightAnnotationResult?: (result: RoomAnnotationResult) => void;
+    handleEletricalAnnotationResult?: (result: RoomAnnotationResult) => void;
     handleComponentUpdaterDefaults?: (
       defaults: ComponentUpdaterDefaults
     ) => void;
@@ -233,6 +290,47 @@ declare global {
     }) => void;
     handleFurnitureReport?: (response: FurnitureReportResponse) => void;
     handleFurnitureOperation?: (response: FurnitureOperationResponse) => void;
+
+    // Furniture Reports Module
+    handleGetFurnitureTypesResult?: (result: FurnitureTypesResult) => void;
+    handleGetCategoryDataResult?: (result: CategoryDataResult) => void;
+    handleGetCategoryPreferencesResult?: (
+      result: CategoryPreferencesResult
+    ) => void;
+    handleSaveCategoryPreferencesResult?: (
+      result: CategoryPreferencesResult
+    ) => void;
+    handleGetColumnPreferencesResult?: (
+      result: ColumnPreferencesResult
+    ) => void;
+    handleSaveColumnPreferencesResult?: (
+      result: ColumnPreferencesResult
+    ) => void;
+    handlePickSaveFilePathFurnitureResult?: (
+      result: SketchupResult & { path?: string }
+    ) => void;
+    handlePickSaveFilePathElectricalResult?: (
+      result: SketchupResult & { path?: string }
+    ) => void;
+    handleExportCategoryCSVResult?: (
+      result: ExportResult & { path?: string }
+    ) => void;
+    handleExportXLSXResult?: (result: ExportResult & { path?: string }) => void;
+    handleIsolateFurnitureItemResult?: (
+      result: FurnitureItemOperationResult
+    ) => void;
+    handleDeleteFurnitureItemResult?: (
+      result: FurnitureItemOperationResult
+    ) => void;
+
+    // Electrical Reports Module
+    handleGetElectricalReportTypesResult?: (
+      result: ElectricalReportTypesResult
+    ) => void;
+    handleGetElectricalReportDataResult?: (result: CategoryDataResult) => void;
+    handleExportElectricalCSVResult?: (result: ExportResult) => void;
+    handleExportElectricalXLSXResult?: (result: ExportResult) => void;
+
     handleImportLayersResult?: (result: {
       success: boolean;
       message: string;
@@ -721,34 +819,17 @@ export interface RubyResponse {
   updated_value?: unknown;
 }
 
+// Annotation types moved to types/annotations.ts
+export type {
+  LightingDefaults,
+  CeilingDefaults,
+  HeightDefaults,
+  ComponentUpdaterDefaults,
+} from './annotations';
+
 export interface SectionDefaults {
   line_height_cm: string;
   scale_factor: string;
-}
-
-export interface LightingDefaults {
-  circuit_text: string;
-  circuit_scale: number;
-  circuit_height_cm: number;
-  circuit_font: string;
-  circuit_text_color: string;
-}
-
-export interface CeilingDefaults {
-  floor_level: string;
-}
-
-export interface HeightDefaults {
-  scale: number;
-  height_z_cm: string;
-  font: string;
-  show_usage: boolean;
-}
-
-export interface ComponentUpdaterDefaults {
-  last_attribute: string;
-  last_value: string;
-  last_situation_type: string;
 }
 
 export interface LanguageOption {

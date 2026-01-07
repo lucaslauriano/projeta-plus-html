@@ -4,8 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { PrintAttributes } from '@/app/dashboard/annotation/components/print-attributes';
-import { useComponentUpdater } from '@/hooks/useComponentUpdater';
+import { PrintAttributes } from '@/app/dashboard/annotation/components/eletrical';
 import {
   Tooltip,
   TooltipTrigger,
@@ -13,6 +12,7 @@ import {
   TooltipProvider,
 } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
+import { useAnnotations } from '@/hooks/useAnnotations';
 
 type AttributeType =
   | 'scale'
@@ -20,6 +20,7 @@ type AttributeType =
   | 'usage'
   | 'usagePrefix'
   | 'situation';
+
 type SituationType = '1' | '2' | '3' | '4';
 
 type SelectionType = AttributeType | SituationType;
@@ -27,8 +28,7 @@ type SelectionType = AttributeType | SituationType;
 const situacaoOptions = ['1', '2', '3', '4'] as const;
 
 export function ElectricalChangeAtributes() {
-  const { updateComponentAttributes, defaults, isLoading } =
-    useComponentUpdater();
+  const { updateComponentAttributes, defaults, isLoading } = useAnnotations();
 
   const [selectedOption, setSelectedOption] = useState<SelectionType>(
     defaults.last_attribute as SelectionType
@@ -46,12 +46,16 @@ export function ElectricalChangeAtributes() {
 
   const fieldConfig: Record<
     'scale' | 'environment' | 'usage' | 'usagePrefix',
-    { label: string; placeholder: string }
+    { label: string; placeholder: string; type?: string }
   > = {
-    scale: { label: 'Escala:', placeholder: 'Ex: 1:50' },
-    environment: { label: 'Ambiente:', placeholder: 'Ex: Sala' },
-    usage: { label: 'Uso:', placeholder: 'Ex: Iluminação' },
-    usagePrefix: { label: 'Prefixo do uso:', placeholder: 'Ex: IL' },
+    scale: { label: 'Escala:', placeholder: 'Ex: 50', type: 'number' },
+    environment: { label: 'Ambiente:', placeholder: 'Ex: Sala', type: 'text' },
+    usage: { label: 'Uso:', placeholder: 'Ex: Iluminação', type: 'text' },
+    usagePrefix: {
+      label: 'Prefixo do uso:',
+      placeholder: 'Ex: IL',
+      type: 'text',
+    },
   };
 
   const isInputFieldSelected = !(situacaoOptions as readonly string[]).includes(
@@ -107,8 +111,8 @@ export function ElectricalChangeAtributes() {
                 </TooltipTrigger>
                 <TooltipContent className='max-w-xs'>
                   <p className='text-sm'>
-                    Selecionar os componentes dinâmicos de pontos técnicos no
-                    modelo e definir o tipo de atributo a modificar.
+                    Selecione os componentes dinâmicos de pontos técnicos no
+                    modelo e defina o tipo de atributo a ser modificado.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -118,6 +122,7 @@ export function ElectricalChangeAtributes() {
           <RadioGroup
             value={selectedOption}
             onValueChange={(value) => {
+              setInputValue('');
               const newValue = value as SelectionType;
               setSelectedOption(newValue);
 
@@ -144,7 +149,7 @@ export function ElectricalChangeAtributes() {
             </div>
             <Input
               id='inputValue'
-              type='text'
+              type={getFieldConfig().type || 'text'}
               prefix={
                 isInputFieldSelected && selectedOption === 'scale'
                   ? '1:'
@@ -177,58 +182,60 @@ export function ElectricalChangeAtributes() {
           </Button>
         </div>
 
-        <div className='space-y-3 rounded-xl'>
-          <div className='flex justify-between space-y-2'>
-            <h3 className='text-sm font-semibold text-foreground'>Situação</h3>
-            <TooltipProvider>
+        <TooltipProvider>
+          <div className='space-y-3 rounded-xl'>
+            <div className='flex justify-between space-y-2'>
+              <h3 className='text-sm font-semibold text-foreground'>
+                Situação
+              </h3>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
                     type='button'
                     className='p-1 hover:bg-accent rounded-md transition-colors'
                   >
-                    <Info className='w-4 h-4 text-muted-foreground' />
+                    <Info className='w-4 h-4' />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent className='max-w-xs'>
                   <p className='text-sm'>
-                    Selecionar os componentes dinâmicos de pontos técnicos no
-                    modelo e definir o status da situação.
+                    Selecione os componentes dinâmicos de pontos técnicos no
+                    modelo e defina o status da situação.
                   </p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
-          </div>
-
-          <RadioGroup
-            value={selectedOption}
-            onValueChange={(value) => {
-              const newValue = value as SelectionType;
-              setSelectedOption(newValue);
-
-              if ((situacaoOptions as readonly string[]).includes(newValue)) {
-                setSelectedSituation(newValue as SituationType);
-              }
-            }}
-            disabled={isLoading}
-          >
-            <div className='grid grid-cols-2 gap-3'>
-              <RadioGroupItem value='1' id='new' label='Novo' />
-              <RadioGroupItem value='2' id='existing' label='Existente' />
-              <RadioGroupItem value='3' id='modify' label='Modificar' />
-              <RadioGroupItem value='4' id='remove' label='Remover' />
             </div>
-          </RadioGroup>
 
-          <Button
-            type='submit'
-            size='sm'
-            disabled={isLoading}
-            className='w-full'
-          >
-            {isLoading ? 'Executando...' : 'Aplicar Alterações'}
-          </Button>
-        </div>
+            <RadioGroup
+              value={selectedOption}
+              onValueChange={(value) => {
+                const newValue = value as SelectionType;
+                setSelectedOption(newValue);
+
+                if ((situacaoOptions as readonly string[]).includes(newValue)) {
+                  setSelectedSituation(newValue as SituationType);
+                }
+              }}
+              disabled={isLoading}
+            >
+              <div className='grid grid-cols-2 gap-3'>
+                <RadioGroupItem value='1' id='new' label='Novo' />
+                <RadioGroupItem value='2' id='existing' label='Existente' />
+                <RadioGroupItem value='3' id='modify' label='Modificar' />
+                <RadioGroupItem value='4' id='remove' label='Remover' />
+              </div>
+            </RadioGroup>
+
+            <Button
+              type='submit'
+              size='sm'
+              disabled={isLoading}
+              className='w-full'
+            >
+              {isLoading ? 'Executando...' : 'Aplicar Alterações'}
+            </Button>
+          </div>
+        </TooltipProvider>
       </form>
       <PrintAttributes />
     </div>

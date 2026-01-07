@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useSketchup } from '@/contexts/SketchupContext';
+import { useConfirm } from './useConfirm';
 
 export interface ViewConfig {
   id: string;
@@ -67,6 +68,7 @@ interface UseViewConfigsOptions {
 
 export function useViewConfigs(options: UseViewConfigsOptions) {
   const { callSketchupMethod, isAvailable } = useSketchup();
+  const { confirm, ConfirmDialog } = useConfirm();
   const [data, setData] = useState<ViewConfigsData>({
     groups: [],
     [options.entityName]: [],
@@ -189,7 +191,15 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
       clearPending();
       setIsLoading(false);
       if (result.success && result.data) {
-        setData(result.data);
+        // Normalize groups to ensure segments is always an array
+        const normalizedData = {
+          ...result.data,
+          groups: (result.data.groups || []).map((group) => ({
+            ...group,
+            segments: Array.isArray(group.segments) ? group.segments : [],
+          })),
+        };
+        setData(normalizedData);
         if (pendingAction !== 'loadJson') {
           toast.success(result.message);
         }
@@ -212,7 +222,15 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
       clearPending();
       setIsLoading(false);
       if (result.success && result.data) {
-        setData(result.data);
+        // Normalize groups to ensure segments is always an array
+        const normalizedData = {
+          ...result.data,
+          groups: (result.data.groups || []).map((group) => ({
+            ...group,
+            segments: Array.isArray(group.segments) ? group.segments : [],
+          })),
+        };
+        setData(normalizedData);
         toast.success(result.message);
       } else {
         toast.error(result.message || 'Erro ao carregar dados padrão');
@@ -230,7 +248,15 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
       clearPending();
       setIsLoading(false);
       if (result.success && result.data) {
-        setData(result.data);
+        // Normalize groups to ensure segments is always an array
+        const normalizedData = {
+          ...result.data,
+          groups: (result.data.groups || []).map((group) => ({
+            ...group,
+            segments: Array.isArray(group.segments) ? group.segments : [],
+          })),
+        };
+        setData(normalizedData);
         toast.success(result.message);
       } else {
         toast.error(result.message || 'Erro ao carregar arquivo');
@@ -379,9 +405,13 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
 
   const deleteItem = useCallback(
     async (name: string) => {
-      const confirmed = confirm(
-        `Deseja realmente remover a ${options.entityNameSingular} "${name}"?`
-      );
+      const confirmed = await confirm({
+        title: `Remover ${options.entityNameSingular}`,
+        description: `Deseja realmente remover a ${options.entityNameSingular} "${name}"?`,
+        confirmText: 'Remover',
+        cancelText: 'Cancelar',
+        variant: 'destructive',
+      });
       if (!confirmed) return;
 
       if (!isAvailable) {
@@ -397,11 +427,15 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
       setPendingAction('delete');
       await callSketchupMethod(options.rubyMethods.delete, { name });
     },
-    [callSketchupMethod, isAvailable, options]
+    [confirm, callSketchupMethod, isAvailable, options]
   );
 
   const applyConfig = useCallback(
-    async (name: string, config: Partial<ViewConfig>) => {
+    async (
+      name: string,
+      code: string | undefined,
+      config: Partial<ViewConfig>
+    ) => {
       if (!isAvailable) {
         toast.info('Configuração aplicada (modo simulação)');
         return;
@@ -410,24 +444,28 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
       setPendingAction('applyConfig');
       await callSketchupMethod(options.rubyMethods.applyConfig, {
         name,
+        code,
         config,
       });
     },
     [callSketchupMethod, isAvailable, options]
   );
 
-  const saveToJson = useCallback(async () => {
-    if (!isAvailable) {
-      toast.info('Configurações salvas (modo simulação)');
-      return;
-    }
+  const saveToJson = useCallback(
+    async (dataToSave?: unknown) => {
+      if (!isAvailable) {
+        toast.info('Configurações salvas (modo simulação)');
+        return;
+      }
 
-    setPendingAction('save');
-    await callSketchupMethod(
-      options.rubyMethods.saveToJson,
-      data as unknown as Record<string, unknown>
-    );
-  }, [callSketchupMethod, data, isAvailable, options]);
+      setPendingAction('save');
+      await callSketchupMethod(
+        options.rubyMethods.saveToJson,
+        (dataToSave || data) as unknown as Record<string, unknown>
+      );
+    },
+    [callSketchupMethod, data, isAvailable, options]
+  );
 
   const loadFromJson = useCallback(async () => {
     if (!isAvailable) {
@@ -464,7 +502,7 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
 
   const getAvailableStyles = useCallback(async () => {
     if (!isAvailable) {
-      setAvailableStyles(['FM_VISTAS', 'FM_PLANTAS', 'FM_CORTES', 'FM_3D']);
+      setAvailableStyles(['PRO_VISTAS', 'PRO_PLANTAS', 'PRO_SECOES', 'PRO_3D']);
       return;
     }
 
@@ -487,7 +525,7 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
   const getCurrentState = useCallback(async () => {
     if (!isAvailable) {
       setCurrentState({
-        style: 'FM_VISTAS',
+        style: 'PRO_VISTAS',
         cameraType: 'iso_perspectiva',
         activeLayers: ['Layer0'],
       });
@@ -499,11 +537,18 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
     await callSketchupMethod(options.rubyMethods.getCurrentState);
   }, [callSketchupMethod, isAvailable, options]);
 
-  const clearAll = useCallback(() => {
-    if (!confirm('Deseja realmente limpar todos os dados?')) return;
+  const clearAll = useCallback(async () => {
+    const confirmed = await confirm({
+      title: 'Limpar todos os dados',
+      description: 'Deseja realmente limpar todos os dados?',
+      confirmText: 'Limpar',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
+    if (!confirmed) return;
     setData({ groups: [], [options.entityName]: [] });
     toast.info('Dados limpos');
-  }, [options]);
+  }, [confirm, options]);
 
   const isBusy = isAvailable && (isLoading || Boolean(pendingAction));
 
@@ -535,6 +580,7 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
     getCurrentState,
     applyConfig,
     getAvailableStyles,
+    ConfirmDialog,
     getAvailableLayers,
   };
 }

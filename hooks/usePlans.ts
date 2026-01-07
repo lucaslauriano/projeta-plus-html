@@ -1,23 +1,17 @@
 'use client';
 
 import { useViewConfigs, ViewConfig } from './useViewConfigs';
+import type { ViewConfigGroup, ViewConfigSegment } from '@/types/global';
 
 export type Plan = ViewConfig;
 
-export interface PlanGroup {
-  id: string;
-  name: string;
-  plans: Array<{
-    id: string;
-    title: string;
-    segments: unknown[];
-  }>;
-  [key: string]: unknown;
-}
+export type PlanSegment = ViewConfigSegment;
+
+export type PlanGroup = ViewConfigGroup;
 
 export interface PlansData {
   groups: PlanGroup[];
-  plans: Plan[];
+  plans?: Plan[]; // Deprecated, for backward compatibility
 }
 
 export interface CurrentState {
@@ -64,7 +58,7 @@ export function usePlans() {
       {
         id: 'planta_baixa',
         name: 'Planta Baixa',
-        style: 'FM_PLANTAS',
+        style: 'PRO_PLANTAS',
         cameraType: 'topo_ortogonal',
         activeLayers: ['Layer0'],
       },

@@ -3,23 +3,8 @@
 import React, { useState } from 'react';
 import { LayoutGrid, Grid3x3, Copy, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogTitle,
-  DialogFooter,
-  DialogHeader,
-  DialogContent,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectItem,
-  SelectValue,
-  SelectContent,
-  SelectTrigger,
-} from '@/components/ui/select';
 import { useDetails } from '@/hooks/useDetails';
+import { DuplicateSceneDialog } from '@/app/dashboard/inteli-sket/components/duplicate-scene-dialog';
 
 export default function DetailsComponent() {
   const {
@@ -62,12 +47,6 @@ export default function DetailsComponent() {
     await togglePerspective();
   }
 
-  function handleDialogKeyPress(e: React.KeyboardEvent) {
-    if (e.key === 'Enter') {
-      handleDuplicateScene();
-    }
-  }
-
   return (
     <>
       <div className='space-y-3'>
@@ -81,7 +60,7 @@ export default function DetailsComponent() {
 
         <div className='flex flex-col gap-3 w-full'>
           <Button
-            className='w-full flex items-center gap-3 justify-center'
+            size='sm'
             variant='default'
             onClick={handleCreateCarpentryDetail}
             disabled={isProcessing}
@@ -91,7 +70,7 @@ export default function DetailsComponent() {
           </Button>
 
           <Button
-            className='w-full flex items-center gap-3 justify-center'
+            size='sm'
             variant='default'
             onClick={handleCreateGeneralDetails}
             disabled={isProcessing}
@@ -101,6 +80,7 @@ export default function DetailsComponent() {
           </Button>
 
           <Button
+            size='sm'
             variant='default'
             onClick={handleOpenDuplicateDialog}
             disabled={isProcessing}
@@ -110,7 +90,7 @@ export default function DetailsComponent() {
           </Button>
 
           <Button
-            className='w-full flex items-center gap-3 justify-center'
+            size='sm'
             variant='default'
             onClick={handleTogglePerspective}
             disabled={isProcessing}
@@ -121,69 +101,17 @@ export default function DetailsComponent() {
         </div>
       </div>
 
-      {/* Dialog para Duplicar Cenas */}
-      <Dialog
-        open={isDuplicateDialogOpen}
+      <DuplicateSceneDialog
+        isOpen={isDuplicateDialogOpen}
         onOpenChange={setIsDuplicateDialogOpen}
-      >
-        <DialogContent className='sm:max-w-[425px] flex flex-col gap-4'>
-          <DialogHeader>
-            <DialogTitle>Duplicar Cena</DialogTitle>
-            <DialogDescription>
-              Selecione um estilo e adicione um sufixo para duplicar a cena
-              atual.
-            </DialogDescription>
-          </DialogHeader>
-          <div className='grid gap-4 py-4'>
-            <div className='space-y-2'>
-              <label className='block text-sm font-semibold mb-2 text-foreground'>
-                Estilo
-              </label>
-              <Select value={selectedStyle} onValueChange={setSelectedStyle}>
-                <SelectTrigger className='h-11 rounded-xl border-2'>
-                  <SelectValue placeholder='Selecione o estilo' />
-                </SelectTrigger>
-                <SelectContent>
-                  {styles.map((style) => (
-                    <SelectItem key={style} value={style}>
-                      {style}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className='space-y-2'>
-              <Input
-                id='suffix'
-                label='Sufixo da cena'
-                placeholder='Ex: planta, corte-aa...'
-                value={suffix}
-                onChange={(e) => setSuffix(e.target.value)}
-                onKeyPress={handleDialogKeyPress}
-              />
-            </div>
-          </div>
-          <DialogFooter className='flex gap-2'>
-            <div className='w-full flex gap-2'>
-              <Button
-                variant='outline'
-                onClick={() => {
-                  setIsDuplicateDialogOpen(false);
-                  setSelectedStyle('');
-                  setSuffix('');
-                }}
-                disabled={isProcessing}
-              >
-                Cancelar
-              </Button>
-              <Button onClick={handleDuplicateScene} disabled={isProcessing}>
-                <Copy className='w-4 h-4 mr-2' />
-                Criar
-              </Button>
-            </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        styles={styles}
+        selectedStyle={selectedStyle}
+        onSelectedStyleChange={setSelectedStyle}
+        suffix={suffix}
+        onSuffixChange={setSuffix}
+        onDuplicate={handleDuplicateScene}
+        isProcessing={isProcessing}
+      />
     </>
   );
 }

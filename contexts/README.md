@@ -17,7 +17,7 @@ Context principal que gerencia:
 
 #### `useSectionAnnotation.ts`
 
-Hook para anotações de corte:
+Hook para anotações da seção:
 
 ```tsx
 const { startSectionAnnotation, isLoading } = useSectionAnnotation();

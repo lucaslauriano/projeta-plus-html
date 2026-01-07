@@ -11,21 +11,17 @@ import {
 import PageHeader from '@/components/page-header';
 import PageWrapper from '@/components/ui/page-wraper';
 
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from '@/components/ui/tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import DetailsComponent from './(modules)/details';
 import LayersComponent from './(modules)/layers';
 import SectionsComponent from './(modules)/sections';
 import PlansComponent from './(modules)/plans';
 import ScenesComponent from './(modules)/scenes';
 import PageContent from '@/components/ui/page-content';
+import Tabs2 from '@/components/ui/tabs2';
 
 export default function InteliSketDashboardPage() {
-  const [activeTab, setActiveTab] = useState('layers');
+  const [activeTab, setActiveTab] = useState('plans');
 
   const renderContent = () => {
     switch (activeTab) {
@@ -59,31 +55,19 @@ export default function InteliSketDashboardPage() {
         description='Organize suas camadas, seções e plantas, detalhes e mais.'
       />
 
-      <PageContent>
-        <div className='flex space-x-2 border-b mb-4 pb-2'>
+      <PageContent className='pt-6'>
+        <div className='space-2 flex border-b items-center'>
           <TooltipProvider>
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <Tooltip key={tab.id}>
-                  <TooltipTrigger asChild>
-                    <button
-                      className={`p-2 rounded-md transition-colors flex-1 flex justify-center items-center ${
-                        activeTab === tab.id
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                      }`}
-                      onClick={() => setActiveTab(tab.id)}
-                    >
-                      <Icon className='w-5 h-5' />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{tab.label}</p>
-                  </TooltipContent>
-                </Tooltip>
-              );
-            })}
+            <Tabs2
+              tabs={tabs.map((tab) => ({
+                name: tab.label,
+                href: '#',
+                current: activeTab === tab.id,
+                icon: tab.icon,
+                id: tab.id,
+              }))}
+              onTabChange={setActiveTab}
+            />
           </TooltipProvider>
         </div>
 

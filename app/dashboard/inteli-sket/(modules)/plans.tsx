@@ -1,21 +1,12 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { PlanItem } from '@/components/PlanItem';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionContent,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Edit, Trash2, Folder, Loader2, Plus } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePlans } from '@/hooks/usePlans';
 import type { PlanGroup } from '@/hooks/usePlans';
-import {
-  AddGroupDialog,
-  AddSceneDialog,
-} from '@/app/dashboard/inteli-sket/components/scene-group-dialogs';
+import { GroupAccordion } from '@/app/dashboard/inteli-sket/components/group-accordion';
 import {
   ScenesSkeleton,
   ScenesEmptyState,
@@ -24,15 +15,21 @@ import {
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
 import { LevelsManagerDialog } from '@/app/dashboard/inteli-sket/components/levels-manager-dialog';
 import { Button } from '@/components/ui/button';
-import { ViewConfigEditDialog } from '@/app/dashboard/inteli-sket/components/view-config-edit-dialog';
 import { BasePlansConfigDialog } from '@/app/dashboard/inteli-sket/components/base-plans-config-dialog';
+import { GroupNameEditDialog } from '@/app/dashboard/inteli-sket/components/group-name-edit-dialog';
+import { AddItemDialog } from '@/app/dashboard/inteli-sket/components/add-item-dialog';
+import { AddItemWithGroupDialog } from '@/app/dashboard/inteli-sket/components/add-item-with-group-dialog';
 import { useBasePlans } from '@/hooks/useBasePlans';
 import { usePlansDialogs } from '@/hooks/usePlansDialogs';
 import { usePlanEditor } from '@/hooks/usePlanEditor';
 import type { Plan } from '@/hooks/usePlanEditor';
 import { useBasePlansConfig } from '@/hooks/useBasePlansConfig';
+import { useConfirm } from '@/hooks/useConfirm';
+import { ViewConfigDialog } from '@/app/dashboard/inteli-sket/components/view-config-dialog';
 
 function PlansComponent() {
+  console.log('PlansComponent');
+  const { confirm, ConfirmDialog } = useConfirm();
   const {
     data,
     isBusy,
@@ -43,10 +40,10 @@ function PlansComponent() {
     setData,
     saveToJson,
     loadDefault,
-    loadFromFile,
-    loadFromJson,
     getCurrentState,
     applyPlanConfig,
+    //loadFromFile,
+    //loadFromJson,
   } = usePlans();
 
   const {
@@ -57,21 +54,23 @@ function PlansComponent() {
     isBusy: isBusyPlans,
   } = useBasePlans();
 
-  // Hook para gerenciar dialogs
   const { groupDialog, planDialog, editDialog, levelsDialog, configDialog } =
     usePlansDialogs();
 
-  // Hook para gerenciar base plans config
   const {
+    baseCode,
     baseStyle,
     baseLayers,
+    ceilingCode,
     ceilingStyle,
     ceilingLayers,
+    saveConfig,
+    updateBaseCode,
     updateBaseStyle,
     updateBaseLayers,
+    updateCeilingCode,
     updateCeilingStyle,
     updateCeilingLayers,
-    saveConfig,
   } = useBasePlansConfig(
     basePlansData,
     savePlans as unknown as (
@@ -80,9 +79,17 @@ function PlansComponent() {
     ) => Promise<void>
   );
 
-  // Hook para gerenciar edição de plantas
+  const [isGroupEditDialogOpen, setIsGroupEditDialogOpen] = useState(false);
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
+  const [editingGroupName, setEditingGroupName] = useState('');
+
+  const memoizedData = useMemo(
+    () => ({ groups: data.groups, plans: [] }),
+    [data.groups]
+  );
+
   const editor = usePlanEditor(
-    { groups: data.groups, plans: data.plans as unknown[] },
+    memoizedData,
     availableStyles,
     availableLayers,
     getCurrentState,
@@ -92,6 +99,7 @@ function PlansComponent() {
   );
 
   const groups = data.groups;
+
   const setGroups = (
     newGroups: PlanGroup[] | ((prev: PlanGroup[]) => PlanGroup[])
   ) => {
@@ -109,10 +117,6 @@ function PlansComponent() {
     [groups]
   );
 
-  // ========================================
-  // HANDLERS - Group Management
-  // ========================================
-
   const handleAddGroup = async () => {
     if (!groupDialog.name.trim()) {
       toast.error('Digite um nome para o grupo');
@@ -122,7 +126,7 @@ function PlansComponent() {
     const newGroup: PlanGroup = {
       id: Date.now().toString(),
       name: groupDialog.name.trim(),
-      plans: [],
+      segments: [],
     };
 
     setGroups([...groups, newGroup]);
@@ -133,11 +137,15 @@ function PlansComponent() {
 
   const handleDeleteGroup = async (groupId: string) => {
     const group = groups.find((g) => g.id === groupId);
-    const confirmed = confirm(
-      `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${
-        group?.plans.length || 0
-      } planta(s)?`
-    );
+    const confirmed = await confirm({
+      title: 'Remover grupo',
+      description: `Deseja realmente remover o grupo "${
+        group?.name
+      }" e todas as suas ${(group?.segments || []).length} planta(s)?`,
+      confirmText: 'Remover',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
     if (!confirmed) return;
 
     setGroups(groups.filter((g) => g.id !== groupId));
@@ -145,28 +153,40 @@ function PlansComponent() {
     toast.success('Grupo removido com sucesso!');
   };
 
-  const handleEditGroup = async (groupId: string) => {
+  const handleEditGroup = (groupId: string) => {
     const group = groups.find((g) => g.id === groupId);
     if (!group) return;
 
-    const newName = prompt('Digite o novo nome do grupo:', group.name);
-    if (!newName || newName.trim() === '') {
+    setEditingGroupId(groupId);
+    setEditingGroupName(group.name);
+    setIsGroupEditDialogOpen(true);
+  };
+
+  const handleConfirmEditGroup = async () => {
+    if (!editingGroupId || !editingGroupName.trim()) {
       toast.error('Nome inválido');
       return;
     }
 
-    if (newName.trim() === group.name) return;
+    const group = groups.find((g) => g.id === editingGroupId);
+    if (!group) return;
+
+    if (editingGroupName.trim() === group.name) {
+      setIsGroupEditDialogOpen(false);
+      return;
+    }
 
     setGroups(
-      groups.map((g) => (g.id === groupId ? { ...g, name: newName.trim() } : g))
+      groups.map((g) =>
+        g.id === editingGroupId ? { ...g, name: editingGroupName.trim() } : g
+      )
     );
     await saveToJson();
     toast.success('Grupo renomeado com sucesso!');
+    setIsGroupEditDialogOpen(false);
+    setEditingGroupId(null);
+    setEditingGroupName('');
   };
-
-  // ========================================
-  // HANDLERS - Plan Management
-  // ========================================
 
   const handleAddPlan = async () => {
     if (!planDialog.title.trim()) {
@@ -174,17 +194,28 @@ function PlansComponent() {
       return;
     }
 
-    const newPlan = {
+    if (
+      !planDialog.selectedGroup.trim() ||
+      planDialog.selectedGroup === 'root'
+    ) {
+      toast.error('Selecione um grupo para a planta');
+      return;
+    }
+
+    const newSegment = {
       id: Date.now().toString(),
-      title: planDialog.title.trim(),
-      segments: [],
+      name: planDialog.title.trim(),
+      code: planDialog.title.trim().toLowerCase().replace(/\s+/g, '_'),
+      style: currentState?.style || 'PRO_PLANTAS',
+      cameraType: currentState?.cameraType || 'topo_ortogonal',
+      activeLayers: currentState?.activeLayers || [],
     };
 
     if (planDialog.selectedGroup === 'root') {
       const newGroup: PlanGroup = {
         id: Date.now().toString(),
         name: planDialog.title.trim(),
-        plans: [],
+        segments: [newSegment],
       };
       setGroups([...groups, newGroup]);
     } else {
@@ -193,7 +224,7 @@ function PlansComponent() {
           if (group.id === planDialog.selectedGroup) {
             return {
               ...group,
-              plans: [...group.plans, newPlan],
+              segments: [...(group.segments || []), newSegment],
             };
           }
           return group;
@@ -206,8 +237,14 @@ function PlansComponent() {
     toast.success('Planta adicionada com sucesso!');
   };
 
-  const handleDeletePlan = async (groupId: string, planId: string) => {
-    const confirmed = confirm('Deseja realmente remover esta planta?');
+  const handleDeletePlan = async (groupId: string, segmentId: string) => {
+    const confirmed = await confirm({
+      title: 'Remover planta',
+      description: 'Deseja realmente remover esta planta?',
+      confirmText: 'Remover',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
     if (!confirmed) return;
 
     setGroups(
@@ -215,7 +252,9 @@ function PlansComponent() {
         if (group.id === groupId) {
           return {
             ...group,
-            plans: group.plans.filter((plan) => plan.id !== planId),
+            segments: (group.segments || []).filter(
+              (segment) => segment.id !== segmentId
+            ),
           };
         }
         return group;
@@ -225,18 +264,18 @@ function PlansComponent() {
     toast.success('Planta removida com sucesso!');
   };
 
-  const handleDuplicatePlan = async (groupId: string, plan: Plan) => {
+  const handleDuplicatePlan = async (groupId: string, segment: Plan) => {
     setGroups(
       groups.map((g) => {
         if (g.id === groupId) {
           return {
             ...g,
-            plans: [
-              ...g.plans,
+            segments: [
+              ...(g.segments || []),
               {
+                ...segment,
                 id: Date.now().toString(),
-                title: `${plan.title} (cópia)`,
-                segments: [...plan.segments],
+                name: `${segment.name!} (cópia)`,
               },
             ],
           };
@@ -248,28 +287,16 @@ function PlansComponent() {
     toast.success('Planta duplicada!');
   };
 
-  const handleApplyPlan = async (plan: Plan) => {
-    const planConfig = data.plans.find(
-      (p) => p.id === plan.id || p.name === plan.title
-    );
-
-    if (!planConfig) {
-      toast.error('Configuração da planta não encontrada no JSON');
-      return;
-    }
-
-    await applyPlanConfig(plan.title, {
-      style: planConfig.style,
-      cameraType: planConfig.cameraType,
-      activeLayers: planConfig.activeLayers,
+  const handleApplyPlan = async (segment: Plan) => {
+    // Segment já tem todas as configurações necessárias
+    await applyPlanConfig(segment.name!, segment.code, {
+      style: segment.style,
+      cameraType: segment.cameraType,
+      activeLayers: segment.activeLayers,
     });
 
-    toast.success(`Planta "${plan.title}" aplicada!`);
+    toast.success(`Planta "${segment.name}" aplicada!`);
   };
-
-  // ========================================
-  // HANDLERS - Editor
-  // ========================================
 
   const handleEditPlan = (plan: Plan) => {
     editor.openEditor(plan);
@@ -281,6 +308,15 @@ function PlansComponent() {
       }
     );
   };
+
+  const handleApplyCurrentState = useCallback(async () => {
+    await getCurrentState();
+    if (currentState) {
+      editor.setEditActiveLayers(currentState.activeLayers);
+      toast.success('Estado atual aplicado!');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getCurrentState, currentState, editor.setEditActiveLayers]);
 
   const handleSaveEditPlan = async () => {
     const success = await editor.saveEdits(groups);
@@ -294,10 +330,6 @@ function PlansComponent() {
     editDialog.close();
   };
 
-  // ========================================
-  // HANDLERS - Keyboard
-  // ========================================
-
   const handleGroupDialogKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleAddGroup();
   };
@@ -306,34 +338,70 @@ function PlansComponent() {
     if (e.key === 'Enter') handleAddPlan();
   };
 
-  // ========================================
-  // RENDER
-  // ========================================
+  const menuItems = [
+    {
+      label: 'Criar grupo',
+      action: () => groupDialog.open(),
+      hasDivider: false,
+    },
+    {
+      label: 'Criar planta',
+      action: () => planDialog.open(),
+      hasDivider: false,
+    },
+    {
+      label: 'Editar níveis',
+      action: () => configDialog.open(),
+      hasDivider: true,
+    },
+    {
+      label: 'Restaurar padrão',
+      action: () => loadDefault(),
+      hasDivider: false,
+    },
+  ];
 
   return (
     <>
-      <AddGroupDialog
-        onAdd={handleAddGroup}
+      <AddItemDialog
         isOpen={groupDialog.isOpen}
-        groupName={groupDialog.name}
-        onKeyPress={handleGroupDialogKeyPress}
         onOpenChange={groupDialog.setOpen}
-        onGroupNameChange={groupDialog.setName}
+        title='Criar novo grupo'
+        description='Organize suas plantas em grupos personalizados.'
+        inputLabel='Nome do grupo'
+        inputPlaceholder='Ex: Pavimento Térreo'
+        inputValue={groupDialog.name}
+        onInputChange={groupDialog.setName}
+        onAdd={handleAddGroup}
+        onKeyPress={handleGroupDialogKeyPress}
       />
 
-      <AddSceneDialog
-        onAdd={handleAddPlan}
+      <AddItemWithGroupDialog
         groups={groups}
         isOpen={planDialog.isOpen}
-        onKeyPress={handlePlanDialogKeyPress}
-        sceneTitle={planDialog.title}
-        onOpenChange={planDialog.setOpen}
+        itemValue={planDialog.title}
         selectedGroup={planDialog.selectedGroup}
-        onSceneTitleChange={planDialog.setTitle}
+        title='Criar nova planta'
+        description='Organize suas plantas em grupos personalizados.'
+        itemLabel='Nome da planta'
+        itemPlaceholder='Ex: Planta de Arquitetura'
+        onAdd={handleAddPlan}
+        onKeyPress={handlePlanDialogKeyPress}
+        onOpenChange={planDialog.setOpen}
+        onItemValueChange={planDialog.setTitle}
         onSelectedGroupChange={planDialog.setSelectedGroup}
       />
 
-      <ViewConfigEditDialog
+      <GroupNameEditDialog
+        open={isGroupEditDialogOpen}
+        onOpenChange={setIsGroupEditDialogOpen}
+        groupName={editingGroupName}
+        onGroupNameChange={setEditingGroupName}
+        onConfirm={handleConfirmEditGroup}
+        disabled={isBusy}
+      />
+
+      <ViewConfigDialog
         title='Configuração da Planta'
         style={editor.editPlanStyle}
         onSave={handleSaveEditPlan}
@@ -352,7 +420,9 @@ function PlansComponent() {
         onApplyCurrentState={editor.applyCurrentState}
         onActiveLayersChange={editor.setEditActiveLayers}
         itemTitle={editor.editPlanName}
+        itemCode={editor.editPlanCode}
         onItemTitleChange={editor.setEditPlanName}
+        onItemCodeChange={editor.setEditPlanCode}
         allowedCameraTypes={[
           'topo_perspectiva',
           'topo_ortogonal',
@@ -367,16 +437,20 @@ function PlansComponent() {
         isBusy={isBusy || isBusyPlans}
         baseStyle={baseStyle}
         baseLayers={baseLayers}
+        baseCode={baseCode}
+        ceilingCode={ceilingCode}
         onOpenChange={configDialog.setOpen}
         ceilingStyle={ceilingStyle}
         ceilingLayers={ceilingLayers}
         availableStyles={bp_availableStyles}
         availableLayers={bp_availableLayerss}
+        onBaseCodeChange={updateBaseCode}
         onBaseStyleChange={updateBaseStyle}
         onBaseLayersChange={updateBaseLayers}
         onCeilingStyleChange={updateCeilingStyle}
         onCeilingLayersChange={updateCeilingLayers}
-        onApplyCurrentState={() => toast.info('Aplicando estado atual...')}
+        onCeilingCodeChange={updateCeilingCode}
+        onApplyCurrentState={handleApplyCurrentState}
       />
 
       <div className='space-y-3'>
@@ -385,17 +459,7 @@ function PlansComponent() {
             Plantas {isLoading && <Loader2 className='w-4 h-4 animate-spin' />}
           </h2>
           <div className='flex items-center gap-2'>
-            <ViewConfigMenu
-              isBusy={isBusy}
-              onAddItem={planDialog.open}
-              onAddGroup={groupDialog.open}
-              onEdit={configDialog.open}
-              entityLabel='Planta'
-              onSaveToJson={saveToJson}
-              onLoadDefault={loadDefault}
-              onLoadFromJson={loadFromJson}
-              onLoadFromFile={loadFromFile}
-            />
+            <ViewConfigMenu menuItems={menuItems} />
           </div>
         </div>
 
@@ -423,79 +487,31 @@ function PlansComponent() {
         {!isLoading && sortedGroups.length === 0 && <ScenesEmptyState />}
 
         {!isLoading && sortedGroups.length > 0 && (
-          <Accordion type='single' collapsible className='w-full space-y-2'>
-            {sortedGroups.map((group) => (
-              <AccordionItem
-                key={group.id}
-                value={group.id}
-                className='border rounded-xl overflow-hidden bg-muted/20 px-0'
-              >
-                <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 group data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none'>
-                  <div className='flex items-center justify-between w-full pr-2'>
-                    <div className='flex items-center gap-2 font-medium text-sm'>
-                      <Folder className='w-4 h-4 text-muted-foreground' />
-                      {group.name}
-                    </div>
-                    <div className='flex  items-center justify-end gap-2 text-muted-foreground'>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditGroup(group.id);
-                        }}
-                        className='opacity-0 group-hover:opacity-100 transition-opacity'
-                        title='Editar'
-                      >
-                        <Edit className='w-4 h-4' />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteGroup(group.id);
-                        }}
-                        className='opacity-0 group-hover:opacity-100 transition-opacity'
-                        title='Excluir pasta'
-                      >
-                        <Trash2 className='w-4 h-4' />
-                      </button>
-                    </div>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className='p-4'>
-                  <div className='space-y-3'>
-                    {group.plans.length > 0 ? (
-                      <div className='space-y-2'>
-                        {group.plans.map((plan) => (
-                          <PlanItem
-                            key={plan.id}
-                            title={plan.title}
-                            onEdit={() =>
-                              handleEditPlan(plan as unknown as Plan)
-                            }
-                            onLoadFromJson={() =>
-                              handleApplyPlan(plan as unknown as Plan)
-                            }
-                            onDuplicate={() =>
-                              handleDuplicatePlan(
-                                group.id,
-                                plan as unknown as Plan
-                              )
-                            }
-                            onDelete={() => handleDeletePlan(group.id, plan.id)}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <div className='text-center py-4 text-sm text-muted-foreground italic'>
-                        Nenhuma planta neste grupo
-                      </div>
-                    )}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+          <GroupAccordion
+            groups={sortedGroups}
+            onEditGroup={handleEditGroup}
+            onDeleteGroup={handleDeleteGroup}
+            emptyMessage='Nenhuma planta neste grupo'
+            iconPosition='right'
+            renderSegment={(segment, groupId) => (
+              <PlanItem
+                key={segment.id}
+                title={segment.name}
+                onEdit={() => handleEditPlan(segment as unknown as Plan)}
+                onLoadFromJson={() =>
+                  handleApplyPlan(segment as unknown as Plan)
+                }
+                onDuplicate={() =>
+                  handleDuplicatePlan(groupId, segment as unknown as Plan)
+                }
+                onDelete={() => handleDeletePlan(groupId, segment.id)}
+              />
+            )}
+          />
         )}
       </div>
+
+      <ConfirmDialog />
     </>
   );
 }

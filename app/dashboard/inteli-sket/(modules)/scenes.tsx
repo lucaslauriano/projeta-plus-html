@@ -1,31 +1,27 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { PlanItem } from '@/components/PlanItem';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionContent,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Edit, Trash2, Folder, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SceneGroup, useScenes } from '@/hooks/useScenes';
-import {
-  AddGroupDialog,
-  AddSceneDialog,
-} from '@/app/dashboard/inteli-sket/components/scene-group-dialogs';
 import {
   ScenesSkeleton,
   ScenesEmptyState,
   ScenesLoadingState,
 } from '@/app/dashboard/inteli-sket/components/scenes-skeleton';
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
-import { ViewConfigEditDialog } from '@/app/dashboard/inteli-sket/components/view-config-edit-dialog';
+import { GroupAccordion } from '@/app/dashboard/inteli-sket/components/group-accordion';
+import { GroupNameEditDialog } from '@/app/dashboard/inteli-sket/components/group-name-edit-dialog';
+import { AddItemDialog } from '@/app/dashboard/inteli-sket/components/add-item-dialog';
+import { AddItemWithGroupDialog } from '@/app/dashboard/inteli-sket/components/add-item-with-group-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
+import { ViewConfigDialog } from '@/app/dashboard/inteli-sket/components/view-config-dialog';
 
-type Scene = SceneGroup['scenes'][number];
+type Scene = SceneGroup['segments'][number];
 
 function ScenesComponent() {
+  const { confirm, ConfirmDialog } = useConfirm();
   const {
     data,
     setData,
@@ -34,18 +30,19 @@ function ScenesComponent() {
     currentState,
     isBusy,
     isLoading,
+    saveToJson,
+    loadDefault,
+    getCurrentState,
+    applySceneConfig,
     // addScene,
     // updateScene,
     // deleteScene,
-    applySceneConfig,
-    saveToJson,
-    loadFromJson,
-    loadDefault,
-    loadFromFile,
-    getCurrentState,
+    // loadFromFile,
+    // loadFromJson,
   } = useScenes();
 
   const groups = data.groups;
+
   const setGroups = (
     newGroups: SceneGroup[] | ((prev: SceneGroup[]) => SceneGroup[])
   ) => {
@@ -66,16 +63,21 @@ function ScenesComponent() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingScene, setEditingScene] = useState<Scene | null>(null);
   const [editSceneName, setEditSceneName] = useState('');
+  const [editSceneCode, setEditSceneCode] = useState('');
   const [editSceneStyle, setEditSceneStyle] = useState('');
   const [editCameraType, setEditCameraType] = useState('');
   const [editActiveLayers, setEditActiveLayers] = useState<string[]>([]);
+
+  const [isGroupEditDialogOpen, setIsGroupEditDialogOpen] = useState(false);
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
+  const [editingGroupName, setEditingGroupName] = useState('');
 
   const sortedGroups = useMemo(
     () => [...groups].sort((a, b) => a.name.localeCompare(b.name)),
     [groups]
   );
 
-  const handleAddGroup = () => {
+  const handleAddGroup = async () => {
     if (!newGroupName.trim()) {
       toast.error('Digite um nome para o grupo');
       return;
@@ -84,32 +86,42 @@ function ScenesComponent() {
     const newGroup: SceneGroup = {
       id: Date.now().toString(),
       name: newGroupName.trim(),
-      scenes: [],
+      segments: [],
     };
 
     const updatedGroups = [...groups, newGroup];
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
 
     setGroups(updatedGroups);
     setNewGroupName('');
     setIsGroupDialogOpen(false);
 
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    await saveToJson(updatedData);
 
     toast.success('Grupo adicionado com sucesso!');
   };
 
-  const handleAddScene = () => {
+  const handleAddScene = async () => {
     if (!newSceneTitle.trim()) {
       toast.error('Digite um título para a cena');
       return;
     }
 
-    const newScene = {
+    if (!selectedGroup.trim() || selectedGroup === 'root') {
+      toast.error('Selecione um grupo para a cena');
+      return;
+    }
+
+    const newSegment = {
       id: Date.now().toString(),
-      title: newSceneTitle.trim(),
-      segments: [],
+      name: newSceneTitle.trim(),
+      code: newSceneTitle.trim().toLowerCase().replace(/\s+/g, '_'),
+      style: currentState?.style || 'PRO_VISTAS',
+      cameraType: currentState?.cameraType || 'iso_perspectiva',
+      activeLayers: currentState?.activeLayers || [],
     };
 
     let updatedGroups: SceneGroup[];
@@ -117,7 +129,7 @@ function ScenesComponent() {
       const newGroup: SceneGroup = {
         id: Date.now().toString(),
         name: newSceneTitle.trim(),
-        scenes: [],
+        segments: [newSegment],
       };
       updatedGroups = [...groups, newGroup];
       setGroups(updatedGroups);
@@ -126,7 +138,7 @@ function ScenesComponent() {
         if (group.id === selectedGroup) {
           return {
             ...group,
-            scenes: [...group.scenes, newScene],
+            segments: [...group.segments, newSegment],
           };
         }
         return group;
@@ -134,32 +146,41 @@ function ScenesComponent() {
       setGroups(updatedGroups);
     }
 
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
+
     setNewSceneTitle('');
     setIsSceneDialogOpen(false);
 
-    // Salvar no JSON após adicionar
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    await saveToJson(updatedData);
 
     toast.success('Cena adicionada com sucesso!');
   };
 
-  const handleDeleteGroup = (groupId: string) => {
+  const handleDeleteGroup = async (groupId: string) => {
     const group = groups.find((g) => g.id === groupId);
-    const confirmed = confirm(
-      `Deseja realmente remover o grupo "${group?.name}" e todas as suas ${
-        group?.scenes.length || 0
-      } cena(s)?`
-    );
+    const confirmed = await confirm({
+      title: 'Remover grupo',
+      description: `Deseja realmente remover o grupo "${
+        group?.name
+      }" e todas as suas ${group?.segments.length || 0} cena(s)?`,
+      confirmText: 'Remover',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
     if (!confirmed) return;
 
-    setGroups(groups.filter((group) => group.id !== groupId));
+    const updatedGroups = groups.filter((group) => group.id !== groupId);
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
 
-    // Salvar no JSON após deletar
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    setGroups(updatedGroups);
+
+    await saveToJson(updatedData);
 
     toast.success('Grupo removido com sucesso!');
   };
@@ -168,98 +189,113 @@ function ScenesComponent() {
     const group = groups.find((g) => g.id === groupId);
     if (!group) return;
 
-    const newName = prompt('Digite o novo nome do grupo:', group.name);
-    if (!newName || newName.trim() === '') {
+    setEditingGroupId(groupId);
+    setEditingGroupName(group.name);
+    setIsGroupEditDialogOpen(true);
+  };
+
+  const handleConfirmEditGroup = async () => {
+    if (!editingGroupId || !editingGroupName.trim()) {
       toast.error('Nome inválido');
       return;
     }
 
-    if (newName.trim() === group.name) {
-      return; // Nenhuma mudança
+    const group = groups.find((g) => g.id === editingGroupId);
+    if (!group) return;
+
+    if (editingGroupName.trim() === group.name) {
+      setIsGroupEditDialogOpen(false);
+      return;
     }
 
-    setGroups(
-      groups.map((g) => (g.id === groupId ? { ...g, name: newName.trim() } : g))
+    const updatedGroups = groups.map((g) =>
+      g.id === editingGroupId ? { ...g, name: editingGroupName.trim() } : g
     );
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
 
-    // Salvar no JSON após editar
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    setGroups(updatedGroups);
+
+    await saveToJson(updatedData);
 
     toast.success('Grupo renomeado com sucesso!');
+    setIsGroupEditDialogOpen(false);
+    setEditingGroupId(null);
+    setEditingGroupName('');
   };
 
-  const handleDeleteScene = (groupId: string, sceneId: string) => {
-    const confirmed = confirm('Deseja realmente remover esta cena?');
+  const handleDeleteScene = async (groupId: string, segmentId: string) => {
+    const confirmed = await confirm({
+      title: 'Remover cena',
+      description: 'Deseja realmente remover esta cena?',
+      confirmText: 'Remover',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
     if (!confirmed) return;
 
-    setGroups(
-      groups.map((group) => {
-        if (group.id === groupId) {
-          return {
-            ...group,
-            scenes: group.scenes.filter((scene) => scene.id !== sceneId),
-          };
-        }
-        return group;
-      })
-    );
+    const updatedGroups = groups.map((group) => {
+      if (group.id === groupId) {
+        return {
+          ...group,
+          segments: group.segments.filter(
+            (segment) => segment.id !== segmentId
+          ),
+        };
+      }
+      return group;
+    });
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
 
-    // Salvar no JSON após deletar
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    setGroups(updatedGroups);
+
+    await saveToJson(updatedData);
 
     toast.success('Cena removida com sucesso!');
   };
 
-  const handleDuplicateScene = (groupId: string, scene: Scene) => {
-    setGroups(
-      groups.map((g) => {
-        if (g.id === groupId) {
-          return {
-            ...g,
-            scenes: [
-              ...g.scenes,
-              {
-                id: Date.now().toString(),
-                title: `${scene.title} (cópia)`,
-                segments: [...scene.segments],
-              },
-            ],
-          };
-        }
-        return g;
-      })
-    );
+  const handleDuplicateScene = async (groupId: string, segment: Scene) => {
+    const updatedGroups = groups.map((g) => {
+      if (g.id === groupId) {
+        return {
+          ...g,
+          segments: [
+            ...g.segments,
+            {
+              ...segment,
+              id: Date.now().toString(),
+              name: `${segment.name} (cópia)`,
+            },
+          ],
+        };
+      }
+      return g;
+    });
+    const updatedData = {
+      ...data,
+      groups: updatedGroups,
+    };
 
-    // Salvar no JSON após duplicar
-    setTimeout(() => {
-      saveToJson();
-    }, 100);
+    setGroups(updatedGroups);
+
+    await saveToJson(updatedData);
 
     toast.success('Cena duplicada!');
   };
 
-  const handleApplyScene = async (scene: Scene) => {
-    // Buscar configuração da cena no data.scenes (do JSON)
-    const sceneConfig = data.scenes.find(
-      (s) => s.id === scene.id || s.name === scene.title
-    );
-
-    if (!sceneConfig) {
-      toast.error('Configuração da cena não encontrada no JSON');
-      return;
-    }
-
-    await applySceneConfig(scene.title, {
-      style: sceneConfig.style,
-      cameraType: sceneConfig.cameraType,
-      activeLayers: sceneConfig.activeLayers,
+  const handleApplyScene = async (segment: Scene) => {
+    await applySceneConfig(segment.name, segment.code, {
+      style: segment.style,
+      cameraType: segment.cameraType,
+      activeLayers: segment.activeLayers,
     });
 
-    toast.success(`Cena "${scene.title}" aplicada!`);
+    toast.success(`Cena "${segment.name}" aplicada!`);
   };
 
   const handleGroupDialogKeyPress = (e: React.KeyboardEvent) => {
@@ -274,34 +310,23 @@ function ScenesComponent() {
     }
   };
 
-  const handleEditScene = (scene: Scene) => {
-    setEditingScene(scene);
-    setEditSceneName(scene.title);
-
-    // Buscar configuração da cena no data.scenes (do JSON)
-    const sceneConfig = data.scenes.find(
-      (s) => s.id === scene.id || s.name === scene.title
+  const handleEditScene = (segment: Scene) => {
+    setEditingScene(segment);
+    setEditSceneName(segment.name);
+    setEditSceneCode(
+      segment.code || segment.name.toLowerCase().replace(/\s+/g, '_')
     );
 
-    if (sceneConfig) {
-      setEditSceneStyle(sceneConfig.style || availableStyles[0] || 'FM_VISTAS');
-      setEditCameraType(sceneConfig.cameraType || 'iso_perspectiva');
-      setEditActiveLayers(sceneConfig.activeLayers || ['Layer0']);
-    } else {
-      setEditSceneStyle(availableStyles[0] || 'FM_VISTAS');
-      setEditCameraType('iso_perspectiva');
-      setEditActiveLayers(['Layer0']);
-    }
+    setEditSceneStyle(segment.style || availableStyles[0] || 'PRO_VISTAS');
+    setEditCameraType(segment.cameraType || 'iso_perspectiva');
+    setEditActiveLayers(segment.activeLayers || ['Layer0']);
 
     setIsEditDialogOpen(true);
   };
 
-  // TODO: Implement apply current state functionality
   const handleApplyCurrentState = async () => {
     await getCurrentState();
     if (currentState) {
-      setEditSceneStyle(currentState.style);
-      setEditCameraType(currentState.cameraType);
       setEditActiveLayers(currentState.activeLayers);
       toast.success('Estado atual aplicado!');
     }
@@ -315,87 +340,118 @@ function ScenesComponent() {
     setEditActiveLayers([]);
   };
 
-  const handleSaveEditScene = async () => {
+  const handleSaveEditScene = useCallback(async () => {
     if (!editSceneName.trim() || !editingScene) {
       toast.error('Digite um nome para a cena');
       return;
     }
 
-    const updatedScenes = data.scenes.map((s) => {
-      if (s.id === editingScene.id || s.name === editingScene.title) {
-        return {
-          ...s,
-          name: editSceneName.trim(),
-          style: editSceneStyle,
-          cameraType: editCameraType,
-          activeLayers: editActiveLayers,
-        };
-      }
-      return s;
-    });
-
-    const sceneExists = data.scenes.some(
-      (s) => s.id === editingScene.id || s.name === editingScene.title
-    );
-
-    if (!sceneExists) {
-      updatedScenes.push({
-        id: editingScene.id,
-        name: editSceneName.trim(),
-        style: editSceneStyle,
-        cameraType: editCameraType,
-        activeLayers: editActiveLayers,
-      });
-    }
-
     const updatedGroups = groups.map((g) => ({
       ...g,
-      scenes: g.scenes.map((s) =>
-        s.id === editingScene.id ? { ...s, title: editSceneName.trim() } : s
+      segments: g.segments.map((s) =>
+        s.id === editingScene.id
+          ? {
+              ...s,
+              name: editSceneName.trim(),
+              code:
+                editSceneCode.trim() ||
+                editSceneName.trim().toLowerCase().replace(/\s+/g, '_'),
+              style: editSceneStyle,
+              cameraType: editCameraType,
+              activeLayers: editActiveLayers,
+            }
+          : s
       ),
     }));
 
-    // Atualizar estado local
-    setData({
+    const updatedData = {
+      ...data,
       groups: updatedGroups,
-      scenes: updatedScenes,
-    });
+    };
 
-    // Salvar no JSON (não mexe no modelo do SketchUp)
-    await saveToJson();
+    setData(updatedData);
+
+    await saveToJson(updatedData);
 
     setIsEditDialogOpen(false);
     setEditingScene(null);
-    toast.success('Configuração salva no JSON!');
-  };
+  }, [
+    data,
+    groups,
+    editSceneName,
+    editingScene,
+    editSceneCode,
+    editSceneStyle,
+    editCameraType,
+    editActiveLayers,
+    setData,
+    saveToJson,
+  ]);
+
+  const menuItems = [
+    {
+      label: 'Criar grupo',
+      action: () => setIsGroupDialogOpen(true),
+      hasDivider: false,
+    },
+    {
+      label: 'Criar cena',
+      action: () => setIsSceneDialogOpen(true),
+      hasDivider: true,
+    },
+    {
+      label: 'Restaurar padrão',
+      action: loadDefault,
+      hasDivider: false,
+    },
+  ];
 
   return (
     <>
-      <AddGroupDialog
+      <AddItemDialog
+        title='Criar novo grupo'
+        description='Organize suas cenas em grupos personalizados.'
         isOpen={isGroupDialogOpen}
-        onOpenChange={setIsGroupDialogOpen}
-        groupName={newGroupName}
-        onGroupNameChange={setNewGroupName}
+        inputValue={newGroupName}
+        inputLabel='Nome do grupo'
+        inputPlaceholder='Ex: Arquitetônico'
         onAdd={handleAddGroup}
         onKeyPress={handleGroupDialogKeyPress}
+        onOpenChange={setIsGroupDialogOpen}
+        onInputChange={setNewGroupName}
       />
 
-      <AddSceneDialog
-        isOpen={isSceneDialogOpen}
-        onOpenChange={setIsSceneDialogOpen}
-        sceneTitle={newSceneTitle}
-        onSceneTitleChange={setNewSceneTitle}
-        selectedGroup={selectedGroup}
-        onSelectedGroupChange={setSelectedGroup}
+      <AddItemWithGroupDialog
         groups={groups}
+        isOpen={isSceneDialogOpen}
+        itemValue={newSceneTitle}
+        selectedGroup={selectedGroup}
+        title='Criar nova cena'
+        description='Crie uma nova cena e escolha em qual grupo ela ficará.'
+        itemLabel='Nome da cena'
+        itemPlaceholder='Ex: Vista Frontal'
         onAdd={handleAddScene}
         onKeyPress={handleSceneDialogKeyPress}
+        onOpenChange={setIsSceneDialogOpen}
+        onItemValueChange={setNewSceneTitle}
+        onSelectedGroupChange={setSelectedGroup}
       />
 
-      <ViewConfigEditDialog
+      <GroupNameEditDialog
+        open={isGroupEditDialogOpen}
+        onOpenChange={setIsGroupEditDialogOpen}
+        groupName={editingGroupName}
+        onGroupNameChange={setEditingGroupName}
+        onConfirm={handleConfirmEditGroup}
+        disabled={isBusy}
+      />
+
+      <ViewConfigDialog
         title='Configuração da Cena'
         itemTitle={editSceneName}
+        itemCode={editSceneCode}
         onItemTitleChange={setEditSceneName}
+        onItemCodeChange={setEditSceneCode}
         allowedCameraTypes={['iso_perspectiva', 'iso_ortogonal']}
         style={editSceneStyle}
         isBusy={isBusy}
@@ -429,16 +485,7 @@ function ScenesComponent() {
             {isLoading && <Loader2 className='w-4 h-4 animate-spin' />}
           </h2>
           <div className='flex items-center gap-2'>
-            <ViewConfigMenu
-              isBusy={isBusy}
-              entityLabel='Cena'
-              onAddGroup={() => setIsGroupDialogOpen(true)}
-              onAddItem={() => setIsSceneDialogOpen(true)}
-              onLoadFromJson={loadFromJson}
-              onLoadDefault={loadDefault}
-              onLoadFromFile={loadFromFile}
-              onSaveToJson={saveToJson}
-            />
+            <ViewConfigMenu menuItems={menuItems} />
           </div>
         </div>
 
@@ -450,81 +497,30 @@ function ScenesComponent() {
 
         {!isLoading && sortedGroups.length > 0 && (
           <div className='space-y-4'>
-            <Accordion type='single' collapsible className='w-full space-y-2'>
-              {sortedGroups.map((group) => (
-                <AccordionItem
-                  key={group.id}
-                  value={group.id}
-                  className='border rounded-xl overflow-hidden bg-muted/20 px-0'
-                >
-                  <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 group data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none'>
-                    <div className='flex items-center justify-between w-full pr-2'>
-                      <div className='flex items-center gap-2 font-medium text-sm'>
-                        <Folder className='w-4 h-4 text-gray-500' />
-                        {group.name}
-                      </div>
-                      <div className='flex  items-center justify-end gap-2 text-muted-foreground'>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditGroup(group.id);
-                          }}
-                          className='opacity-0 group-hover:opacity-100 transition-opacity'
-                          title='Editar'
-                        >
-                          <Edit className='w-4 h-4' />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteGroup(group.id);
-                          }}
-                          className='opacity-0 group-hover:opacity-100 transition-opacity'
-                          title='Excluir pasta'
-                        >
-                          <Trash2 className='w-4 h-4' />
-                        </button>
-                      </div>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className='p-4'>
-                    <div className='space-y-3'>
-                      {group.scenes.length > 0 ? (
-                        <div className='space-y-2'>
-                          {group.scenes.map((scene) => (
-                            <PlanItem
-                              key={scene.id}
-                              title={scene.title}
-                              onEdit={() => handleEditScene(scene as Scene)}
-                              onLoadFromJson={() =>
-                                handleApplyScene(scene as Scene)
-                              }
-                              onDuplicate={() =>
-                                handleDuplicateScene(group.id, scene as Scene)
-                              }
-                              onDelete={() =>
-                                handleDeleteScene(group.id, scene.id)
-                              }
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <div className='text-center py-4 text-sm text-muted-foreground italic'>
-                          Nenhuma cena neste grupo
-                        </div>
-                      )}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            <GroupAccordion
+              groups={sortedGroups}
+              onEditGroup={handleEditGroup}
+              onDeleteGroup={handleDeleteGroup}
+              emptyMessage='Nenhuma cena neste grupo'
+              iconPosition='right'
+              renderSegment={(segment, groupId) => (
+                <PlanItem
+                  key={segment.id}
+                  title={segment.name}
+                  onEdit={() => handleEditScene(segment as Scene)}
+                  onLoadFromJson={() => handleApplyScene(segment as Scene)}
+                  onDuplicate={() =>
+                    handleDuplicateScene(groupId, segment as Scene)
+                  }
+                  onDelete={() => handleDeleteScene(groupId, segment.id)}
+                />
+              )}
+            />
           </div>
         )}
-
-        {isLoading && sortedGroups.length === 0 && <ScenesLoadingState />}
-
-        {!isLoading && sortedGroups.length === 0 && <ScenesEmptyState />}
       </div>
+
+      <ConfirmDialog />
     </>
   );
 }

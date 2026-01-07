@@ -27,16 +27,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-import {
-  Table,
-  TableRow,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-} from '@/components/ui/table';
-import { Card } from '@/components/ui/card';
-
 interface LevelsManagerDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -53,6 +43,7 @@ export function LevelsManagerDialog({
     removeLevel,
     createBaseScene,
     createCeilingScene,
+    ConfirmDialog,
   } = useLevels();
 
   const [heightInput, setHeightInput] = useState('0.00');
@@ -82,7 +73,7 @@ export function LevelsManagerDialog({
               <DialogTitle className='flex text-start gap-2 text-xl'>
                 Gerenciador de Níveis
               </DialogTitle>
-              <DialogDescription className='text-start text-sm text-muted-foreground'>
+              <DialogDescription className='flex text-start items-center justify-start text-xs text-muted-foreground'>
                 Configure os níveis do projeto e crie as cenas de planta baixa e
                 forro
               </DialogDescription>
@@ -120,7 +111,7 @@ export function LevelsManagerDialog({
               ) : (
                 <Plus className='w-4 h-4 ' />
               )}
-              Adicionar
+              Criar
             </Button>
           </div>
 
@@ -210,6 +201,7 @@ export function LevelsManagerDialog({
           )}
         </div>
       </DialogContent>
+      <ConfirmDialog />
     </Dialog>
   );
 }

@@ -1,16 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Save,
-  Upload,
-  Download,
-  FolderOpen,
-  PlusCircle,
-  FolderPlus,
-  MoreVertical,
-  Edit,
-} from 'lucide-react';
+import { MoreVertical } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -19,28 +10,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 interface ViewConfigMenuProps {
-  isBusy: boolean;
-  entityLabel: string;
-  onEdit?: () => void;
-  onAddItem?: () => void;
-  onAddGroup?: () => void;
-  onSaveToJson?: () => void;
-  onLoadDefault?: () => void;
-  onLoadFromJson?: () => void;
-  onLoadFromFile?: () => void;
+  menuItems?: Array<{ label: string; action: () => void; hasDivider: boolean }>;
 }
 
-export function ViewConfigMenu({
-  isBusy,
-  onEdit,
-  onAddItem,
-  onAddGroup,
-  entityLabel,
-  onSaveToJson,
-  onLoadDefault,
-  onLoadFromJson,
-  onLoadFromFile,
-}: ViewConfigMenuProps) {
+export function ViewConfigMenu({ menuItems = [] }: ViewConfigMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -49,52 +22,16 @@ export function ViewConfigMenu({
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-48'>
-        {onEdit && (
-          <DropdownMenuItem className='cursor-pointer' onClick={onEdit}>
-            <Edit className='w-4 h-4 mr-2' />
-            Editar
-          </DropdownMenuItem>
-        )}
-        {onAddGroup && (
-          <DropdownMenuItem className='cursor-pointer' onClick={onAddGroup}>
-            <FolderPlus className='w-4 h-4 mr-2' />
-            Adicionar Grupo
-          </DropdownMenuItem>
-        )}
-        {onAddItem && (
-          <DropdownMenuItem className='cursor-pointer' onClick={onAddItem}>
-            <PlusCircle className='w-4 h-4 mr-2' />
-            Adicionar {entityLabel}
-          </DropdownMenuItem>
-        )}
-        {onLoadFromJson && (
-          <DropdownMenuItem className='cursor-pointer' onClick={onLoadFromJson}>
-            <FolderOpen className='w-4 h-4 mr-2' />
-            Carregar Salvo
-          </DropdownMenuItem>
-        )}
-        {onLoadDefault && (
-          <DropdownMenuItem className='cursor-pointer' onClick={onLoadDefault}>
-            <Download className='w-4 h-4 mr-2' />
-            Carregar Padrão
-          </DropdownMenuItem>
-        )}
-        {onLoadFromFile && (
-          <DropdownMenuItem className='cursor-pointer' onClick={onLoadFromFile}>
-            <Upload className='w-4 h-4 mr-2' />
-            Importar Arquivo
-          </DropdownMenuItem>
-        )}
-        {onSaveToJson && (
-          <DropdownMenuItem
-            className='cursor-pointer'
-            onClick={onSaveToJson}
-            disabled={isBusy}
-          >
-            <Save className='w-4 h-4 mr-2' />
-            Salvar
-          </DropdownMenuItem>
-        )}
+        {menuItems.map((item, index) => (
+          <React.Fragment key={index}>
+            <DropdownMenuItem className='cursor-pointer' onClick={item.action}>
+              {item.label}
+            </DropdownMenuItem>
+            {item.hasDivider && (
+              <hr className='my-1 border-muted-foreground/20' />
+            )}
+          </React.Fragment>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

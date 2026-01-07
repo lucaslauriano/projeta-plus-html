@@ -1,14 +1,6 @@
-type PlanGroup = {
-  id: string;
-  name: string;
-  plans: Plan[];
-};
+import { ViewConfigSegment, ViewConfigGroup } from '@/types/global';
 
-type Plan = {
-  id: string;
-  title: string;
-  segments: Array<{ id: string; name: string }>;
-};
+type PlanGroup = ViewConfigGroup;
 
 export const planActions = {
   /**
@@ -18,7 +10,7 @@ export const planActions = {
     const newGroup: PlanGroup = {
       id: Date.now().toString(),
       name: name.trim(),
-      plans: [],
+      segments: [],
     };
     return [...groups, newGroup];
   },
@@ -49,19 +41,23 @@ export const planActions = {
   addPlan: (
     groups: PlanGroup[],
     title: string,
-    selectedGroup: string
+    selectedGroup: string,
+    currentState?: { style: string; cameraType: string; activeLayers: string[] }
   ): PlanGroup[] => {
-    const newPlan: Plan = {
+    const newSegment: ViewConfigSegment = {
       id: Date.now().toString(),
-      title: title.trim(),
-      segments: [],
+      name: title.trim(),
+      code: title.trim().toLowerCase().replace(/\s+/g, '_'),
+      style: currentState?.style || 'PRO_PLANTAS',
+      cameraType: currentState?.cameraType || 'topo_ortogonal',
+      activeLayers: currentState?.activeLayers || [],
     };
 
     if (selectedGroup === 'root') {
       const newGroup: PlanGroup = {
         id: Date.now().toString(),
         name: title.trim(),
-        plans: [],
+        segments: [newSegment],
       };
       return [...groups, newGroup];
     }
@@ -70,7 +66,7 @@ export const planActions = {
       if (group.id === selectedGroup) {
         return {
           ...group,
-          plans: [...group.plans, newPlan],
+          segments: [...(group.segments || []), newSegment],
         };
       }
       return group;
@@ -78,18 +74,20 @@ export const planActions = {
   },
 
   /**
-   * Remove uma planta de um grupo
+   * Remove um segmento de um grupo
    */
   deletePlan: (
     groups: PlanGroup[],
     groupId: string,
-    planId: string
+    segmentId: string
   ): PlanGroup[] => {
     return groups.map((group) => {
       if (group.id === groupId) {
         return {
           ...group,
-          plans: group.plans.filter((plan) => plan.id !== planId),
+          segments: (group.segments || []).filter(
+            (segment) => segment.id !== segmentId
+          ),
         };
       }
       return group;
@@ -102,18 +100,18 @@ export const planActions = {
   duplicatePlan: (
     groups: PlanGroup[],
     groupId: string,
-    plan: Plan
+    segment: ViewConfigSegment
   ): PlanGroup[] => {
     return groups.map((g) => {
       if (g.id === groupId) {
         return {
           ...g,
-          plans: [
-            ...g.plans,
+          segments: [
+            ...(g.segments || []),
             {
+              ...segment,
               id: Date.now().toString(),
-              title: `${plan.title} (cópia)`,
-              segments: [...plan.segments],
+              name: `${segment.name} (cópia)`,
             },
           ],
         };
@@ -123,17 +121,17 @@ export const planActions = {
   },
 
   /**
-   * Atualiza o título de uma planta em todos os grupos
+   * Atualiza o nome de uma planta em todos os grupos
    */
-  updatePlanTitle: (
+  updatePlanName: (
     groups: PlanGroup[],
     planId: string,
-    newTitle: string
+    newName: string
   ): PlanGroup[] => {
     return groups.map((g) => ({
       ...g,
-      plans: g.plans.map((p) =>
-        p.id === planId ? { ...p, title: newTitle.trim() } : p
+      segments: (g.segments || []).map((s) =>
+        s.id === planId ? { ...s, name: newName.trim() } : s
       ),
     }));
   },

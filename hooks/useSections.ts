@@ -3,25 +3,52 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useSketchup } from '@/contexts/SketchupContext';
+import { useConfirm } from './useConfirm';
 
 export interface Section {
   id: string;
   name: string;
+  style: string;
+  cameraType: string;
+  activeLayers: string[];
+  code?: string;
   position: [number, number, number];
   direction: [number, number, number];
-  active: boolean;
+  active?: boolean;
+}
+
+export interface SectionGroup {
+  id: string;
+  name: string;
+  segments: Section[];
 }
 
 export interface SectionsData {
-  sections: Section[];
+  groups: SectionGroup[];
+  sections?: Section[]; // Deprecated, for backward compatibility
+}
+
+export interface SectionsSettings {
+  style: string;
+  activeLayers: string[];
 }
 
 export function useSections() {
   const { callSketchupMethod, isAvailable } = useSketchup();
+  const { confirm, ConfirmDialog } = useConfirm();
   const [data, setData] = useState<SectionsData>({
-    sections: [],
+    groups: [],
   });
   const [isBusy, setIsBusy] = useState(false);
+  const [settings, setSettings] = useState<SectionsSettings>({
+    style: 'PRO_VISTAS',
+    activeLayers: [],
+  });
+  const [availableStyles, setAvailableStyles] = useState<string[]>([]);
+  const [availableLayers, setAvailableLayers] = useState<string[]>([]);
+  const [modelScenes, setModelScenes] = useState<
+    Array<{ name: string; label?: string; description?: string }>
+  >([]);
 
   // ========================================
   // UTILITY FUNCTIONS
@@ -30,7 +57,10 @@ export function useSections() {
   const callSketchupMethodSafe = useCallback(
     (method: string, params?: unknown) => {
       if (isAvailable) {
-        callSketchupMethod(method, params).catch(() => {});
+        callSketchupMethod(
+          method,
+          params as Record<string, unknown> | undefined
+        ).catch(() => {});
       } else {
         console.warn(`[MOCK MODE] ${method}:`, params);
       }
@@ -47,11 +77,25 @@ export function useSections() {
       (result: {
         success: boolean;
         message?: string;
+        data?: SectionsData;
         sections?: Section[];
       }) => {
         setIsBusy(false);
-        if (result.success && result.sections) {
-          setData({ sections: result.sections });
+        if (result.success) {
+          if (result.data) {
+            // New format with groups
+            setData(result.data);
+          } else if (result.sections) {
+            // Backward compatibility: convert flat sections to groups
+            const groups = [
+              {
+                id: 'default',
+                name: 'Sections',
+                segments: result.sections,
+              },
+            ];
+            setData({ groups, sections: result.sections });
+          }
         } else {
           toast.error(result.message || 'Erro ao carregar seções');
         }
@@ -157,7 +201,15 @@ export function useSections() {
     }) => {
       setIsBusy(false);
       if (result.success && result.data) {
-        setData(result.data);
+        // Normalize groups to ensure segments is always an array
+        const normalizedData = {
+          ...result.data,
+          groups: (result.data.groups || []).map((group) => ({
+            ...group,
+            segments: Array.isArray(group.segments) ? group.segments : [],
+          })),
+        };
+        setData(normalizedData);
         toast.success(result.message);
       } else {
         toast.error(result.message || 'Erro ao carregar configurações');
@@ -173,7 +225,15 @@ export function useSections() {
     }) => {
       setIsBusy(false);
       if (result.success && result.data) {
-        setData(result.data);
+        // Normalize groups to ensure segments is always an array
+        const normalizedData = {
+          ...result.data,
+          groups: (result.data.groups || []).map((group) => ({
+            ...group,
+            segments: Array.isArray(group.segments) ? group.segments : [],
+          })),
+        };
+        setData(normalizedData);
         toast.success(result.message);
       } else {
         toast.error(result.message || 'Erro ao carregar dados padrão');
@@ -189,7 +249,15 @@ export function useSections() {
     }) => {
       setIsBusy(false);
       if (result.success && result.data) {
-        setData(result.data);
+        // Normalize groups to ensure segments is always an array
+        const normalizedData = {
+          ...result.data,
+          groups: (result.data.groups || []).map((group) => ({
+            ...group,
+            segments: Array.isArray(group.segments) ? group.segments : [],
+          })),
+        };
+        setData(normalizedData);
         toast.success(result.message);
       } else {
         toast.error(result.message || 'Erro ao carregar arquivo');
@@ -212,6 +280,245 @@ export function useSections() {
       }
     };
 
+    (
+      window as unknown as Record<string, unknown>
+    ).handleGetSectionsSettingsResult = (result: {
+      success: boolean;
+      message?: string;
+      settings?: SectionsSettings;
+    }) => {
+      setIsBusy(false);
+      if (result.success && result.settings) {
+        setSettings(result.settings);
+      } else {
+        toast.error(result.message || 'Erro ao carregar configurações');
+      }
+    };
+
+    (
+      window as unknown as Record<string, unknown>
+    ).handleSaveSectionsSettingsResult = (result: {
+      success: boolean;
+      message: string;
+      settings?: SectionsSettings;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        if (result.settings) {
+          setSettings(result.settings);
+        }
+      } else {
+        toast.error(result.message);
+      }
+    };
+
+    (
+      window as unknown as Record<string, unknown>
+    ).handleGetAvailableStylesForSectionsResult = (result: {
+      success: boolean;
+      message?: string;
+      styles?: string[];
+    }) => {
+      setIsBusy(false);
+      if (result.success && result.styles) {
+        setAvailableStyles(result.styles);
+      } else if (!result.success) {
+        toast.error(result.message || 'Erro ao carregar estilos');
+      }
+    };
+
+    (
+      window as unknown as Record<string, unknown>
+    ).handleGetAvailableLayersForSectionsResult = (result: {
+      success: boolean;
+      message?: string;
+      layers?: string[];
+    }) => {
+      setIsBusy(false);
+      if (result.success && result.layers) {
+        setAvailableLayers(result.layers);
+      } else if (!result.success) {
+        toast.error(result.message || 'Erro ao carregar camadas');
+      }
+    };
+
+    (
+      window as unknown as Record<string, unknown>
+    ).handleApplyCurrentStyleToSectionsResult = (result: {
+      success: boolean;
+      message?: string;
+      style?: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success && result.style) {
+        setSettings((prev) => ({ ...prev, style: result.style! }));
+        toast.success(result.message || 'Estilo capturado');
+      } else {
+        toast.error(result.message || 'Erro ao capturar estilo');
+      }
+    };
+
+    (
+      window as unknown as Record<string, unknown>
+    ).handleGetCurrentActiveLayersResult = (result: {
+      success: boolean;
+      message?: string;
+      layers?: string[];
+    }) => {
+      setIsBusy(false);
+      if (result.success && result.layers) {
+        setSettings((prev) => ({ ...prev, activeLayers: result.layers! }));
+        toast.success(result.message || 'Camadas capturadas');
+      } else {
+        toast.error(result.message || 'Erro ao capturar camadas');
+      }
+    };
+
+    (
+      window as unknown as Record<string, unknown>
+    ).handleGetCurrentActiveLayersFilteredResult = (result: {
+      success: boolean;
+      message?: string;
+      layers?: string[];
+    }) => {
+      setIsBusy(false);
+      if (result.success && result.layers) {
+        // Call the callback if it exists
+        const callback = (window as unknown as Record<string, unknown>)
+          ._getCurrentActiveLayersFilteredCallback;
+        if (typeof callback === 'function') {
+          callback(result.layers);
+          delete (window as unknown as Record<string, unknown>)
+            ._getCurrentActiveLayersFilteredCallback;
+        }
+        toast.success(result.message || 'Camadas capturadas');
+      } else {
+        toast.error(result.message || 'Erro ao capturar camadas');
+      }
+    };
+
+    // Groups handlers
+    (
+      window as unknown as Record<string, unknown>
+    ).handleAddSectionsGroupResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        getSections();
+      } else {
+        toast.error(result.message);
+      }
+    };
+
+    (
+      window as unknown as Record<string, unknown>
+    ).handleUpdateSectionsGroupResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        getSections();
+      } else {
+        toast.error(result.message);
+      }
+    };
+
+    (
+      window as unknown as Record<string, unknown>
+    ).handleDeleteSectionsGroupResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        getSections();
+      } else {
+        toast.error(result.message);
+      }
+    };
+
+    // Segments handlers
+    (
+      window as unknown as Record<string, unknown>
+    ).handleAddSectionsSegmentResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        getSections();
+      } else {
+        toast.error(result.message);
+      }
+    };
+
+    (
+      window as unknown as Record<string, unknown>
+    ).handleUpdateSectionsSegmentResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        getSections();
+      } else {
+        toast.error(result.message);
+      }
+    };
+
+    (
+      window as unknown as Record<string, unknown>
+    ).handleDeleteSectionsSegmentResult = (result: {
+      success: boolean;
+      message: string;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+        getSections();
+      } else {
+        toast.error(result.message);
+      }
+    };
+
+    (
+      window as unknown as Record<string, unknown>
+    ).handleDuplicateScenesWithSegmentResult = (result: {
+      success: boolean;
+      message: string;
+      count?: number;
+    }) => {
+      setIsBusy(false);
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    };
+
+    (window as unknown as Record<string, unknown>).handleGetModelScenesResult =
+      (result: {
+        success: boolean;
+        message?: string;
+        scenes?: Array<{ name: string; label?: string; description?: string }>;
+      }) => {
+        setIsBusy(false);
+        if (result.success && result.scenes) {
+          setModelScenes(result.scenes);
+        } else if (!result.success && result.message) {
+          toast.error(result.message);
+        }
+      };
+
     // Cleanup
     return () => {
       const w = window as unknown as Record<string, unknown>;
@@ -227,6 +534,21 @@ export function useSections() {
       delete w.handleLoadDefaultSectionsResult;
       delete w.handleLoadSectionsFromFileResult;
       delete w.handleImportSectionsToModelResult;
+      delete w.handleGetSectionsSettingsResult;
+      delete w.handleSaveSectionsSettingsResult;
+      delete w.handleGetAvailableStylesForSectionsResult;
+      delete w.handleGetAvailableLayersForSectionsResult;
+      delete w.handleApplyCurrentStyleToSectionsResult;
+      delete w.handleGetCurrentActiveLayersResult;
+      delete w.handleGetCurrentActiveLayersFilteredResult;
+      delete w.handleAddSectionsGroupResult;
+      delete w.handleUpdateSectionsGroupResult;
+      delete w.handleDeleteSectionsGroupResult;
+      delete w.handleAddSectionsSegmentResult;
+      delete w.handleUpdateSectionsSegmentResult;
+      delete w.handleDeleteSectionsSegmentResult;
+      delete w.handleDuplicateScenesWithSegmentResult;
+      delete w.handleGetModelScenesResult;
     };
   }, []);
 
@@ -236,17 +558,7 @@ export function useSections() {
 
   const getSections = useCallback(() => {
     if (!isAvailable) {
-      setData({
-        sections: [
-          {
-            id: 'A',
-            name: 'A',
-            position: [0, 40, 0],
-            direction: [0, 1, 0],
-            active: true,
-          },
-        ],
-      });
+      setData({ groups: [] });
       return;
     }
 
@@ -294,7 +606,13 @@ export function useSections() {
 
   const deleteSection = useCallback(
     async (name: string) => {
-      const confirmed = confirm(`Deseja realmente remover a seção "${name}"?`);
+      const confirmed = await confirm({
+        title: 'Remover seção',
+        description: `Deseja realmente remover a seção "${name}"?`,
+        confirmText: 'Remover',
+        cancelText: 'Cancelar',
+        variant: 'destructive',
+      });
       if (!confirmed) return;
 
       if (!isAvailable) {
@@ -305,12 +623,12 @@ export function useSections() {
       setIsBusy(true);
       callSketchupMethodSafe('deleteSection', { name });
     },
-    [callSketchupMethodSafe, isAvailable]
+    [confirm, callSketchupMethodSafe, isAvailable]
   );
 
   const createStandardSections = useCallback(() => {
     if (!isAvailable) {
-      toast.info('Cortes padrões criados (modo simulação)');
+      toast.info('Seções gerais criadas (modo simulação)');
       return;
     }
 
@@ -326,7 +644,7 @@ export function useSections() {
       }
 
       if (!isAvailable) {
-        toast.info('Vistas automáticas criadas (modo simulação)');
+        toast.info('Seções por ambiente criadas (modo simulação)');
         return;
       }
 
@@ -344,7 +662,7 @@ export function useSections() {
       }
 
       if (!isAvailable) {
-        toast.info('Corte individual criado (modo simulação)');
+        toast.info('Seção individual criado (modo simulação)');
         return;
       }
 
@@ -407,13 +725,263 @@ export function useSections() {
     callSketchupMethodSafe('importSectionsToModel', data);
   }, [callSketchupMethodSafe, data, isAvailable]);
 
-  const clearAll = useCallback(() => {
-    const confirmed = confirm('Deseja realmente limpar todas as seções?');
+  const clearAll = useCallback(async () => {
+    const confirmed = await confirm({
+      title: 'Limpar todas as seções',
+      description: 'Deseja realmente limpar todas as seções?',
+      confirmText: 'Limpar',
+      cancelText: 'Cancelar',
+      variant: 'destructive',
+    });
     if (!confirmed) return;
 
-    setData({ sections: [] });
+    setData({ groups: [] });
     toast.info('Seções limpas');
-  }, []);
+  }, [confirm]);
+
+  const getSectionsSettings = useCallback(() => {
+    if (!isAvailable) {
+      return;
+    }
+
+    setIsBusy(true);
+    callSketchupMethodSafe('getSectionsSettings');
+  }, [callSketchupMethodSafe, isAvailable]);
+
+  const saveSectionsSettings = useCallback(
+    (newSettings: SectionsSettings) => {
+      if (!isAvailable) {
+        toast.info('Configurações salvas (modo simulação)');
+        setSettings(newSettings);
+        return;
+      }
+
+      setIsBusy(true);
+      callSketchupMethodSafe('saveSectionsSettings', newSettings);
+    },
+    [callSketchupMethodSafe, isAvailable]
+  );
+
+  const getAvailableStylesForSections = useCallback(() => {
+    if (!isAvailable) {
+      setAvailableStyles(['PRO_VISTAS', 'PRO_PLANTAS']);
+      return;
+    }
+
+    setIsBusy(true);
+    callSketchupMethodSafe('getAvailableStylesForSections');
+  }, [callSketchupMethodSafe, isAvailable]);
+
+  const getAvailableLayersForSections = useCallback(() => {
+    if (!isAvailable) {
+      setAvailableLayers(['Layer0']);
+      return;
+    }
+
+    setIsBusy(true);
+    callSketchupMethodSafe('getAvailableLayersForSections');
+  }, [callSketchupMethodSafe, isAvailable]);
+
+  const applyCurrentStyleToSections = useCallback(() => {
+    if (!isAvailable) {
+      toast.info('Estilo capturado (modo simulação)');
+      return;
+    }
+
+    setIsBusy(true);
+    callSketchupMethodSafe('applyCurrentStyleToSections');
+  }, [callSketchupMethodSafe, isAvailable]);
+
+  const getCurrentActiveLayers = useCallback(() => {
+    if (!isAvailable) {
+      toast.info('Camadas capturadas (modo simulação)');
+      return;
+    }
+
+    setIsBusy(true);
+    callSketchupMethodSafe('getCurrentActiveLayers');
+  }, [callSketchupMethodSafe, isAvailable]);
+
+  const getCurrentActiveLayersFiltered = useCallback(
+    (availableLayers: string[], callback?: (layers: string[]) => void) => {
+      if (!isAvailable) {
+        toast.info('Camadas capturadas (modo simulação)');
+        if (callback) callback([]);
+        return;
+      }
+
+      // Store callback for later use
+      if (callback) {
+        (
+          window as Window & {
+            _getCurrentActiveLayersFilteredCallback?: (
+              layers: string[]
+            ) => void;
+          }
+        )._getCurrentActiveLayersFilteredCallback = callback;
+      }
+
+      setIsBusy(true);
+      callSketchupMethodSafe('getCurrentActiveLayersFiltered', {
+        availableLayers,
+      });
+    },
+    [callSketchupMethodSafe, isAvailable]
+  );
+
+  // Groups methods
+  const addGroup = useCallback(
+    (params: { name: string }) => {
+      if (!isAvailable) {
+        toast.info('Grupo adicionado (modo simulação)');
+        return;
+      }
+
+      setIsBusy(true);
+      callSketchupMethodSafe('addSectionsGroup', {
+        ...params,
+        id: Date.now().toString(),
+      });
+    },
+    [callSketchupMethodSafe, isAvailable]
+  );
+
+  const updateGroup = useCallback(
+    (id: string, params: { name: string }) => {
+      if (!isAvailable) {
+        toast.info('Grupo atualizado (modo simulação)');
+        return;
+      }
+
+      setIsBusy(true);
+      callSketchupMethodSafe('updateSectionsGroup', { id, ...params });
+    },
+    [callSketchupMethodSafe, isAvailable]
+  );
+
+  const deleteGroup = useCallback(
+    (id: string) => {
+      if (!isAvailable) {
+        toast.info('Grupo removido (modo simulação)');
+        return;
+      }
+
+      setIsBusy(true);
+      callSketchupMethodSafe('deleteSectionsGroup', { id });
+    },
+    [callSketchupMethodSafe, isAvailable]
+  );
+
+  // Segments methods
+  const addSegment = useCallback(
+    (
+      groupId: string,
+      params: {
+        name: string;
+        code: string;
+        style: string;
+        activeLayers: string[];
+      }
+    ) => {
+      if (!isAvailable) {
+        toast.info('Segmento adicionado (modo simulação)');
+        return;
+      }
+
+      setIsBusy(true);
+      callSketchupMethodSafe('addSectionsSegment', {
+        groupId,
+        ...params,
+        id: Date.now().toString(),
+      });
+    },
+    [callSketchupMethodSafe, isAvailable]
+  );
+
+  const updateSegment = useCallback(
+    (
+      groupId: string,
+      segmentId: string,
+      params: Partial<{
+        name: string;
+        code: string;
+        style: string;
+        activeLayers: string[];
+      }>
+    ) => {
+      if (!isAvailable) {
+        toast.info('Segmento atualizado (modo simulação)');
+        return;
+      }
+
+      setIsBusy(true);
+      callSketchupMethodSafe('updateSectionsSegment', {
+        groupId,
+        id: segmentId,
+        ...params,
+      });
+    },
+    [callSketchupMethodSafe, isAvailable]
+  );
+
+  const deleteSegment = useCallback(
+    (groupId: string, segmentId: string) => {
+      if (!isAvailable) {
+        toast.info('Segmento removido (modo simulação)');
+        return;
+      }
+
+      setIsBusy(true);
+      callSketchupMethodSafe('deleteSectionsSegment', {
+        groupId,
+        id: segmentId,
+      });
+    },
+    [callSketchupMethodSafe, isAvailable]
+  );
+
+  const duplicateScenesWithSegment = useCallback(
+    (params: {
+      sceneNames: string[];
+      code: string;
+      style: string;
+      activeLayers: string[];
+    }) => {
+      if (!isAvailable) {
+        toast.info('Cenas duplicadas (modo simulação)');
+        return;
+      }
+
+      setIsBusy(true);
+      callSketchupMethodSafe('duplicateScenesWithSegment', params);
+    },
+    [callSketchupMethodSafe, isAvailable]
+  );
+
+  const getModelScenes = useCallback(() => {
+    if (!isAvailable) {
+      return Promise.resolve([]);
+    }
+
+    setIsBusy(true);
+    callSketchupMethodSafe('getModelScenes');
+    return new Promise<
+      Array<{ name: string; label?: string; description?: string }>
+    >((resolve) => {
+      const checkScenes = setInterval(() => {
+        if (!isBusy) {
+          clearInterval(checkScenes);
+          resolve(modelScenes);
+        }
+      }, 100);
+
+      // Timeout após 5 segundos
+      setTimeout(() => {
+        clearInterval(checkScenes);
+        resolve(modelScenes);
+      }, 5000);
+    });
+  }, [callSketchupMethodSafe, isAvailable, isBusy, modelScenes]);
 
   // ========================================
   // LIFECYCLE
@@ -421,6 +989,9 @@ export function useSections() {
 
   useEffect(() => {
     getSections();
+    getSectionsSettings();
+    getAvailableStylesForSections();
+    getAvailableLayersForSections();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -430,6 +1001,7 @@ export function useSections() {
 
   return {
     data,
+    setData,
     isBusy,
     isAvailable,
     getSections,
@@ -445,5 +1017,25 @@ export function useSections() {
     loadFromFile,
     importToModel,
     clearAll,
+    settings,
+    availableStyles,
+    availableLayers,
+    modelScenes,
+    getSectionsSettings,
+    saveSectionsSettings,
+    getAvailableStylesForSections,
+    getAvailableLayersForSections,
+    applyCurrentStyleToSections,
+    getCurrentActiveLayers,
+    getCurrentActiveLayersFiltered,
+    addGroup,
+    updateGroup,
+    deleteGroup,
+    ConfirmDialog,
+    addSegment,
+    updateSegment,
+    deleteSegment,
+    duplicateScenesWithSegment,
+    getModelScenes,
   };
 }
