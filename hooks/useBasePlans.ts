@@ -22,6 +22,7 @@ export function useBasePlans() {
   const [availableLayers, setAvailableLayers] = useState<string[]>([]);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   const clearPending = useCallback(() => {
     setPendingAction(null);
@@ -149,14 +150,21 @@ export function useBasePlans() {
     };
   }, [clearPending]);
 
-  // Load initial data
+  // Load initial data (only once)
   useEffect(() => {
-    if (isAvailable) {
+    if (isAvailable && !hasInitialized) {
       loadPlans();
       getAvailableStyles();
       getAvailableLayers();
+      setHasInitialized(true);
     }
-  }, [isAvailable, loadPlans, getAvailableStyles, getAvailableLayers]);
+  }, [
+    isAvailable,
+    hasInitialized,
+    loadPlans,
+    getAvailableStyles,
+    getAvailableLayers,
+  ]);
 
   const isBusy = isAvailable && (isLoading || Boolean(pendingAction));
 

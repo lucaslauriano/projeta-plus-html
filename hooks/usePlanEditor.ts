@@ -94,8 +94,6 @@ export function usePlanEditor(
         groups: updatedGroups,
       };
 
-      console.log('updatedData', updatedData);
-
       setData(updatedData);
 
       // Passar os dados atualizados diretamente para evitar problema de closure

@@ -15,7 +15,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import DetailsComponent from './(modules)/details';
 import LayersComponent from './(modules)/layers';
 import SectionsComponent from './(modules)/sections';
-import PlansComponent from './(modules)/plans';
+import PlansComponent from './(modules)/plans/page';
 import ScenesComponent from './(modules)/scenes';
 import PageContent from '@/components/ui/page-content';
 import Tabs2 from '@/components/ui/tabs2';

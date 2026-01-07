@@ -34,6 +34,12 @@ export function useBasePlansConfig(
   });
   const [isInitialized, setIsInitialized] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const savePlansRef = useRef(savePlans);
+
+  // Atualizar referência de savePlans
+  useEffect(() => {
+    savePlansRef.current = savePlans;
+  }, [savePlans]);
 
   // Inicializar a partir de basePlansData
   useEffect(() => {
@@ -42,27 +48,27 @@ export function useBasePlansConfig(
       const ceilingPlan = basePlansData.plans.find((p) => p.id === 'forro');
 
       if (basePlan || ceilingPlan) {
-        setConfig({
+        setConfig((prev) => ({
           base: basePlan
             ? {
                 style: basePlan.style,
                 layers: basePlan.activeLayers,
                 code: basePlan.code || 'base',
               }
-            : config.base,
+            : prev.base,
           ceiling: ceilingPlan
             ? {
                 style: ceilingPlan.style,
                 layers: ceilingPlan.activeLayers,
                 code: ceilingPlan.code || 'ceiling',
               }
-            : config.ceiling,
-        });
+            : prev.ceiling,
+        }));
       }
 
       setIsInitialized(true);
     }
-  }, [basePlansData, isInitialized, config.base, config.ceiling]);
+  }, [basePlansData, isInitialized]);
 
   // Auto-save com debounce
   useEffect(() => {
@@ -90,7 +96,7 @@ export function useBasePlansConfig(
         },
       ];
 
-      savePlans(plans, false);
+      savePlansRef.current(plans, false);
     }, 100);
 
     return () => {
@@ -98,7 +104,7 @@ export function useBasePlansConfig(
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [config, isInitialized, savePlans]);
+  }, [config, isInitialized]);
 
   const updateBaseStyle = (style: string) => {
     setConfig((prev) => ({
