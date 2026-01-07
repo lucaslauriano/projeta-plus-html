@@ -18,7 +18,7 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Loader2, Plus } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 interface DuplicateSceneDialogProps {
   isOpen: boolean;

@@ -9,14 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import {
-  Armchair,
-  Zap,
-  Lightbulb,
-  Box,
-  Layers,
-  LucideIcon,
-} from 'lucide-react';
+import { Armchair, Zap, Lightbulb, Box, Layers } from 'lucide-react';
 import ElectricalReport from './components/electrical';
 import BaseboardsReport from './components/baseboards';
 import CoatingsReport from '@/app/dashboard/generate-report/components/coatings';

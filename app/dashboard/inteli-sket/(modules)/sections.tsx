@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Grid3x3, FileText } from 'lucide-react';
+import { Grid3x3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { PlanItem } from '@/components/PlanItem';
@@ -11,14 +11,13 @@ import { GroupAccordion } from '@/app/dashboard/inteli-sket/components/group-acc
 import { CreateAutoViewsDialog } from '@/app/dashboard/inteli-sket/components/create-auto-views-dialog';
 import { CreateIndividualSectionDialog } from '@/app/dashboard/inteli-sket/components/create-individual-section-dialog';
 import { SectionsConfigDialog } from '@/app/dashboard/inteli-sket/components/sections-config-dialog';
-import { SegmentEditDialog } from '@/app/dashboard/inteli-sket/components/segment-edit-dialog';
+import { SegmentEditDialog } from '@/app/dashboard/inteli-sket/components/segment-config-dialog';
 import { SelectScenesDialog } from '@/app/dashboard/inteli-sket/components/select-scenes-dialog';
 import { AddItemDialog } from '@/app/dashboard/inteli-sket/components/add-item-dialog';
 import { AddItemWithGroupDialog } from '@/app/dashboard/inteli-sket/components/add-item-with-group-dialog';
 import { Segment } from 'next/dist/server/app-render/types';
 import { useConfirm } from '@/hooks/useConfirm';
 import { toast } from 'sonner';
-import { SceneGroup } from '@/hooks/useScenes';
 
 export default function SectionsComponent() {
   const {
@@ -30,19 +29,19 @@ export default function SectionsComponent() {
     createAutoViews,
     createIndividualSection,
     saveToJson,
-    loadFromJson,
     loadDefault,
-    loadFromFile,
     settings,
+    modelScenes,
     availableStyles,
     availableLayers,
-    modelScenes,
     saveSectionsSettings,
     applyCurrentStyleToSections,
-    getCurrentActiveLayers,
     getCurrentActiveLayersFiltered,
     addGroup,
-    updateGroup,
+    // updateGroup,
+    // loadFromJson,
+    // loadFromFile,
+    // getCurrentActiveLayers,
     deleteGroup,
     addSegment,
     updateSegment,
@@ -108,17 +107,17 @@ export default function SectionsComponent() {
     setConfigLayers(settings.activeLayers);
   }, [settings]);
 
-  const setGroups = (
-    newGroups: SectionGroup[] | ((prev: SectionGroup[]) => SectionGroup[])
-  ) => {
-    const updatedGroups =
-      typeof newGroups === 'function' ? newGroups(data.groups) : newGroups;
+  // const setGroups = (
+  //   newGroups: SectionGroup[] | ((prev: SectionGroup[]) => SectionGroup[])
+  // ) => {
+  //   const updatedGroups =
+  //     typeof newGroups === 'function' ? newGroups(data.groups) : newGroups;
 
-    setData({
-      ...data,
-      groups: updatedGroups,
-    });
-  };
+  //   setData({
+  //     ...data,
+  //     groups: updatedGroups,
+  //   });
+  // };
 
   const handleCreateIndividualSection = () => {
     if (!individualSectionName.trim()) {

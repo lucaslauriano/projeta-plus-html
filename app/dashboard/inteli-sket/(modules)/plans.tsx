@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { PlanItem } from '@/components/PlanItem';
 import { Loader2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -15,7 +15,6 @@ import {
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
 import { LevelsManagerDialog } from '@/app/dashboard/inteli-sket/components/levels-manager-dialog';
 import { Button } from '@/components/ui/button';
-import { ViewConfigEditDialog } from '@/app/dashboard/inteli-sket/components/view-config-edit-dialog';
 import { BasePlansConfigDialog } from '@/app/dashboard/inteli-sket/components/base-plans-config-dialog';
 import { GroupNameEditDialog } from '@/app/dashboard/inteli-sket/components/group-name-edit-dialog';
 import { AddItemDialog } from '@/app/dashboard/inteli-sket/components/add-item-dialog';
@@ -26,8 +25,10 @@ import { usePlanEditor } from '@/hooks/usePlanEditor';
 import type { Plan } from '@/hooks/usePlanEditor';
 import { useBasePlansConfig } from '@/hooks/useBasePlansConfig';
 import { useConfirm } from '@/hooks/useConfirm';
+import { ViewConfigDialog } from '@/app/dashboard/inteli-sket/components/view-config-dialog';
 
 function PlansComponent() {
+  console.log('PlansComponent');
   const { confirm, ConfirmDialog } = useConfirm();
   const {
     data,
@@ -39,10 +40,10 @@ function PlansComponent() {
     setData,
     saveToJson,
     loadDefault,
-    loadFromFile,
-    loadFromJson,
     getCurrentState,
     applyPlanConfig,
+    //loadFromFile,
+    //loadFromJson,
   } = usePlans();
 
   const {
@@ -53,25 +54,23 @@ function PlansComponent() {
     isBusy: isBusyPlans,
   } = useBasePlans();
 
-  // Hook para gerenciar dialogs
   const { groupDialog, planDialog, editDialog, levelsDialog, configDialog } =
     usePlansDialogs();
 
-  // Hook para gerenciar base plans config
   const {
+    baseCode,
     baseStyle,
     baseLayers,
-    baseCode,
+    ceilingCode,
     ceilingStyle,
     ceilingLayers,
-    ceilingCode,
+    saveConfig,
+    updateBaseCode,
     updateBaseStyle,
     updateBaseLayers,
-    updateBaseCode,
+    updateCeilingCode,
     updateCeilingStyle,
     updateCeilingLayers,
-    updateCeilingCode,
-    saveConfig,
   } = useBasePlansConfig(
     basePlansData,
     savePlans as unknown as (
@@ -80,9 +79,17 @@ function PlansComponent() {
     ) => Promise<void>
   );
 
-  // Hook para gerenciar edição de plantas
+  const [isGroupEditDialogOpen, setIsGroupEditDialogOpen] = useState(false);
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
+  const [editingGroupName, setEditingGroupName] = useState('');
+
+  const memoizedData = useMemo(
+    () => ({ groups: data.groups, plans: [] }),
+    [data.groups]
+  );
+
   const editor = usePlanEditor(
-    { groups: data.groups, plans: [] },
+    memoizedData,
     availableStyles,
     availableLayers,
     getCurrentState,
@@ -92,6 +99,7 @@ function PlansComponent() {
   );
 
   const groups = data.groups;
+
   const setGroups = (
     newGroups: PlanGroup[] | ((prev: PlanGroup[]) => PlanGroup[])
   ) => {
@@ -108,17 +116,6 @@ function PlansComponent() {
     () => [...groups].sort((a, b) => a.name.localeCompare(b.name)),
     [groups]
   );
-
-  // ========================================
-  // STATE - Group Edit Dialog
-  // ========================================
-  const [isGroupEditDialogOpen, setIsGroupEditDialogOpen] = useState(false);
-  const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
-  const [editingGroupName, setEditingGroupName] = useState('');
-
-  // ========================================
-  // HANDLERS - Group Management
-  // ========================================
 
   const handleAddGroup = async () => {
     if (!groupDialog.name.trim()) {
@@ -190,10 +187,6 @@ function PlansComponent() {
     setEditingGroupId(null);
     setEditingGroupName('');
   };
-
-  // ========================================
-  // HANDLERS - Plan Management
-  // ========================================
 
   const handleAddPlan = async () => {
     if (!planDialog.title.trim()) {
@@ -305,10 +298,6 @@ function PlansComponent() {
     toast.success(`Planta "${segment.name}" aplicada!`);
   };
 
-  // ========================================
-  // HANDLERS - Editor
-  // ========================================
-
   const handleEditPlan = (plan: Plan) => {
     editor.openEditor(plan);
     editDialog.open(
@@ -319,6 +308,15 @@ function PlansComponent() {
       }
     );
   };
+
+  const handleApplyCurrentState = useCallback(async () => {
+    await getCurrentState();
+    if (currentState) {
+      editor.setEditActiveLayers(currentState.activeLayers);
+      toast.success('Estado atual aplicado!');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getCurrentState, currentState, editor.setEditActiveLayers]);
 
   const handleSaveEditPlan = async () => {
     const success = await editor.saveEdits(groups);
@@ -332,10 +330,6 @@ function PlansComponent() {
     editDialog.close();
   };
 
-  // ========================================
-  // HANDLERS - Keyboard
-  // ========================================
-
   const handleGroupDialogKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleAddGroup();
   };
@@ -343,10 +337,6 @@ function PlansComponent() {
   const handlePlanDialogKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleAddPlan();
   };
-
-  // ========================================
-  // RENDER
-  // ========================================
 
   const menuItems = [
     {
@@ -411,7 +401,7 @@ function PlansComponent() {
         disabled={isBusy}
       />
 
-      <ViewConfigEditDialog
+      <ViewConfigDialog
         title='Configuração da Planta'
         style={editor.editPlanStyle}
         onSave={handleSaveEditPlan}
@@ -448,19 +438,19 @@ function PlansComponent() {
         baseStyle={baseStyle}
         baseLayers={baseLayers}
         baseCode={baseCode}
+        ceilingCode={ceilingCode}
         onOpenChange={configDialog.setOpen}
         ceilingStyle={ceilingStyle}
         ceilingLayers={ceilingLayers}
-        ceilingCode={ceilingCode}
         availableStyles={bp_availableStyles}
         availableLayers={bp_availableLayerss}
+        onBaseCodeChange={updateBaseCode}
         onBaseStyleChange={updateBaseStyle}
         onBaseLayersChange={updateBaseLayers}
-        onBaseCodeChange={updateBaseCode}
         onCeilingStyleChange={updateCeilingStyle}
         onCeilingLayersChange={updateCeilingLayers}
         onCeilingCodeChange={updateCeilingCode}
-        onApplyCurrentState={() => toast.info('Aplicando estado atual...')}
+        onApplyCurrentState={handleApplyCurrentState}
       />
 
       <div className='space-y-3'>

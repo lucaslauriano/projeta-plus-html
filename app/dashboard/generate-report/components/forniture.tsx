@@ -82,27 +82,27 @@ export function FurnitureReports() {
     });
   }, [selectedCategories, categoryData, getCategoryData]);
 
-  const handleCategoryToggle = (category: string, checked: boolean) => {
-    const newPrefs = {
-      ...categoryPrefs,
-      [category]: {
-        ...categoryPrefs[category],
-        show: checked,
-      },
-    };
-    saveCategoryPreferences(newPrefs);
-  };
+  // const handleCategoryToggle = (category: string, checked: boolean) => {
+  //   const newPrefs = {
+  //     ...categoryPrefs,
+  //     [category]: {
+  //       ...categoryPrefs[category],
+  //       show: checked,
+  //     },
+  //   };
+  //   saveCategoryPreferences(newPrefs);
+  // };
 
-  const handleExportCategoryToggle = (category: string, checked: boolean) => {
-    const newPrefs = {
-      ...categoryPrefs,
-      [category]: {
-        ...categoryPrefs[category],
-        export: checked,
-      },
-    };
-    saveCategoryPreferences(newPrefs);
-  };
+  // const handleExportCategoryToggle = (category: string, checked: boolean) => {
+  //   const newPrefs = {
+  //     ...categoryPrefs,
+  //     [category]: {
+  //       ...categoryPrefs[category],
+  //       export: checked,
+  //     },
+  //   };
+  //   saveCategoryPreferences(newPrefs);
+  // };
 
   const handleColumnToggle = (column: string, checked: boolean) => {
     const newPrefs = {

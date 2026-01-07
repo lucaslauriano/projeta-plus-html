@@ -113,21 +113,16 @@ export function BasePlansConfigDialog({
     }
   };
 
-  const handleSelectAllFiltered = () => {
+  const handleFilterSelection = (type: 'all' | 'none') => {
     const updateLayers =
       activeTab === 'base' ? onBaseLayersChange : onCeilingLayersChange;
     const layers = activeTab === 'base' ? baseLayers : ceilingLayers;
-    const newActiveLayers = [...new Set([...layers, ...filteredLayers])];
-    updateLayers(newActiveLayers);
-  };
 
-  const handleSelectNoneFiltered = () => {
-    const updateLayers =
-      activeTab === 'base' ? onBaseLayersChange : onCeilingLayersChange;
-    const layers = activeTab === 'base' ? baseLayers : ceilingLayers;
-    const newActiveLayers = layers.filter(
-      (layer) => !filteredLayers.includes(layer)
-    );
+    const newActiveLayers =
+      type === 'all'
+        ? [...new Set([...layers, ...filteredLayers])]
+        : layers.filter((layer) => !filteredLayers.includes(layer));
+
     updateLayers(newActiveLayers);
   };
 
@@ -222,7 +217,7 @@ export function BasePlansConfigDialog({
                   size='sm'
                   onClick={() => {
                     setFilterType('all');
-                    handleSelectAllFiltered();
+                    handleFilterSelection('all');
                   }}
                   className='h-8 text-xs rounded-4xl'
                 >
@@ -233,7 +228,7 @@ export function BasePlansConfigDialog({
                   size='sm'
                   onClick={() => {
                     setFilterType('none');
-                    handleSelectNoneFiltered();
+                    handleFilterSelection('none');
                   }}
                   className='h-8 text-xs rounded-4xl'
                 >

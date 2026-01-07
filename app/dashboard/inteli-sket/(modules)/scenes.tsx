@@ -11,12 +11,12 @@ import {
   ScenesLoadingState,
 } from '@/app/dashboard/inteli-sket/components/scenes-skeleton';
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
-import { ViewConfigEditDialog } from '@/app/dashboard/inteli-sket/components/view-config-edit-dialog';
 import { GroupAccordion } from '@/app/dashboard/inteli-sket/components/group-accordion';
 import { GroupNameEditDialog } from '@/app/dashboard/inteli-sket/components/group-name-edit-dialog';
 import { AddItemDialog } from '@/app/dashboard/inteli-sket/components/add-item-dialog';
 import { AddItemWithGroupDialog } from '@/app/dashboard/inteli-sket/components/add-item-with-group-dialog';
 import { useConfirm } from '@/hooks/useConfirm';
+import { ViewConfigDialog } from '@/app/dashboard/inteli-sket/components/view-config-dialog';
 
 type Scene = SceneGroup['segments'][number];
 
@@ -42,6 +42,7 @@ function ScenesComponent() {
   } = useScenes();
 
   const groups = data.groups;
+
   const setGroups = (
     newGroups: SceneGroup[] | ((prev: SceneGroup[]) => SceneGroup[])
   ) => {
@@ -323,12 +324,9 @@ function ScenesComponent() {
     setIsEditDialogOpen(true);
   };
 
-  // TODO: Implement apply current state functionality
   const handleApplyCurrentState = async () => {
     await getCurrentState();
     if (currentState) {
-      setEditSceneStyle(currentState.style);
-      setEditCameraType(currentState.cameraType);
       setEditActiveLayers(currentState.activeLayers);
       toast.success('Estado atual aplicado!');
     }
@@ -371,20 +369,17 @@ function ScenesComponent() {
       groups: updatedGroups,
     };
 
-    // Atualizar o estado
     setData(updatedData);
 
-    // Passar os dados atualizados diretamente para evitar problema de closure
     await saveToJson(updatedData);
 
     setIsEditDialogOpen(false);
     setEditingScene(null);
-    toast.success('Configuração salva no JSON!');
   }, [
+    data,
+    groups,
     editSceneName,
     editingScene,
-    groups,
-    data,
     editSceneCode,
     editSceneStyle,
     editCameraType,
@@ -451,7 +446,7 @@ function ScenesComponent() {
         disabled={isBusy}
       />
 
-      <ViewConfigEditDialog
+      <ViewConfigDialog
         title='Configuração da Cena'
         itemTitle={editSceneName}
         itemCode={editSceneCode}

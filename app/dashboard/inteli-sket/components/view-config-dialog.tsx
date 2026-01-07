@@ -20,7 +20,7 @@ import {
   DialogContent,
 } from '@/components/ui/dialog';
 
-interface ViewConfigEditDialogProps {
+interface ViewConfigDialogProps {
   title: string;
   itemTitle: string;
   itemCode?: string;
@@ -55,7 +55,7 @@ const CAMERA_TYPE_LABELS: Record<string, string> = {
   topo_ortogonal: '⬇️ Vista de Topo + Ortogonal',
 };
 
-export function ViewConfigEditDialog({
+export function ViewConfigDialog({
   title,
   itemTitle,
   itemCode,
@@ -79,7 +79,7 @@ export function ViewConfigEditDialog({
   onApplyCurrentState,
   onItemTitleChange,
   onItemCodeChange,
-}: ViewConfigEditDialogProps) {
+}: ViewConfigDialogProps) {
   const [layerFilter, setLayerFilter] = useState('');
 
   const filteredLayers = useMemo(() => {

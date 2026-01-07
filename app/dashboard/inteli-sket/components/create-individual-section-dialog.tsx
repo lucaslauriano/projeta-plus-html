@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectContent,
 } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 
 interface CreateIndividualSectionDialogProps {
   open: boolean;
