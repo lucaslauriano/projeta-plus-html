@@ -10,7 +10,11 @@ export function usePlanEditor(
   data: { groups: unknown; plans: unknown[] },
   availableStyles: string[],
   availableLayers: string[],
-  getCurrentState: () => Promise<void>,
+  getCurrentState: () => Promise<{
+    style: string;
+    cameraType: string;
+    activeLayers: string[];
+  }>,
   currentState: {
     style: string;
     cameraType: string;
@@ -45,14 +49,14 @@ export function usePlanEditor(
   }, []);
 
   const applyCurrentState = useCallback(async () => {
-    await getCurrentState();
-    if (currentState) {
-      setEditPlanStyle(currentState.style);
-      setEditCameraType(currentState.cameraType);
-      setEditActiveLayers(currentState.activeLayers);
+    const state = await getCurrentState();
+    if (state) {
+      setEditPlanStyle(state.style);
+      setEditCameraType(state.cameraType);
+      setEditActiveLayers(state.activeLayers);
       toast.success('Estado atual aplicado!');
     }
-  }, [getCurrentState, currentState]);
+  }, [getCurrentState]);
 
   const selectAllLayers = useCallback(() => {
     setEditActiveLayers(availableLayers);

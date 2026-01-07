@@ -61,7 +61,7 @@ interface BaseViewConfigDialogProps {
   onOpenChange: (open: boolean) => void;
   availableStyles: string[];
   availableLayers: string[];
-  onApplyCurrentState: (availableLayers: string[]) => void;
+  onApplyCurrentState: (availableLayers: string[], activeTab?: 'base' | 'ceiling') => void;
   onCancel?: () => void;
 }
 
@@ -162,6 +162,16 @@ export function ViewConfigDialog(props: ViewConfigDialogProps) {
       (layer) => !filteredLayers.includes(layer)
     );
     currentConfig.updateLayers(newActiveLayers);
+  };
+
+  const handleApplyCurrentState = async () => {
+    if (mode === 'multi-tab') {
+      // No modo multi-tab, passar a aba ativa como segundo parâmetro
+      await onApplyCurrentState(availableLayers, activeTab);
+    } else {
+      // No modo single, funciona normalmente
+      await onApplyCurrentState(availableLayers);
+    }
   };
 
   const handleCancel = () => {
@@ -363,7 +373,7 @@ export function ViewConfigDialog(props: ViewConfigDialogProps) {
         <Button
           variant='outline'
           size='sm'
-          onClick={() => onApplyCurrentState(availableLayers as string[])}
+          onClick={handleApplyCurrentState}
           disabled={isBusy}
           className='h-8 text-xs rounded-4xl'
         >

@@ -327,6 +327,34 @@ function PlansComponent() {
     if (e.key === 'Enter') handleAddPlan();
   };
 
+  const handleApplyCurrentStateBasePlans = async (
+    availableLayers: string[],
+    activeTab?: 'base' | 'ceiling'
+  ) => {
+    try {
+      // Buscar o estado atual do SketchUp - agora retorna a Promise com os dados
+      const state = await getCurrentState();
+      
+      if (state) {
+        // Aplicar ao estado correto baseado na aba ativa
+        if (activeTab === 'base') {
+          updateBaseStyle(state.style);
+          updateBaseLayers(state.activeLayers);
+          toast.success('Estado atual aplicado à configuração de Base!');
+        } else if (activeTab === 'ceiling') {
+          updateCeilingStyle(state.style);
+          updateCeilingLayers(state.activeLayers);
+          toast.success('Estado atual aplicado à configuração de Forro!');
+        }
+      } else {
+        toast.error('Não foi possível obter o estado atual');
+      }
+    } catch (error) {
+      toast.error('Erro ao obter estado atual');
+      console.error('Error getting current state:', error);
+    }
+  };
+
   const menuItems = [
     {
       label: 'Criar grupo',
@@ -430,7 +458,7 @@ function PlansComponent() {
         onOpenChange={configDialog.setOpen}
         availableStyles={bp_availableStyles}
         availableLayers={bp_availableLayerss}
-        onApplyCurrentState={editor.applyCurrentState}
+        onApplyCurrentState={handleApplyCurrentStateBasePlans}
         baseConfig={{
           code: baseCode,
           style: baseStyle,
