@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { PlanItem } from '@/components/PlanItem';
 import { Loader2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -15,7 +15,6 @@ import {
 import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
 import { LevelsManagerDialog } from '@/app/dashboard/inteli-sket/components/levels-manager-dialog';
 import { Button } from '@/components/ui/button';
-import { BasePlansConfigDialog } from '@/app/dashboard/inteli-sket/components/base-plans-config-dialog';
 import { GroupNameEditDialog } from '@/app/dashboard/inteli-sket/components/group-name-edit-dialog';
 import { AddItemDialog } from '@/app/dashboard/inteli-sket/components/add-item-dialog';
 import { AddItemWithGroupDialog } from '@/app/dashboard/inteli-sket/components/add-item-with-group-dialog';
@@ -288,7 +287,6 @@ function PlansComponent() {
   };
 
   const handleApplyPlan = async (segment: Plan) => {
-    // Segment já tem todas as configurações necessárias
     await applyPlanConfig(segment.name!, segment.code, {
       style: segment.style,
       cameraType: segment.cameraType,
@@ -308,15 +306,6 @@ function PlansComponent() {
       }
     );
   };
-
-  const handleApplyCurrentState = useCallback(async () => {
-    await getCurrentState();
-    if (currentState) {
-      editor.setEditActiveLayers(currentState.activeLayers);
-      toast.success('Estado atual aplicado!');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getCurrentState, currentState, editor.setEditActiveLayers]);
 
   const handleSaveEditPlan = async () => {
     const success = await editor.saveEdits(groups);
@@ -431,26 +420,33 @@ function PlansComponent() {
         ]}
       />
 
-      <BasePlansConfigDialog
-        onSave={() => saveConfig(true)}
+      <ViewConfigDialog
+        mode='multi-tab'
+        title='Configurações Base e Forro'
+        description='Configure os estilos e camadas que serão usados nas plantas de base e forro'
         isOpen={configDialog.isOpen}
         isBusy={isBusy || isBusyPlans}
-        baseStyle={baseStyle}
-        baseLayers={baseLayers}
-        baseCode={baseCode}
-        ceilingCode={ceilingCode}
+        onSave={() => saveConfig(true)}
         onOpenChange={configDialog.setOpen}
-        ceilingStyle={ceilingStyle}
-        ceilingLayers={ceilingLayers}
         availableStyles={bp_availableStyles}
         availableLayers={bp_availableLayerss}
-        onBaseCodeChange={updateBaseCode}
-        onBaseStyleChange={updateBaseStyle}
-        onBaseLayersChange={updateBaseLayers}
-        onCeilingStyleChange={updateCeilingStyle}
-        onCeilingLayersChange={updateCeilingLayers}
-        onCeilingCodeChange={updateCeilingCode}
-        onApplyCurrentState={handleApplyCurrentState}
+        onApplyCurrentState={editor.applyCurrentState}
+        baseConfig={{
+          code: baseCode,
+          style: baseStyle,
+          layers: baseLayers,
+          updateCode: updateBaseCode,
+          updateStyle: updateBaseStyle,
+          updateLayers: updateBaseLayers,
+        }}
+        ceilingConfig={{
+          code: ceilingCode,
+          style: ceilingStyle,
+          layers: ceilingLayers,
+          updateCode: updateCeilingCode,
+          updateStyle: updateCeilingStyle,
+          updateLayers: updateCeilingLayers,
+        }}
       />
 
       <div className='space-y-3'>

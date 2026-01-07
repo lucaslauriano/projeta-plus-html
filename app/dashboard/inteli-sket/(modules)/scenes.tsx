@@ -472,10 +472,6 @@ function ScenesComponent() {
         onSelectAllLayers={handleSelectAllLayers}
         onSelectNoLayers={handleSelectNoLayers}
         onApplyCurrentState={handleApplyCurrentState}
-        onImportStyle={() => {
-          // TODO: Implement import style functionality
-          toast.info('Funcionalidade de importar estilo em desenvolvimento');
-        }}
       />
 
       <div className='space-y-3'>

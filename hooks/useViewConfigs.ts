@@ -201,7 +201,7 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
         };
         setData(normalizedData);
         if (pendingAction !== 'loadJson') {
-          toast.success(result.message);
+          console.log('Load from json success:', result.message);
         }
       } else {
         if (!result.success) {
@@ -231,7 +231,7 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
           })),
         };
         setData(normalizedData);
-        toast.success(result.message);
+        console.log('Load default success:', result.message);
       } else {
         toast.error(result.message || 'Erro ao carregar dados padrão');
       }
