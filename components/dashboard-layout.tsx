@@ -6,6 +6,10 @@ import { useState, useEffect } from 'react';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { useSubscription } from '@clerk/nextjs/experimental';
 import { cn } from '@/lib/utils';
+
+// Singleton global para rastrear se o dashboard já foi carregado
+let dashboardHasLoaded = false;
+
 import {
   Plus,
   Menu,
@@ -18,7 +22,6 @@ import {
   FileTextIcon,
   PanelBottom,
   LampCeiling,
-  Monitor,
 } from 'lucide-react';
 import { AiOutlineTag } from 'react-icons/ai';
 import Link from 'next/link';
@@ -65,7 +68,7 @@ const navigation = [
     icon: Proportions,
   },
   { name: 'Settings', href: '/dashboard/user-settings', icon: Settings },
-  { name: 'Tema', href: '/dashboard/theme-preview', icon: Monitor },
+  // { name: 'Tema', href: '/dashboard/theme-preview', icon: Monitor },
 ];
 
 interface DashboardLayoutProps {
@@ -74,7 +77,6 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const { user, isLoaded: isUserLoaded } = useUser();
   // const hasPremiumPlan =
   //   user?.publicMetadata?.plan === 'premium' ||
@@ -83,13 +85,22 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { data, isLoading: isSubscriptionLoading } = useSubscription();
   const pathname = usePathname();
 
+  // Use variável global para persistir entre remontagens completas
+  const [isInitialLoading, setIsInitialLoading] = useState(
+    () => !dashboardHasLoaded
+  );
+
   useEffect(() => {
-    if (isUserLoaded && !isSubscriptionLoading) {
+    if (isUserLoaded && !isSubscriptionLoading && !dashboardHasLoaded) {
       const timer = setTimeout(() => {
         setIsInitialLoading(false);
+        dashboardHasLoaded = true; // Marca globalmente como carregado
       }, 800);
 
       return () => clearTimeout(timer);
+    } else if (dashboardHasLoaded) {
+      // Se já foi carregado anteriormente, não mostrar loading
+      setIsInitialLoading(false);
     }
   }, [isUserLoaded, isSubscriptionLoading]);
 
@@ -102,7 +113,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <div
         onMouseLeave={() => setSidebarExpanded(false)}
         className={cn(
-          'absolute left-2 top-2 bottom-2 z-50 flex flex-col bg-card shadow-2xl rounded-md transition-all duration-300 ease-in-out',
+          'absolute left-2 top-2 bottom-2 z-50 flex flex-col bg-card shadow-2xl rounded-xl transition-all duration-300 ease-in-out',
           sidebarExpanded ? 'w-64' : 'w-14'
         )}
       >

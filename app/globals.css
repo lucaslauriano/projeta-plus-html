@@ -62,6 +62,7 @@
   --shadow-2xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.45);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+  --radius: 1rem;
 }
 
 .dark {
@@ -120,6 +121,7 @@
   --shadow-xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.18),
     0px 8px 10px -1px hsl(0 0% 0% / 0.18);
   --shadow-2xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.45);
+  --radius: 1rem;
 }
 
 @theme inline {

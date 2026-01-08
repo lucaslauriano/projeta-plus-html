@@ -55,7 +55,7 @@ export default function InteliSketDashboardPage() {
         description='Organize suas camadas, seções e plantas, detalhes e mais.'
       />
 
-      <PageContent className='pt-6'>
+      <PageContent className='pt-6 pb-2'>
         <div className='space-2 flex border-b items-center'>
           <TooltipProvider>
             <Tabs2

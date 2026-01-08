@@ -68,7 +68,7 @@ export default function AnnotationDashboardPage() {
               <AccordionItem
                 key={item.value}
                 value={item.value}
-                className='border rounded-md overflow-hidden bg-muted/20 px-0'
+                className='border overflow-hidden bg-muted/20 px-0'
               >
                 <AccordionTrigger className='hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70 data-[state=open]:rounded-bl-none data-[state=open]:rounded-br-none w-full'>
                   <div className='flex items-start text-base font-semibold '>

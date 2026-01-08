@@ -83,7 +83,7 @@ export default function ElectricalDashboardPage() {
                 <AccordionItem
                   key={group.id}
                   value={group.id}
-                  className='border border-b rounded-xl overflow-hidden bg-muted/20'
+                  className='border border-b overflow-hidden bg-muted/20'
                 >
                   <AccordionTrigger className='px-4 py-2 hover:no-underline bg-muted/50 data-[state=open]:bg-muted/70'>
                     <div className='flex items-center gap-2 font-semibold text-sm'>

@@ -43,7 +43,7 @@ export function GroupAccordion<T extends { id: string }>({
         <AccordionItem
           key={group.id}
           value={group.id}
-          className='border rounded-[8px] overflow-hidden bg-muted/20 px-0'
+          className='border overflow-hidden bg-muted/20 px-0'
         >
           <div className='relative group'>
             <AccordionTrigger

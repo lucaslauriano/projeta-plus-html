@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useSketchup } from '@/contexts/SketchupContext';
 import { useConfirm } from './useConfirm';
@@ -11,6 +11,7 @@ export interface ViewConfig {
   style: string;
   cameraType: string;
   activeLayers: string[];
+  visibleLayers: string[];
 }
 
 export interface ViewConfigGroup {
@@ -78,9 +79,6 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
   const [currentState, setCurrentState] = useState<CurrentState | null>(null);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Ref para armazenar os resolvers das Promises do getCurrentState
-  const getCurrentStateResolverRef = useRef<((state: CurrentState) => void) | null>(null);
 
   const clearPending = useCallback(() => {
     setPendingAction(null);
@@ -319,24 +317,13 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
       clearPending();
       setIsLoading(false);
       if (result.success) {
-        const newState = {
+        setCurrentState({
           style: result.style || '',
           cameraType: result.cameraType || 'iso_perspectiva',
           activeLayers: result.activeLayers || [],
-        };
-        setCurrentState(newState);
-        
-        // Resolver a Promise se houver um resolver pendente
-        if (getCurrentStateResolverRef.current) {
-          getCurrentStateResolverRef.current(newState);
-          getCurrentStateResolverRef.current = null;
-        }
+        });
       } else {
         toast.error(result.message || 'Erro ao obter estado atual');
-        // Rejeitar a Promise se houver erro
-        if (getCurrentStateResolverRef.current) {
-          getCurrentStateResolverRef.current = null;
-        }
       }
     };
 
@@ -536,24 +523,19 @@ export function useViewConfigs(options: UseViewConfigsOptions) {
     await callSketchupMethod(options.rubyMethods.getAvailableLayers);
   }, [callSketchupMethod, isAvailable, options]);
 
-  const getCurrentState = useCallback(async (): Promise<CurrentState> => {
+  const getCurrentState = useCallback(async () => {
     if (!isAvailable) {
-      const mockState = {
+      setCurrentState({
         style: 'PRO_VISTAS',
         cameraType: 'iso_perspectiva',
         activeLayers: ['Layer0'],
-      };
-      setCurrentState(mockState);
-      return mockState;
+      });
+      return;
     }
 
-    // Criar uma Promise que será resolvida quando o handler for chamado
-    return new Promise<CurrentState>((resolve) => {
-      getCurrentStateResolverRef.current = resolve;
-      setIsLoading(true);
-      setPendingAction('getCurrentState');
-      callSketchupMethod(options.rubyMethods.getCurrentState);
-    });
+    setIsLoading(true);
+    setPendingAction('getCurrentState');
+    await callSketchupMethod(options.rubyMethods.getCurrentState);
   }, [callSketchupMethod, isAvailable, options]);
 
   const clearAll = useCallback(async () => {

@@ -1,12 +1,31 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
-
 import { Sun, Moon } from 'lucide-react';
 
 export function ThemeSelector() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
+
+  // Forçar aplicação do tema na montagem
+  useEffect(() => {
+    if (theme && typeof document !== 'undefined') {
+      const root = document.documentElement;
+      root.classList.remove('light', 'dark');
+      root.classList.add(theme);
+    }
+  }, [theme]);
+
+  const handleThemeChange = (newTheme: 'light' | 'dark') => {
+    setTheme(newTheme);
+    // Forçar aplicação imediata
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      root.classList.remove('light', 'dark');
+      root.classList.add(newTheme);
+    }
+  };
 
   return (
     <div className='space-y-2'>
@@ -15,7 +34,7 @@ export function ThemeSelector() {
         <Button
           variant={theme === 'light' ? 'default' : 'outline'}
           size='sm'
-          onClick={() => setTheme('light')}
+          onClick={() => handleThemeChange('light')}
           className='flex-1'
         >
           <Sun className='h-4 w-4 mr-2' />
@@ -24,7 +43,7 @@ export function ThemeSelector() {
         <Button
           variant={theme === 'dark' ? 'default' : 'outline'}
           size='sm'
-          onClick={() => setTheme('dark')}
+          onClick={() => handleThemeChange('dark')}
           className='flex-1'
         >
           <Moon className='h-4 w-4 mr-2' />

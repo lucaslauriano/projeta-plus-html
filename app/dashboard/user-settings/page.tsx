@@ -22,6 +22,7 @@ import {
   InputGroupInput,
 } from '@/components/ui/input-group';
 import { Label } from '@/components/ui/label';
+import { ThemeSelector } from '@/components/ui/theme-selector';
 
 export default function GlobalSettingsPage() {
   const {
@@ -141,6 +142,8 @@ export default function GlobalSettingsPage() {
               </Button>
             </div>
           )}
+
+          <ThemeSelector />
         </form>
       </PageContent>
     </PageWrapper>

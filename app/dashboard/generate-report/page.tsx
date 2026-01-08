@@ -52,7 +52,7 @@ export default function GenerateReportDashboardPage() {
         title='Relatórios'
         description='Gere relatórios detalhados do seu projeto'
       />
-      <PageContent>
+      <PageContent className='pb-2'>
         <Tabs defaultValue='furniture' className='w-full'>
           <TooltipProvider delayDuration={300}>
             <TabsList className='grid w-full grid-cols-5'>
