@@ -808,6 +808,21 @@ declare global {
       message: string;
       count?: number;
     }) => void;
+    handleGetLightningTypesResult?: (result: {
+      success: boolean;
+      message: string;
+      types?: LightningType[];
+    }) => void;
+    handleGetLightningDataResult?: (result: {
+      success: boolean;
+      message: string;
+      data?: LightningData;
+    }) => void;
+    handleGetLightningColumnPreferencesResult?: (result: {
+      success: boolean;
+      message: string;
+      preferences?: string[];
+    }) => void;
   }
 }
 

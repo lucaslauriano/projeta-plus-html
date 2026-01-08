@@ -332,18 +332,16 @@ function PlansComponent() {
     activeTab?: 'base' | 'ceiling'
   ) => {
     try {
-      // Buscar o estado atual do SketchUp - agora retorna a Promise com os dados
-      const state = await getCurrentState();
-      
-      if (state) {
-        // Aplicar ao estado correto baseado na aba ativa
+      await getCurrentState();
+
+      if (currentState) {
         if (activeTab === 'base') {
-          updateBaseStyle(state.style);
-          updateBaseLayers(state.activeLayers);
+          updateBaseStyle(currentState.style);
+          updateBaseLayers(currentState.activeLayers);
           toast.success('Estado atual aplicado à configuração de Base!');
         } else if (activeTab === 'ceiling') {
-          updateCeilingStyle(state.style);
-          updateCeilingLayers(state.activeLayers);
+          updateCeilingStyle(currentState.style);
+          updateCeilingLayers(currentState.activeLayers);
           toast.success('Estado atual aplicado à configuração de Forro!');
         }
       } else {

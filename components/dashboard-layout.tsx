@@ -209,25 +209,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       {/* Main content */}
-      <div className='absolute inset-y-0 right-0 left-17'>
-        {/* <div className='sticky top-5 z-30 ml-2 mr-4 mb-4'>
-          <div className='flex h-14 items-center justify-end gap-3 px-4 bg-card rounded-2xl shadow-lg'>
-            <Badge
-              variant='secondary'
-              className={cn(
-                'font-semibold',
-                userPlan === 'free'
-                  ? 'bg-primary/10 text-primary border border-primary/20'
-                  : 'bg-accent/10 text-accent-foreground border border-accent/20'
-              )}
-            >
-              {userPlan === 'free' ? 'Free' : 'Premium'}
-            </Badge>
-            <ThemeToggleButton />
-          </div>
-        </div> */}
-
-        <main className='pb-6 overflow-y-auto py-2 bg'>{children}</main>
+      <div className='absolute inset-y-0 right-0 left-16'>
+        <main className='pb-6 overflow-y-auto py-2 px-1'>{children}</main>
       </div>
     </div>
   );

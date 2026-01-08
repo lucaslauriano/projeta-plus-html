@@ -227,3 +227,9 @@ body::-webkit-scrollbar-thumb {
   border-radius: 20px; /* roundness of the scroll thumb */
   border: 2px solid orange; /* creates padding around scroll thumb */
 }
+
+/* Force checkbox to have small border-radius regardless of --radius variable */
+[role='checkbox'],
+button[role='checkbox'] {
+  border-radius: 0.35rem !important;
+}

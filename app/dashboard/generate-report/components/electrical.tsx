@@ -38,6 +38,7 @@ import {
   RefreshCw,
   Info,
 } from 'lucide-react';
+import { EmptyState } from './empty-state';
 
 type ReportDataItem = {
   quantidade: number;
@@ -100,11 +101,18 @@ export default function ElectricalReport() {
     <div className='space-y-4'>
       {/* Header */}
       <div className='flex items-center justify-between'>
-        <div>
-          <h2 className='text-2xl font-bold'>Pontos técnicos</h2>
-          <p className='text-sm text-muted-foreground'>
-            Visualize e exporte relatórios elétricos do projeto
-          </p>
+        <div className='flex items-center justify-between gap-2 w-full'>
+          <h2 className='text-lg font-bold'>Pontos Técnicos</h2>
+          {/* <ViewConfigMenu
+            menuItems={[
+              {
+                icon: <FileSpreadsheet className='w-4 h-4' />,
+                label: 'Exportar Unificado',
+                action: () => {},
+                hasDivider: false,
+              },
+            ]}
+          /> */}
         </div>
         <div className='flex items-center gap-2'>
           {!isAvailable && (
@@ -126,7 +134,7 @@ export default function ElectricalReport() {
                 <TooltipTrigger asChild>
                   <Info className='h-4 w-4 text-muted-foreground cursor-help' />
                 </TooltipTrigger>
-                <TooltipContent className='max-w-[280px]'>
+                <TooltipContent className='max-w-[230px]'>
                   <p>Selecione o tipo de relatório que deseja visualizar</p>
                 </TooltipContent>
               </Tooltip>
@@ -211,22 +219,20 @@ export default function ElectricalReport() {
       )} */}
 
       {/* Data Table */}
-      {selectedReportType && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Dados do Relatório</CardTitle>
-            <CardDescription>
-              {reportData.length === 0
-                ? 'Nenhum dado encontrado para este tipo de relatório'
-                : `${reportData.length} ${
-                    reportData.length === 1
-                      ? 'item encontrado'
-                      : 'itens encontrados'
-                  }`}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {reportData.length > 0 ? (
+      {selectedReportType &&
+        (reportData.length > 0 ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Dados do Relatório</CardTitle>
+              <CardDescription>
+                {`${reportData.length} ${
+                  reportData.length === 1
+                    ? 'item encontrado'
+                    : 'itens encontrados'
+                }`}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
               <div className='rounded-md border max-h-[600px] overflow-auto mt-4'>
                 <Table>
                   <TableHeader>
@@ -261,21 +267,15 @@ export default function ElectricalReport() {
                   </TableBody>
                 </Table>
               </div>
-            ) : (
-              <div className='flex flex-col items-center justify-center py-12 text-center'>
-                <FileSpreadsheet className='h-12 w-12 text-muted-foreground mb-4' />
-                <h3 className='text-lg font-semibold mb-2'>
-                  Nenhum dado encontrado
-                </h3>
-                <p className='text-sm text-muted-foreground max-w-md'>
-                  Não há dados para exibir neste tipo de relatório. Verifique se
-                  existem componentes elétricos no modelo.
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+            </CardContent>
+          </Card>
+        ) : (
+          <EmptyState
+            icon={FileSpreadsheet}
+            title='Nenhum dado encontrado'
+            description='Não há dados para exibir neste tipo de relatório. Verifique se existem componentes elétricos no modelo.'
+          />
+        ))}
     </div>
   );
 }

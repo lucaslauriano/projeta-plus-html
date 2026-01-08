@@ -6,9 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Sun, Moon } from 'lucide-react';
 
 export function ThemeSelector() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
-  // Forçar aplicação do tema na montagem
   useEffect(() => {
     if (theme && typeof document !== 'undefined') {
       const root = document.documentElement;
@@ -19,7 +18,6 @@ export function ThemeSelector() {
 
   const handleThemeChange = (newTheme: 'light' | 'dark') => {
     setTheme(newTheme);
-    // Forçar aplicação imediata
     if (typeof document !== 'undefined') {
       const root = document.documentElement;
       root.classList.remove('light', 'dark');

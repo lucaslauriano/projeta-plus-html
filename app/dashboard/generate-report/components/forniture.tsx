@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useFurnitureReports } from '@/hooks/useFurnitureReports';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -20,7 +20,15 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Download, FileSpreadsheet, Eye, Trash2 } from 'lucide-react';
+import {
+  Eye,
+  Info,
+  Trash2,
+  Loader2,
+  Download,
+  PackageSearch,
+  FileSpreadsheet,
+} from 'lucide-react';
 import { DeleteConfirmDialog } from './delete-confirm-dialog';
 import { ExportXLSXModal } from './export-xlsx-modal';
 import { ExportFormatDialog } from './export-format-dialog';
@@ -30,17 +38,17 @@ import {
   TooltipProvider,
 } from '@radix-ui/react-tooltip';
 import { TooltipContent } from '@/components/ui/tooltip';
+import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
+import { EmptyState } from './empty-state';
 
 export function FurnitureReports() {
   const {
     categories,
     categoryData,
-    categoryPrefs,
     columnPrefs,
     isBusy,
     isAvailable,
     getCategoryData,
-    saveCategoryPreferences,
     saveColumnPreferences,
     exportCategoryCSV,
     exportXLSX,
@@ -49,7 +57,14 @@ export function FurnitureReports() {
   } = useFurnitureReports();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [loadedCategories, setLoadedCategories] = useState<string[]>([]);
   const [xlsxModalOpen, setXlsxModalOpen] = useState(false);
+
+  // Criar categoryPrefs baseado nas categorias carregadas
+  const categoryPrefs = loadedCategories.reduce((acc, cat) => {
+    acc[cat] = { show: true, export: true };
+    return acc;
+  }, {} as Record<string, { show: boolean; export: boolean }>);
   const [exportDialog, setExportDialog] = useState<{
     open: boolean;
     category: string;
@@ -64,45 +79,27 @@ export function FurnitureReports() {
     itemName: '',
   });
 
-  // Sincroniza selectedCategories com categoryPrefs
-  useEffect(() => {
-    const selected = categories.filter(
-      (cat) => categoryPrefs[cat]?.show !== false
-    );
-    setSelectedCategories(selected);
-  }, [categories, categoryPrefs]);
-
-  // Carrega dados das categorias selecionadas
-  useEffect(() => {
+  // Função para carregar categorias selecionadas
+  const handleLoadCategories = () => {
     selectedCategories.forEach((category) => {
-      if (!categoryData[category]) {
+      if (!loadedCategories.includes(category)) {
         console.log('[Forniture] Fetching data for category:', category);
         getCategoryData(category);
       }
     });
-  }, [selectedCategories, categoryData, getCategoryData]);
+    setLoadedCategories(selectedCategories);
+  };
 
-  // const handleCategoryToggle = (category: string, checked: boolean) => {
-  //   const newPrefs = {
-  //     ...categoryPrefs,
-  //     [category]: {
-  //       ...categoryPrefs[category],
-  //       show: checked,
-  //     },
-  //   };
-  //   saveCategoryPreferences(newPrefs);
-  // };
-
-  // const handleExportCategoryToggle = (category: string, checked: boolean) => {
-  //   const newPrefs = {
-  //     ...categoryPrefs,
-  //     [category]: {
-  //       ...categoryPrefs[category],
-  //       export: checked,
-  //     },
-  //   };
-  //   saveCategoryPreferences(newPrefs);
-  // };
+  // Toggle de seleção de categoria
+  const handleCategoryToggle = (category: string, checked: boolean) => {
+    if (checked) {
+      setSelectedCategories([...selectedCategories, category]);
+    } else {
+      setSelectedCategories(
+        selectedCategories.filter((cat) => cat !== category)
+      );
+    }
+  };
 
   const handleColumnToggle = (column: string, checked: boolean) => {
     const newPrefs = {
@@ -161,14 +158,22 @@ export function FurnitureReports() {
   );
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-4'>
       <div className='flex items-center justify-between'>
-        <div>
-          <h2 className='text-2xl font-bold'>Mobiliário</h2>
-          <p className='text-sm text-muted-foreground'>
-            Gerencie e exporte relatórios de mobiliário do projeto
-          </p>
+        <div className='flex items-center justify-between gap-2 w-full'>
+          <h2 className='text-lg font-bold'>Mobiliário</h2>
+          <ViewConfigMenu
+            menuItems={[
+              {
+                icon: <FileSpreadsheet className='w-4 h-4' />,
+                label: 'Exportar Unificado',
+                action: () => setXlsxModalOpen(true),
+                hasDivider: false,
+              },
+            ]}
+          />
         </div>
+
         <div className='flex items-center gap-2'>
           {!isAvailable && (
             <Badge variant='outline' className='text-xs'>
@@ -178,64 +183,54 @@ export function FurnitureReports() {
           {isBusy && <Loader2 className='w-4 h-4 animate-spin' />}
         </div>
       </div>
-      <div className='flex gap-2 items-center justify-center'>
-        <Button
-          size='sm'
-          className='w-full md:w-fit'
-          onClick={() => setXlsxModalOpen(true)}
-          disabled={isBusy}
-        >
-          <FileSpreadsheet className='w-4 h-4 mr-2' />
-          Exportar Consolidado
-        </Button>
-      </div>
-      {/* Category Filters */}
-      {/* <Card>
-        <CardHeader>
-          <CardTitle>Categorias</CardTitle>
-          <CardDescription>
-            Selecione as categorias para exibir e exportar
-          </CardDescription>
+      <Card>
+        <CardHeader className='flex items-center justify-between '>
+          <CardTitle className='px-0'>
+            <h2 className='text-md font-medium'> Selecionar Categorias</h2>
+          </CardTitle>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Info className='w-4 h-4 text-muted-foreground cursor-help' />
+              </TooltipTrigger>
+              <TooltipContent className='max-w-[200px]'>
+                <p>Escolha as categorias que deseja visualizar</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </CardHeader>
-        <CardContent>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+        <CardContent className='space-y-4 pt-4'>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2'>
             {categories.map((category) => (
-              <div key={category} className='space-y-2'>
-                <div className='flex items-center space-x-2'>
-                  <Checkbox
-                    id={`show-${category}`}
-                    checked={categoryPrefs[category]?.show !== false}
-                    onCheckedChange={(checked) =>
-                      handleCategoryToggle(category, checked as boolean)
-                    }
-                  />
-                  <label
-                    htmlFor={`show-${category}`}
-                    className='text-sm font-medium cursor-pointer'
-                  >
-                    {category}
-                  </label>
-                </div>
-                <div className='flex items-center space-x-2 ml-6'>
-                  <Checkbox
-                    id={`export-${category}`}
-                    checked={categoryPrefs[category]?.export !== false}
-                    onCheckedChange={(checked) =>
-                      handleExportCategoryToggle(category, checked as boolean)
-                    }
-                  />
-                  <label
-                    htmlFor={`export-${category}`}
-                    className='text-xs text-muted-foreground cursor-pointer'
-                  >
-                    Exportar
-                  </label>
-                </div>
+              <div key={category} className='flex items-center space-x-2'>
+                <Checkbox
+                  id={`select-${category}`}
+                  checked={selectedCategories.includes(category)}
+                  onCheckedChange={(checked) =>
+                    handleCategoryToggle(category, checked as boolean)
+                  }
+                />
+                <label
+                  htmlFor={`select-${category}`}
+                  className='text-sm font-medium cursor-pointer'
+                >
+                  {category}
+                </label>
               </div>
             ))}
           </div>
+          <div className='w-fullflex gap-2'>
+            <Button
+              onClick={handleLoadCategories}
+              disabled={isBusy || selectedCategories.length === 0}
+              className='w-full'
+            >
+              {isBusy && <Loader2 className='w-4 h-4 mr-2 animate-spin' />}
+              Carregar selecionadas
+            </Button>
+          </div>
         </CardContent>
-      </Card> */}
+      </Card>
 
       {/* Column Filters */}
       <Card>
@@ -268,141 +263,160 @@ export function FurnitureReports() {
         </CardContent>
       </Card>
 
-      {/* Export Actions */}
-
       {/* Category Tables */}
-      {selectedCategories.map((category) => {
-        const data = categoryData[category];
-        if (!data) return null;
+      {loadedCategories.length === 0 ? (
+        <EmptyState
+          icon={PackageSearch}
+          title='Sem categorias carregadas'
+          description={
+            <>
+              Selecione as categorias desejadas acima e clique no botão{' '}
+              <span className='font-medium text-foreground'>
+                &quot;Carregar selecionadas&quot;
+              </span>{' '}
+              para visualizar os dados do seu projeto
+            </>
+          }
+          steps={[
+            { label: 'Selecione categorias' },
+            { label: 'Clique em carregar' },
+            { label: 'Visualize os dados' },
+          ]}
+        />
+      ) : (
+        loadedCategories.map((category) => {
+          const data = categoryData[category];
+          if (!data) return null;
 
-        return (
-          <Card key={category}>
-            <CardHeader>
-              <div className='flex items-center justify-between'>
-                <div>
-                  <CardTitle>{category}</CardTitle>
-                  <CardDescription>
-                    {data.itemCount} itens • Total: R$ {data.total.toFixed(2)}
-                  </CardDescription>
-                </div>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant='outline'
-                        size='sm'
-                        onClick={() => handleExportCSV(category)}
-                        disabled={isBusy}
-                      >
-                        <Download className='w-4 h-4' />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className='text-sm'>Exportar</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className='rounded-md border'>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      {visibleColumns.map((col) => (
-                        <TableHead key={col}>{col}</TableHead>
-                      ))}
-                      <TableHead className='text-right'>Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.items.length === 0 ? (
-                      <TableRow>
-                        <TableCell
-                          colSpan={visibleColumns.length + 1}
-                          className='text-center text-muted-foreground'
+          return (
+            <Card key={category}>
+              <CardHeader>
+                <div className='flex items-center justify-between'>
+                  <div>
+                    <CardTitle>{category}</CardTitle>
+                    <CardDescription>
+                      {data.itemCount} itens • Total: R$ {data.total.toFixed(2)}
+                    </CardDescription>
+                  </div>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          onClick={() => handleExportCSV(category)}
+                          disabled={isBusy}
                         >
-                          Nenhum item nesta categoria
-                        </TableCell>
+                          <Download className='w-4 h-4' />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className='text-sm'>Exportar</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className='rounded-md border'>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        {visibleColumns.map((col) => (
+                          <TableHead key={col}>{col}</TableHead>
+                        ))}
+                        <TableHead className='text-right'>Ações</TableHead>
                       </TableRow>
-                    ) : (
-                      data.items.map((item, index) => (
-                        <TableRow key={index}>
-                          {visibleColumns.includes('Código') && (
-                            <TableCell className='font-mono'>
-                              <Badge>{item.code}</Badge>
-                            </TableCell>
-                          )}
-                          {visibleColumns.includes('Nome') && (
-                            <TableCell>{item.name}</TableCell>
-                          )}
-                          {visibleColumns.includes('Cor') && (
-                            <TableCell>{item.color}</TableCell>
-                          )}
-                          {visibleColumns.includes('Marca') && (
-                            <TableCell>{item.brand}</TableCell>
-                          )}
-                          {visibleColumns.includes('Dimensão') && (
-                            <TableCell>{item.dimension}</TableCell>
-                          )}
-                          {visibleColumns.includes('Ambiente') && (
-                            <TableCell>{item.environment}</TableCell>
-                          )}
-                          {visibleColumns.includes('Observações') && (
-                            <TableCell>{item.observations}</TableCell>
-                          )}
-                          {visibleColumns.includes('Link') && (
-                            <TableCell>
-                              {item.link && (
-                                <a
-                                  href={item.link}
-                                  target='_blank'
-                                  rel='noopener noreferrer'
-                                  className='text-blue-500 hover:underline text-sm'
-                                >
-                                  Link
-                                </a>
-                              )}
-                            </TableCell>
-                          )}
-                          {visibleColumns.includes('Valor') && (
-                            <TableCell>{item.value}</TableCell>
-                          )}
-                          {visibleColumns.includes('Quantidade') && (
-                            <TableCell>{item.quantity}</TableCell>
-                          )}
-                          <TableCell className='text-right'>
-                            <div className='flex items-center justify-end gap-2'>
-                              <Button
-                                variant='ghost'
-                                size='sm'
-                                onClick={() => handleIsolate(item.ids[0])}
-                                title='Isolar'
-                              >
-                                <Eye className='w-4 h-4' />
-                              </Button>
-                              <Button
-                                variant='ghost'
-                                size='sm'
-                                onClick={() =>
-                                  handleDelete(item.ids[0], item.name)
-                                }
-                                title='Remover'
-                              >
-                                <Trash2 className='w-4 h-4 text-destructive' />
-                              </Button>
-                            </div>
+                    </TableHeader>
+                    <TableBody>
+                      {data.items.length === 0 ? (
+                        <TableRow>
+                          <TableCell
+                            colSpan={visibleColumns.length + 1}
+                            className='text-center text-muted-foreground'
+                          >
+                            Nenhum item nesta categoria
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
+                      ) : (
+                        data.items.map((item, index) => (
+                          <TableRow key={index}>
+                            {visibleColumns.includes('Código') && (
+                              <TableCell className='font-mono'>
+                                <Badge>{item.code}</Badge>
+                              </TableCell>
+                            )}
+                            {visibleColumns.includes('Nome') && (
+                              <TableCell>{item.name}</TableCell>
+                            )}
+                            {visibleColumns.includes('Cor') && (
+                              <TableCell>{item.color}</TableCell>
+                            )}
+                            {visibleColumns.includes('Marca') && (
+                              <TableCell>{item.brand}</TableCell>
+                            )}
+                            {visibleColumns.includes('Dimensão') && (
+                              <TableCell>{item.dimension}</TableCell>
+                            )}
+                            {visibleColumns.includes('Ambiente') && (
+                              <TableCell>{item.environment}</TableCell>
+                            )}
+                            {visibleColumns.includes('Observações') && (
+                              <TableCell>{item.observations}</TableCell>
+                            )}
+                            {visibleColumns.includes('Link') && (
+                              <TableCell>
+                                {item.link && (
+                                  <a
+                                    href={item.link}
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    className='text-blue-500 hover:underline text-sm'
+                                  >
+                                    Link
+                                  </a>
+                                )}
+                              </TableCell>
+                            )}
+                            {visibleColumns.includes('Valor') && (
+                              <TableCell>{item.value}</TableCell>
+                            )}
+                            {visibleColumns.includes('Quantidade') && (
+                              <TableCell>{item.quantity}</TableCell>
+                            )}
+                            <TableCell className='text-right'>
+                              <div className='flex items-center justify-end gap-2'>
+                                <Button
+                                  variant='ghost'
+                                  size='sm'
+                                  onClick={() => handleIsolate(item.ids[0])}
+                                  title='Isolar'
+                                >
+                                  <Eye className='w-4 h-4' />
+                                </Button>
+                                <Button
+                                  variant='ghost'
+                                  size='sm'
+                                  onClick={() =>
+                                    handleDelete(item.ids[0], item.name)
+                                  }
+                                  title='Remover'
+                                >
+                                  <Trash2 className='w-4 h-4 text-destructive' />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })
+      )}
 
       {/* Export Format Dialog (Individual) */}
       <ExportFormatDialog

@@ -10,7 +10,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 interface ViewConfigMenuProps {
-  menuItems?: Array<{ label: string; action: () => void; hasDivider: boolean }>;
+  menuItems?: Array<{
+    label: string;
+    action: () => void;
+    hasDivider: boolean;
+    icon?: React.ReactNode;
+  }>;
 }
 
 export function ViewConfigMenu({ menuItems = [] }: ViewConfigMenuProps) {
@@ -25,7 +30,8 @@ export function ViewConfigMenu({ menuItems = [] }: ViewConfigMenuProps) {
         {menuItems.map((item, index) => (
           <React.Fragment key={index}>
             <DropdownMenuItem className='cursor-pointer' onClick={item.action}>
-              {item.label}
+              {item.icon && <span className='mr-2'>{item.icon}</span>}
+              <span>{item.label}</span>
             </DropdownMenuItem>
             {item.hasDivider && (
               <hr className='my-1 border-muted-foreground/20' />
