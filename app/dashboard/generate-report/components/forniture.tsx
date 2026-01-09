@@ -150,16 +150,6 @@ export function FurnitureReports() {
       <div className='flex items-center justify-between'>
         <div className='flex items-center justify-between gap-2 w-full'>
           <h2 className='text-lg font-bold'>Mobiliário</h2>
-          <ViewConfigMenu
-            menuItems={[
-              {
-                icon: <FileSpreadsheet className='w-4 h-4' />,
-                label: 'Exportar Unificado',
-                action: () => setExportPopoverOpen(true),
-                hasDivider: false,
-              },
-            ]}
-          />
         </div>
 
         <div className='flex items-center gap-2'>
