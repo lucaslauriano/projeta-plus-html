@@ -84,13 +84,38 @@ export function useFurniture() {
       response: FurnitureAttributesResponse
     ) => {
       clearPending();
-      // Limpa atributos se não tiver sucesso OU se não tiver nada selecionado
-      if (!response.success || !response.selected) {
+
+      // Se não tem nada selecionado, limpa tudo
+      if (!response.selected) {
         setAttributes(null);
         setDimensions(null);
         return;
       }
 
+      // Se tem algo selecionado mas sem sucesso (dados não carregados ainda)
+      // Cria um objeto mínimo apenas com selected: true para habilitar o botão
+      if (!response.success && response.selected) {
+        setAttributes({
+          selected: true,
+          entity_id: undefined,
+          name: '',
+          color: '',
+          brand: '',
+          type: '',
+          dimension_format: 'L x D x H',
+          dimension: '',
+          environment: '',
+          value: '',
+          link: '',
+          observations: '',
+          width: '',
+          depth: '',
+          height: '',
+        });
+        return;
+      }
+
+      // Se tem sucesso e está selecionado, carrega todos os dados
       const nextAttributes: FurnitureData = {
         selected: response.selected ?? false,
         entity_id: response.entity_id,

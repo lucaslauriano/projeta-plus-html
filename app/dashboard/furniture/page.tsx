@@ -96,18 +96,18 @@ export default function FurnitureDashboardPage() {
     color,
     brand,
     type,
-    dimensionFormat,
-    finalDimension,
-    environment,
     value,
     link,
-    observations,
     width,
     depth,
     height,
     keepWidth,
     keepDepth,
     keepHeight,
+    environment,
+    observations,
+    finalDimension,
+    dimensionFormat,
   } = furnitureForm;
 
   const typeOptions = useMemo(
@@ -116,6 +116,8 @@ export default function FurnitureDashboardPage() {
   );
 
   const isSelected = attributes?.selected ?? false;
+
+  console.log('attributes', attributes);
 
   useEffect(() => {
     setFurnitureForm((prev) => {

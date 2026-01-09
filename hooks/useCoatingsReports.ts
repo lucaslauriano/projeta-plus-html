@@ -106,7 +106,6 @@ export function useCoatingsReports() {
     [callSketchupMethod, isAvailable]
   );
 
-  // Local operations
   const updateItem = useCallback(
     (index: number, updates: Partial<CoatingItem>) => {
       const newData = [...coatingsData];
@@ -137,10 +136,6 @@ export function useCoatingsReports() {
     [coatingsData, saveData]
   );
 
-  // ========================================
-  // HANDLERS
-  // ========================================
-
   useEffect(() => {
     const cleanup = registerHandlers({
       handleLoadCoatingsDataResult: (response) => {
@@ -165,7 +160,7 @@ export function useCoatingsReports() {
         const result = response as AddMaterialResult;
         console.log('[CoatingsReports] Add material result:', result);
         setIsBusy(false);
-        
+
         if (result.success && result.material) {
           const newItem: CoatingItem = {
             ambiente: '',
@@ -176,18 +171,15 @@ export function useCoatingsReports() {
             acrescimo: 0,
             total: result.material.area,
           };
-          
+
           setCoatingsData((prev) => {
             const newData = [...prev, newItem];
-            // Salvar usando o método direto
             callSketchupMethod('saveCoatingsData', { data: newData });
             return newData;
           });
           toast.success(`Material "${result.material.name}" adicionado!`);
         } else {
-          toast.error(
-            result.message || 'Erro ao adicionar material'
-          );
+          toast.error(result.message || 'Erro ao adicionar material');
         }
       },
 
@@ -228,10 +220,6 @@ export function useCoatingsReports() {
     }
   }, [isAvailable, loadData]);
 
-  // ========================================
-  // COMPUTED VALUES
-  // ========================================
-
   const summary = {
     totalItems: coatingsData.length,
     totalArea: parseFloat(
@@ -242,25 +230,21 @@ export function useCoatingsReports() {
     ).size,
   };
 
-  // ========================================
-  // RETURN
-  // ========================================
-
   return {
     // State
-    coatingsData,
-    summary,
     isBusy,
+    summary,
     isLoading,
     isAvailable,
+    coatingsData,
 
     // Methods
     loadData,
     saveData,
-    addSelectedMaterial,
+    exportCSV,
     updateItem,
     removeItem,
-    exportCSV,
     exportXLSX,
+    addSelectedMaterial,
   };
 }
