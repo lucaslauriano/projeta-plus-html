@@ -14,21 +14,20 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  Eye,
-  Trash2,
   Loader2,
   Download,
-  FileSpreadsheet,
-  ChevronDown,
   Columns3,
   FileSearch,
+  ChevronDown,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formatCurrency } from '@/lib/format';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
 import {
   Popover,
@@ -143,7 +142,7 @@ export function FurnitureReports() {
         })),
       ];
     });
-
+  console.log(consolidatedData);
   return (
     <div className='space-y-4'>
       <div className='flex items-center justify-between'>
@@ -200,10 +199,10 @@ export function FurnitureReports() {
             <div className='flex lg:hidden'>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='outline' size='sm' className='gap-2'>
-                    <span>Categorias</span>
+                  <Button variant='outline' size='sm' className=''>
+                    <span>Grupos</span>
                     {selectedCategories.length > 0 && (
-                      <Badge variant='secondary' className='ml-1'>
+                      <Badge variant='secondary' className=''>
                         {selectedCategories.length}
                       </Badge>
                     )}
@@ -254,7 +253,6 @@ export function FurnitureReports() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Export Popover */}
               <Popover
                 open={exportPopoverOpen}
                 onOpenChange={setExportPopoverOpen}
@@ -294,7 +292,6 @@ export function FurnitureReports() {
             </div>
           </div>
 
-          {/* Área da tabela com estados condicionais */}
           <div className=''>
             {selectedCategories.length === 0 ? (
               <div className='py-6 px-2'>
@@ -320,14 +317,12 @@ export function FurnitureReports() {
                     {visibleColumns.map((col) => (
                       <TableHead key={col}>{col}</TableHead>
                     ))}
-                    <TableHead className='text-right'>Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {/* eslint-disable @typescript-eslint/no-explicit-any */}
                   {consolidatedData.map((row, index) => {
                     if (row.isHeader) {
-                      // Linha de cabeçalho da categoria
                       const header = row as {
                         isHeader: true;
                         category: string;
@@ -346,8 +341,11 @@ export function FurnitureReports() {
                             <div className='flex items-center justify-between'>
                               <span>{header.category}</span>
                               <span className='text-sm text-muted-foreground'>
-                                {header.itemCount} itens • Total: R${' '}
-                                {header.total.toFixed(2)}
+                                {header.itemCount} itens • Total:{' '}
+                                {formatCurrency(header.total, {
+                                  locale: 'pt-BR',
+                                  currency: 'BRL',
+                                })}
                               </span>
                             </div>
                           </TableCell>
@@ -355,7 +353,6 @@ export function FurnitureReports() {
                       );
                     }
 
-                    // Linhas de dados
                     const item = row as any;
                     return (
                       <TableRow key={`item-${item.category}-${index}`}>
@@ -397,12 +394,16 @@ export function FurnitureReports() {
                           </TableCell>
                         )}
                         {visibleColumns.includes('Valor') && (
-                          <TableCell>{item.value}</TableCell>
+                          <TableCell>
+                            {item?.value ? formatCurrency(item?.value) : '-'}
+                          </TableCell>
                         )}
                         {visibleColumns.includes('Quantidade') && (
-                          <TableCell>{item.quantity}</TableCell>
+                          <TableCell className='text-center'>
+                            {item.quantity}
+                          </TableCell>
                         )}
-                        <TableCell className='text-right'>
+                        {/* <TableCell className='text-right'>
                           <div className='flex items-center justify-end gap-2'>
                             <Button
                               variant='ghost'
@@ -423,7 +424,7 @@ export function FurnitureReports() {
                               <Trash2 className='w-4 h-4 text-destructive' />
                             </Button>
                           </div>
-                        </TableCell>
+                        </TableCell> */}
                       </TableRow>
                     );
                   })}

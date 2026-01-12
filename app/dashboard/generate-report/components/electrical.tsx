@@ -135,7 +135,7 @@ export default function ElectricalReport() {
                   <Info className='h-4 w-4 text-muted-foreground cursor-help' />
                 </TooltipTrigger>
                 <TooltipContent className='max-w-[230px]'>
-                  <p>Selecione o tipo de relatório que deseja visualizar</p>
+                  <p>Selecione o grupo de relatório que deseja visualizar</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

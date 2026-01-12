@@ -479,14 +479,14 @@ export default function FurnitureDashboardPage() {
               <div>
                 <Select
                   value={type}
-                  label='Tipo'
+                  label='Grupo'
                   onValueChange={(selected) =>
                     setFurnitureField('type', selected)
                   }
                   disabled={isBusy}
                 >
                   <SelectTrigger className='w-full'>
-                    <SelectValue placeholder='Selecione o tipo' />
+                    <SelectValue placeholder='Selecione o grupo' />
                   </SelectTrigger>
                   <SelectContent>
                     {typeOptions.map((option) => (
