@@ -64,10 +64,6 @@ export function useElectricalReports() {
   const [isBusy, setIsBusy] = useState(false);
   const isInitialMount = useRef(true);
 
-  // ========================================
-  // HANDLERS
-  // ========================================
-
   useEffect(() => {
     const cleanup = registerHandlers({
       handleGetElectricalReportTypesResult: (response) => {
@@ -76,7 +72,6 @@ export function useElectricalReports() {
         if (result.success) {
           const types = result.types || [];
           setReportTypes(types);
-          // Só seta o primeiro tipo se ainda não houver um selecionado
           if (types.length > 0) {
             setSelectedReportType((current) => current || types[0].id);
           }

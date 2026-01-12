@@ -34,36 +34,32 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { DeleteConfirmDialog } from './delete-confirm-dialog';
 import { EmptyState } from '@/app/dashboard/generate-report/components/empty-state';
 
 export function FurnitureReports() {
   const {
     isBusy,
+    exportXLSX,
     categories,
     isAvailable,
     columnPrefs,
     categoryData,
-    exportXLSX,
     getCategoryData,
     saveColumnPreferences,
-    isolateFurnitureItem,
-    deleteFurnitureItem,
   } = useFurnitureReports();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [exportPopoverOpen, setExportPopoverOpen] = useState(false);
-  const [deleteDialog, setDeleteDialog] = useState<{
-    open: boolean;
-    itemId: number | null;
-    itemName: string;
-  }>({
-    open: false,
-    itemId: null,
-    itemName: '',
-  });
+  // const [deleteDialog, setDeleteDialog] = useState<{
+  //   open: boolean;
+  //   itemId: number | null;
+  //   itemName: string;
+  // }>({
+  //   open: false,
+  //   itemId: null,
+  //   itemName: '',
+  // });
 
-  // Carrega dados automaticamente quando uma categoria é selecionada
   const handleCategoryToggle = (category: string, checked: boolean) => {
     const newSelected = checked
       ? [...selectedCategories, category]
@@ -71,7 +67,6 @@ export function FurnitureReports() {
 
     setSelectedCategories(newSelected);
 
-    // Carregar dados se ainda não estiver carregado
     if (checked && !categoryData[category]) {
       console.log('[Forniture] Auto-loading data for category:', category);
       getCategoryData(category);
@@ -89,52 +84,48 @@ export function FurnitureReports() {
   const handleExport = (format: 'csv' | 'xlsx') => {
     if (selectedCategories.length === 0) return;
 
-    // Exportação consolidada das categorias selecionadas
     exportXLSX(selectedCategories, format, true);
     setExportPopoverOpen(false);
   };
 
-  const handleIsolate = (entityId: number) => {
-    isolateFurnitureItem(entityId);
-  };
+  // const handleIsolate = (entityId: number) => {
+  //   isolateFurnitureItem(entityId);
+  // };
 
-  const handleDelete = (entityId: number, itemName: string) => {
-    setDeleteDialog({
-      open: true,
-      itemId: entityId,
-      itemName,
-    });
-  };
+  // const handleDelete = (entityId: number, itemName: string) => {
+  //   setDeleteDialog({
+  //     open: true,
+  //     itemId: entityId,
+  //     itemName,
+  //   });
+  // };
 
-  const confirmDelete = () => {
-    if (deleteDialog.itemId) {
-      deleteFurnitureItem(deleteDialog.itemId);
-      setDeleteDialog({ open: false, itemId: null, itemName: '' });
-    }
-  };
+  // const confirmDelete = () => {
+  //   if (deleteDialog.itemId) {
+  //     deleteFurnitureItem(deleteDialog.itemId);
+  //     setDeleteDialog({ open: false, itemId: null, itemName: '' });
+  //   }
+  // };
 
-  const cancelDelete = () => {
-    setDeleteDialog({ open: false, itemId: null, itemName: '' });
-  };
+  // const cancelDelete = () => {
+  //   setDeleteDialog({ open: false, itemId: null, itemName: '' });
+  // };
 
   const visibleColumns = Object.keys(columnPrefs).filter(
     (col) => columnPrefs[col] !== false
   );
 
-  // Consolidar dados de todas as categorias selecionadas em uma única tabela
   const consolidatedData = selectedCategories
-    .filter((cat) => categoryData[cat]) // Apenas categorias com dados carregados
+    .filter((cat) => categoryData[cat])
     .flatMap((category) => {
       const data = categoryData[category];
       return [
-        // Linha de cabeçalho da categoria
         {
           isHeader: true,
           category: category,
           itemCount: data.itemCount,
           total: data.total,
         },
-        // Itens da categoria
         ...data.items.map((item) => ({
           ...item,
           isHeader: false,
@@ -142,7 +133,7 @@ export function FurnitureReports() {
         })),
       ];
     });
-  console.log(consolidatedData);
+
   return (
     <div className='space-y-4'>
       <div className='flex items-center justify-between'>
@@ -160,11 +151,9 @@ export function FurnitureReports() {
         </div>
       </div>
 
-      {/* Card com controles sempre visíveis e tabela/empty state dentro */}
       <Card>
         <CardContent className='p-0'>
           <div className='flex items-center justify-between gap-2 pb-4 px-2 flex-wrap'>
-            {/* Desktop: Tabs - oculta quando não cabe ou mobile */}
             <div className='hidden lg:flex items-center gap-1 flex-wrap flex-1 min-w-0'>
               {categories.map((category) => {
                 const isSelected = selectedCategories.includes(category);
@@ -229,7 +218,6 @@ export function FurnitureReports() {
             </div>
 
             <div className='flex items-center gap-2 ml-auto'>
-              {/* Customize Columns */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant='outline' size='sm' className='gap-2'>
@@ -403,28 +391,30 @@ export function FurnitureReports() {
                             {item.quantity}
                           </TableCell>
                         )}
-                        {/* <TableCell className='text-right'>
-                          <div className='flex items-center justify-end gap-2'>
-                            <Button
-                              variant='ghost'
-                              size='sm'
-                              onClick={() => handleIsolate(item.ids[0])}
-                              title='Isolar'
-                            >
-                              <Eye className='w-4 h-4' />
-                            </Button>
-                            <Button
-                              variant='ghost'
-                              size='sm'
-                              onClick={() =>
-                                handleDelete(item.ids[0], item.name)
-                              }
-                              title='Remover'
-                            >
-                              <Trash2 className='w-4 h-4 text-destructive' />
-                            </Button>
-                          </div>
-                        </TableCell> */}
+                        {/* 
+                          <TableCell className='text-right'>
+                            <div className='flex items-center justify-end gap-2'>
+                              <Button
+                                variant='ghost'
+                                size='sm'
+                                onClick={() => handleIsolate(item.ids[0])}
+                                title='Isolar'
+                              >
+                                <Eye className='w-4 h-4' />
+                              </Button>
+                              <Button
+                                variant='ghost'
+                                size='sm'
+                                onClick={() =>
+                                  handleDelete(item.ids[0], item.name)
+                                }
+                                title='Remover'
+                              >
+                                <Trash2 className='w-4 h-4 text-destructive' />
+                              </Button>
+                            </div>
+                          </TableCell> 
+                        */}
                       </TableRow>
                     );
                   })}
@@ -436,13 +426,13 @@ export function FurnitureReports() {
       </Card>
 
       {/* Delete Confirmation Dialog */}
-      <DeleteConfirmDialog
+      {/* <DeleteConfirmDialog
         open={deleteDialog.open}
         title='Confirmar Exclusão'
         description={`Deseja realmente remover o item "${deleteDialog.itemName}"? Esta ação não pode ser desfeita.`}
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
-      />
+      /> */}
     </div>
   );
 }
