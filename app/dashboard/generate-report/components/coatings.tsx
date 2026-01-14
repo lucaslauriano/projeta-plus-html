@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useCoatingsReports } from '@/hooks/useCoatingsReports';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table';
-import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Loader2,
@@ -22,16 +22,23 @@ import {
   Plus,
   Trash2,
   FolderOpen,
+  Info,
+  Columns3,
+  ChevronDown,
+  Download,
 } from 'lucide-react';
-import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
-import { EmptyState } from './empty-state';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+} from '@/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { EmptyState } from './empty-state';
 
 const AVAILABLE_COLUMNS = [
   { id: 'ambiente', label: 'Ambiente' },
@@ -49,69 +56,54 @@ export default function CoatingsReport() {
     summary,
     isBusy,
     isAvailable,
-    addSelectedMaterial,
+    exportCSV,
     updateItem,
     removeItem,
-    exportCSV,
     exportXLSX,
+    addSelectedMaterial,
   } = useCoatingsReports();
 
   // Estados locais
-  const [searchTerm, setSearchTerm] = useState('');
-  const [environmentFilter, setEnvironmentFilter] = useState('__all__');
   const [groupByEnvironment, setGroupByEnvironment] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>(
     AVAILABLE_COLUMNS.map((c) => c.id)
   );
+  const [exportPopoverOpen, setExportPopoverOpen] = useState(false);
 
   const hasData = coatingsData && coatingsData.length > 0;
-
-  // Filtros
-  const filteredData = useMemo(() => {
-    return coatingsData.filter((item) => {
-      const matchSearch =
-        !searchTerm ||
-        item.material.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchEnvironment =
-        environmentFilter === '__all__' || item.ambiente === environmentFilter;
-      return matchSearch && matchEnvironment;
-    });
-  }, [coatingsData, searchTerm, environmentFilter]);
 
   // Dados agrupados
   const groupedData = useMemo(() => {
     if (!groupByEnvironment) return null;
 
-    const groups: { [key: string]: typeof filteredData } = {};
-    filteredData.forEach((item) => {
+    const groups: { [key: string]: typeof coatingsData } = {};
+    coatingsData.forEach((item) => {
       const env = item.ambiente || 'Sem Ambiente';
       if (!groups[env]) groups[env] = [];
       groups[env].push(item);
     });
     return groups;
-  }, [filteredData, groupByEnvironment]);
-
-  // Ambientes únicos para filtro
-  const uniqueEnvironments = useMemo(() => {
-    return Array.from(new Set(coatingsData.map((item) => item.ambiente)))
-      .filter(Boolean)
-      .sort();
-  }, [coatingsData]);
+  }, [coatingsData, groupByEnvironment]);
 
   // Handlers
   const handleAddMaterial = () => {
     addSelectedMaterial();
   };
 
-  const handleExportCSV = () => {
-    if (!hasData || isBusy) return;
-    exportCSV(coatingsData, selectedColumns);
-  };
+  const handleExport = useCallback(
+    async (format: 'csv' | 'xlsx') => {
+      if (!hasData || isBusy) return;
 
-  const handleExportXLSX = () => {
-    if (!hasData || isBusy) return;
-    exportXLSX(coatingsData, selectedColumns);
-  };
+      if (format === 'csv') {
+        await exportCSV(coatingsData, selectedColumns);
+      } else {
+        await exportXLSX(coatingsData, selectedColumns);
+      }
+
+      setExportPopoverOpen(false);
+    },
+    [hasData, isBusy, coatingsData, selectedColumns, exportCSV, exportXLSX]
+  );
 
   const handleRemoveItem = (index: number) => {
     if (confirm('Deseja realmente remover este item?')) {
@@ -119,86 +111,43 @@ export default function CoatingsReport() {
     }
   };
 
-  const toggleColumn = (columnId: string) => {
+  const handleColumnToggle = useCallback((column: string, checked: boolean) => {
     setSelectedColumns((prev) =>
-      prev.includes(columnId)
-        ? prev.filter((id) => id !== columnId)
-        : [...prev, columnId]
+      checked ? [...prev, column] : prev.filter((id) => id !== column)
     );
-  };
+  }, []);
 
   const isColumnVisible = (columnId: string) =>
     selectedColumns.includes(columnId);
 
   return (
     <div className='space-y-4'>
-      {/* Header */}
       <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center justify-between gap-2 w-full'>
           <h2 className='text-lg font-bold'>Revestimentos</h2>
         </div>
-        <ViewConfigMenu
-          menuItems={[
-            {
-              icon: <FileSpreadsheet className='w-4 h-4' />,
-              label: 'Exportar CSV',
-              action: handleExportCSV,
-              hasDivider: false,
-            },
-            {
-              icon: <FileSpreadsheet className='w-4 h-4' />,
-              label: 'Exportar XLSX',
-              action: handleExportXLSX,
-              hasDivider: false,
-            },
-          ]}
-        />
+
+        <div className='flex items-center gap-2'>
+          {!isAvailable && (
+            <Badge variant='outline' className='text-xs'>
+              Modo Simulação
+            </Badge>
+          )}
+          {isBusy && <Loader2 className='w-4 h-4 animate-spin' />}
+        </div>
       </div>
 
-      {/* Status do SketchUp */}
-      {!isAvailable && (
-        <Card className='border-destructive'>
-          <CardContent className='pt-6'>
-            <p className='text-sm text-destructive'>
-              ⚠️ SketchUp não detectado. Abra o arquivo no SketchUp para
-              visualizar os dados.
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Controles */}
       <Card>
-        <CardContent className=' space-y-4'>
-          {/* Filtros */}
+        <CardContent className='space-y-4'>
+          <div className='p-3 bg-muted rounded-md'>
+            <p className='text-xs text-muted-foreground'>
+              <Info className='w-4 h-4 inline mr-2' /> Use o conta-gotas
+              (Material Eyedropper) do SketchUp para selecionar um material e
+              clique em &quot;Adicionar Material&quot;. O acréscimo percentual é
+              calculado automaticamente no total.
+            </p>
+          </div>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-            <div className='space-y-2'>
-              <label className='text-sm font-medium'>Buscar Material</label>
-              <Input
-                placeholder='Digite para buscar...'
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div className='space-y-2'>
-              <Select
-                label='Filtrar por Ambiente'
-                value={environmentFilter}
-                onValueChange={setEnvironmentFilter}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder='Todos os ambientes' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='__all__'>Todos os ambientes</SelectItem>
-                  {uniqueEnvironments.map((env) => (
-                    <SelectItem key={env} value={env}>
-                      {env}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
             <div className='space-y-2'>
               <Checkbox
                 id='groupByEnv'
@@ -210,347 +159,330 @@ export default function CoatingsReport() {
               />
             </div>
           </div>
-
-          {/* Ações */}
-          <div className='flex gap-2 pt-2 '>
-            <Button
-              onClick={handleAddMaterial}
-              disabled={!isAvailable || isBusy}
-              className='w-full gap-2'
-            >
-              <Plus className='w-4 h-4' />
-              Adicionar Material
-            </Button>
-          </div>
         </CardContent>
       </Card>
 
-      {/* Dados */}
-      {isBusy && !hasData ? (
-        <Card>
-          <CardContent className='flex items-center justify-center py-6'>
-            <Loader2 className='h-8 w-8 animate-spin text-primary' />
-            <span className='ml-2'>Carregando dados...</span>
-          </CardContent>
-        </Card>
-      ) : !hasData ? (
-        <EmptyState
-          icon={Layers}
-          title='Nenhum revestimento adicionado'
-          description='Use o conta-gotas do SketchUp para selecionar um material e clique em "Adicionar Material" para começar.'
-        />
-      ) : (
-        <Card>
-          <CardHeader>
-            <div className='flex items-center justify-between'>
-              <CardTitle>Quantitativo de Materiais</CardTitle>
-              <div className='flex gap-2'>
-                <Badge variant='outline'>{summary.totalItems} itens</Badge>
-                <Badge variant='outline'>{summary.totalArea}m² total</Badge>
-                {summary.uniqueEnvironments > 0 && (
-                  <Badge variant='outline'>
-                    {summary.uniqueEnvironments} ambientes
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {/* Seleção de Colunas */}
-            <div className='mb-4 p-3 bg-muted rounded-md'>
-              <p className='text-sm font-medium mb-2'>Colunas Visíveis:</p>
-              <div className='flex flex-wrap gap-3'>
-                {AVAILABLE_COLUMNS.map((col) => (
-                  <div key={col.id} className='flex items-center gap-2'>
-                    <Checkbox
-                      id={`col-${col.id}`}
-                      checked={isColumnVisible(col.id)}
-                      onCheckedChange={() => toggleColumn(col.id)}
-                    />
-                    <label
-                      htmlFor={`col-${col.id}`}
-                      className='text-xs cursor-pointer'
-                    >
-                      {col.label}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Tabela */}
-            <div className='rounded-md border max-h-[600px] overflow-auto'>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    {isColumnVisible('ambiente') && (
-                      <TableHead>Ambiente</TableHead>
-                    )}
-                    {isColumnVisible('material') && (
-                      <TableHead>Material</TableHead>
-                    )}
-                    {isColumnVisible('marca') && <TableHead>Marca</TableHead>}
-                    {isColumnVisible('acabamento') && (
-                      <TableHead>Acabamento</TableHead>
-                    )}
-                    {isColumnVisible('area') && (
-                      <TableHead>Área (m²)</TableHead>
-                    )}
-                    {isColumnVisible('acrescimo') && (
-                      <TableHead>Acréscimo (%)</TableHead>
-                    )}
-                    {isColumnVisible('total') && (
-                      <TableHead>Total (m²)</TableHead>
-                    )}
-                    <TableHead className='w-[100px]'>Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {groupByEnvironment && groupedData
-                    ? Object.entries(groupedData).map(([env, items]) => (
-                        <React.Fragment key={env}>
-                          <TableRow className='bg-muted font-semibold'>
-                            <TableCell colSpan={selectedColumns.length + 1}>
-                              <FolderOpen className='w-4 h-4 inline mr-2' />
-                              {env} ({items.length} itens)
-                            </TableCell>
-                          </TableRow>
-                          {items.map((item) => {
-                            const originalIndex = coatingsData.indexOf(item);
-                            return (
-                              <TableRow key={originalIndex}>
-                                {isColumnVisible('ambiente') && (
-                                  <TableCell>
-                                    <Input
-                                      value={item.ambiente}
-                                      onChange={(e) =>
-                                        updateItem(originalIndex, {
-                                          ambiente: e.target.value,
-                                        })
-                                      }
-                                      className='h-8'
-                                    />
-                                  </TableCell>
-                                )}
-                                {isColumnVisible('material') && (
-                                  <TableCell>
-                                    <Input
-                                      value={item.material}
-                                      onChange={(e) =>
-                                        updateItem(originalIndex, {
-                                          material: e.target.value,
-                                        })
-                                      }
-                                      className='h-8'
-                                    />
-                                  </TableCell>
-                                )}
-                                {isColumnVisible('marca') && (
-                                  <TableCell>
-                                    <Input
-                                      value={item.marca}
-                                      onChange={(e) =>
-                                        updateItem(originalIndex, {
-                                          marca: e.target.value,
-                                        })
-                                      }
-                                      className='h-8'
-                                    />
-                                  </TableCell>
-                                )}
-                                {isColumnVisible('acabamento') && (
-                                  <TableCell>
-                                    <Input
-                                      value={item.acabamento}
-                                      onChange={(e) =>
-                                        updateItem(originalIndex, {
-                                          acabamento: e.target.value,
-                                        })
-                                      }
-                                      className='h-8'
-                                    />
-                                  </TableCell>
-                                )}
-                                {isColumnVisible('area') && (
-                                  <TableCell>
-                                    <Badge variant='secondary'>
-                                      {item.area}
-                                    </Badge>
-                                  </TableCell>
-                                )}
-                                {isColumnVisible('acrescimo') && (
-                                  <TableCell>
-                                    <Input
-                                      type='number'
-                                      value={item.acrescimo}
-                                      onChange={(e) =>
-                                        updateItem(originalIndex, {
-                                          acrescimo:
-                                            parseFloat(e.target.value) || 0,
-                                        })
-                                      }
-                                      className='h-8 w-20'
-                                    />
-                                  </TableCell>
-                                )}
-                                {isColumnVisible('total') && (
-                                  <TableCell>
-                                    <Badge>{item.total}</Badge>
-                                  </TableCell>
-                                )}
-                                <TableCell>
-                                  <Button
-                                    variant='ghost'
-                                    size='sm'
-                                    onClick={() =>
-                                      handleRemoveItem(originalIndex)
-                                    }
-                                  >
-                                    <Trash2 className='w-4 h-4 text-destructive' />
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </React.Fragment>
-                      ))
-                    : filteredData.map((item) => {
-                        const originalIndex = coatingsData.indexOf(item);
-                        return (
-                          <TableRow key={originalIndex}>
-                            {isColumnVisible('ambiente') && (
-                              <TableCell>
-                                <Input
-                                  value={item.ambiente}
-                                  onChange={(e) =>
-                                    updateItem(originalIndex, {
-                                      ambiente: e.target.value,
-                                    })
-                                  }
-                                  className='h-8'
-                                />
-                              </TableCell>
-                            )}
-                            {isColumnVisible('material') && (
-                              <TableCell>
-                                <Input
-                                  value={item.material}
-                                  onChange={(e) =>
-                                    updateItem(originalIndex, {
-                                      material: e.target.value,
-                                    })
-                                  }
-                                  className='h-8'
-                                />
-                              </TableCell>
-                            )}
-                            {isColumnVisible('marca') && (
-                              <TableCell>
-                                <Input
-                                  value={item.marca}
-                                  onChange={(e) =>
-                                    updateItem(originalIndex, {
-                                      marca: e.target.value,
-                                    })
-                                  }
-                                  className='h-8'
-                                />
-                              </TableCell>
-                            )}
-                            {isColumnVisible('acabamento') && (
-                              <TableCell>
-                                <Input
-                                  value={item.acabamento}
-                                  onChange={(e) =>
-                                    updateItem(originalIndex, {
-                                      acabamento: e.target.value,
-                                    })
-                                  }
-                                  className='h-8'
-                                />
-                              </TableCell>
-                            )}
-                            {isColumnVisible('area') && (
-                              <TableCell>
-                                <Badge variant='secondary'>{item.area}</Badge>
-                              </TableCell>
-                            )}
-                            {isColumnVisible('acrescimo') && (
-                              <TableCell>
-                                <Input
-                                  type='number'
-                                  value={item.acrescimo}
-                                  onChange={(e) =>
-                                    updateItem(originalIndex, {
-                                      acrescimo:
-                                        parseFloat(e.target.value) || 0,
-                                    })
-                                  }
-                                  className='h-8 w-20'
-                                />
-                              </TableCell>
-                            )}
-                            {isColumnVisible('total') && (
-                              <TableCell>
-                                <Badge>{item.total}</Badge>
-                              </TableCell>
-                            )}
-                            <TableCell>
-                              <Button
-                                variant='ghost'
-                                size='sm'
-                                onClick={() => handleRemoveItem(originalIndex)}
-                              >
-                                <Trash2 className='w-4 h-4 text-destructive' />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                  {/* Linha de Total */}
-                  <TableRow className='bg-muted font-semibold'>
-                    <TableCell
-                      colSpan={
-                        isColumnVisible('area')
-                          ? selectedColumns.indexOf('area') + 1
-                          : 1
+      <Card>
+        <CardContent className='p-0'>
+          <div className='flex items-center justify-between gap-2 pb-4 px-3.5 '>
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={handleAddMaterial}
+              disabled={!isAvailable || isBusy}
+              className='w-fit'
+            >
+              Adicionar
+            </Button>
+            <div className='flex items-center gap-2 ml-auto'>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='outline' size='sm' className='gap-2'>
+                    <Columns3 className='h-4 w-4' />
+                    <span className='hidden sm:inline'>Colunas</span>
+                    <ChevronDown className='h-4 w-4' />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end' className='w-[200px]'>
+                  {AVAILABLE_COLUMNS.map((column) => (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      checked={isColumnVisible(column.id)}
+                      onCheckedChange={(checked) =>
+                        handleColumnToggle(column.id, checked as boolean)
                       }
                     >
-                      TOTAL
-                    </TableCell>
-                    {isColumnVisible('area') && (
-                      <>
-                        {selectedColumns
-                          .slice(
-                            selectedColumns.indexOf('area') + 1,
-                            selectedColumns.indexOf('total')
-                          )
-                          .map((col) => (
-                            <TableCell key={col}></TableCell>
-                          ))}
-                      </>
-                    )}
-                    {isColumnVisible('total') && (
-                      <TableCell>{summary.totalArea}</TableCell>
-                    )}
-                    <TableCell></TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
+                      {column.label}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-            {/* Informação */}
-            <div className='mt-4 p-3 bg-muted rounded-md'>
-              <p className='text-xs text-muted-foreground'>
-                💡 <strong>Dica:</strong> Use o conta-gotas (Material
-                Eyedropper) do SketchUp para selecionar um material e clique em
-                &quot;Adicionar Material&quot;. O acréscimo percentual é
-                calculado automaticamente no total.
-              </p>
+              <Popover
+                open={exportPopoverOpen}
+                onOpenChange={setExportPopoverOpen}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    className='gap-2'
+                    disabled={!hasData || isBusy}
+                  >
+                    <Download className='h-4 w-4' />
+                    <span className='hidden sm:inline'>Exportar</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className='w-48' align='end'>
+                  <div className='flex flex-col gap-2'>
+                    <Button
+                      variant='ghost'
+                      className='w-full justify-start gap-2'
+                      onClick={() => handleExport('csv')}
+                    >
+                      <FileSpreadsheet className='h-4 w-4' />
+                      Exportar CSV
+                    </Button>
+                    <Button
+                      variant='ghost'
+                      className='w-full justify-start gap-2'
+                      onClick={() => handleExport('xlsx')}
+                    >
+                      <FileSpreadsheet className='h-4 w-4' />
+                      Exportar XLSX
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+
+          <div className=''>
+            {!hasData ? (
+              <div className='py-6 px-2'>
+                <EmptyState
+                  icon={Layers}
+                  title='Nenhum revestimento adicionado'
+                  description='Use o conta-gotas do SketchUp para selecionar um material e clique em "Adicionar Material" para começar.'
+                />
+              </div>
+            ) : (
+              <div className=''>
+                <Table className='border-t'>
+                  <TableHeader>
+                    <TableRow>
+                      {isColumnVisible('ambiente') && (
+                        <TableHead>Ambiente</TableHead>
+                      )}
+                      {isColumnVisible('material') && (
+                        <TableHead>Material</TableHead>
+                      )}
+                      {isColumnVisible('marca') && <TableHead>Marca</TableHead>}
+                      {isColumnVisible('acabamento') && (
+                        <TableHead>Acabamento</TableHead>
+                      )}
+                      {isColumnVisible('area') && (
+                        <TableHead>Área (m²)</TableHead>
+                      )}
+                      {isColumnVisible('acrescimo') && (
+                        <TableHead>Acréscimo (%)</TableHead>
+                      )}
+                      {isColumnVisible('total') && (
+                        <TableHead>Total (m²)</TableHead>
+                      )}
+                      <TableHead className='w-[100px]'>Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {groupByEnvironment && groupedData
+                      ? Object.entries(groupedData).map(([env, items]) => (
+                          <React.Fragment key={env}>
+                            <TableRow className='bg-muted/50 font-semibold hover:bg-muted/70'>
+                              <TableCell colSpan={selectedColumns.length + 1}>
+                                <FolderOpen className='w-4 h-4 inline mr-2' />
+                                {env} ({items.length} itens)
+                              </TableCell>
+                            </TableRow>
+                            {items.map((item) => {
+                              const originalIndex = coatingsData.indexOf(item);
+                              return (
+                                <TableRow key={originalIndex}>
+                                  {isColumnVisible('ambiente') && (
+                                    <TableCell>
+                                      <Input
+                                        value={item.ambiente}
+                                        onChange={(e) =>
+                                          updateItem(originalIndex, {
+                                            ambiente: e.target.value,
+                                          })
+                                        }
+                                        className='h-8'
+                                      />
+                                    </TableCell>
+                                  )}
+                                  {isColumnVisible('material') && (
+                                    <TableCell>
+                                      <Input
+                                        value={item.material}
+                                        onChange={(e) =>
+                                          updateItem(originalIndex, {
+                                            material: e.target.value,
+                                          })
+                                        }
+                                        className='h-8'
+                                      />
+                                    </TableCell>
+                                  )}
+                                  {isColumnVisible('marca') && (
+                                    <TableCell>
+                                      <Input
+                                        value={item.marca}
+                                        onChange={(e) =>
+                                          updateItem(originalIndex, {
+                                            marca: e.target.value,
+                                          })
+                                        }
+                                        className='h-8'
+                                      />
+                                    </TableCell>
+                                  )}
+                                  {isColumnVisible('acabamento') && (
+                                    <TableCell>
+                                      <Input
+                                        value={item.acabamento}
+                                        onChange={(e) =>
+                                          updateItem(originalIndex, {
+                                            acabamento: e.target.value,
+                                          })
+                                        }
+                                        className='h-8'
+                                      />
+                                    </TableCell>
+                                  )}
+                                  {isColumnVisible('area') && (
+                                    <TableCell>
+                                      <Badge variant='secondary'>
+                                        {item.area}
+                                      </Badge>
+                                    </TableCell>
+                                  )}
+                                  {isColumnVisible('acrescimo') && (
+                                    <TableCell>
+                                      <Input
+                                        type='number'
+                                        value={item.acrescimo}
+                                        onChange={(e) =>
+                                          updateItem(originalIndex, {
+                                            acrescimo:
+                                              parseFloat(e.target.value) || 0,
+                                          })
+                                        }
+                                        className='h-8 w-20'
+                                      />
+                                    </TableCell>
+                                  )}
+                                  {isColumnVisible('total') && (
+                                    <TableCell>
+                                      <Badge>{item.total}</Badge>
+                                    </TableCell>
+                                  )}
+                                  <TableCell>
+                                    <Button
+                                      variant='ghost'
+                                      size='sm'
+                                      onClick={() =>
+                                        handleRemoveItem(originalIndex)
+                                      }
+                                    >
+                                      <Trash2 className='w-4 h-4 text-destructive' />
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                          </React.Fragment>
+                        ))
+                      : coatingsData.map((item, originalIndex) => {
+                          return (
+                            <TableRow key={originalIndex}>
+                              {isColumnVisible('ambiente') && (
+                                <TableCell>
+                                  <Input
+                                    value={item.ambiente}
+                                    onChange={(e) =>
+                                      updateItem(originalIndex, {
+                                        ambiente: e.target.value,
+                                      })
+                                    }
+                                    className='h-8'
+                                  />
+                                </TableCell>
+                              )}
+                              {isColumnVisible('material') && (
+                                <TableCell>
+                                  <Input
+                                    value={item.material}
+                                    onChange={(e) =>
+                                      updateItem(originalIndex, {
+                                        material: e.target.value,
+                                      })
+                                    }
+                                    className='h-8'
+                                  />
+                                </TableCell>
+                              )}
+                              {isColumnVisible('marca') && (
+                                <TableCell>
+                                  <Input
+                                    value={item.marca}
+                                    onChange={(e) =>
+                                      updateItem(originalIndex, {
+                                        marca: e.target.value,
+                                      })
+                                    }
+                                    className='h-8'
+                                  />
+                                </TableCell>
+                              )}
+                              {isColumnVisible('acabamento') && (
+                                <TableCell>
+                                  <Input
+                                    value={item.acabamento}
+                                    onChange={(e) =>
+                                      updateItem(originalIndex, {
+                                        acabamento: e.target.value,
+                                      })
+                                    }
+                                    className='h-8'
+                                  />
+                                </TableCell>
+                              )}
+                              {isColumnVisible('area') && (
+                                <TableCell>
+                                  <Badge variant='secondary'>{item.area}</Badge>
+                                </TableCell>
+                              )}
+                              {isColumnVisible('acrescimo') && (
+                                <TableCell>
+                                  <Input
+                                    type='number'
+                                    value={item.acrescimo}
+                                    onChange={(e) =>
+                                      updateItem(originalIndex, {
+                                        acrescimo:
+                                          parseFloat(e.target.value) || 0,
+                                      })
+                                    }
+                                    className='h-8 w-20'
+                                  />
+                                </TableCell>
+                              )}
+                              {isColumnVisible('total') && (
+                                <TableCell>
+                                  <Badge>{item.total}</Badge>
+                                </TableCell>
+                              )}
+                              <TableCell>
+                                <Button
+                                  variant='ghost'
+                                  size='sm'
+                                  onClick={() =>
+                                    handleRemoveItem(originalIndex)
+                                  }
+                                >
+                                  <Trash2 className='w-4 h-4 text-destructive' />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

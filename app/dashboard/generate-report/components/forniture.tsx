@@ -132,7 +132,7 @@ export function FurnitureReports() {
         </div>
       </div>
 
-      <Card>
+      <Card className=''>
         <CardContent className='p-0'>
           <ReportCategoriesToolbar
             isBusy={isBusy}
@@ -149,15 +149,13 @@ export function FurnitureReports() {
 
           <div className=''>
             {selectedCategories.length === 0 ? (
-              <div className='py-6 px-2'>
-                <EmptyState
-                  icon={FileSearch}
-                  title='Sem categorias selecionadas'
-                  description='Selecione as categorias desejadas acima para visualizar os dados do seu projeto'
-                />
-              </div>
+              <EmptyState
+                icon={FileSearch}
+                title='Sem categorias selecionadas'
+                description='Selecione as categorias desejadas acima para visualizar os dados do seu projeto'
+              />
             ) : consolidatedData.length === 0 ? (
-              <div className='py-12 flex items-center justify-center'>
+              <div className='py-6 flex items-center justify-center'>
                 <div className='flex flex-col items-center gap-2'>
                   <Loader2 className='w-8 h-8 animate-spin text-muted-foreground' />
                   <p className='text-sm text-muted-foreground'>

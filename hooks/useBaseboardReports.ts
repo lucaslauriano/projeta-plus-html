@@ -162,13 +162,13 @@ export function useBaseboardReports() {
       },
     });
 
-    // Load initial data
-    if (isAvailable) {
-      getBaseboardData();
-    }
+    // Não carrega dados automaticamente - usuário deve clicar no botão
+    // if (isAvailable) {
+    //   getBaseboardData();
+    // }
 
     return cleanup;
-  }, [isAvailable, getBaseboardData]);
+  }, []);
 
   // ========================================
   // RETURN

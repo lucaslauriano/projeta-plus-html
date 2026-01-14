@@ -17,34 +17,32 @@ import { ChevronDown, Download, FileSpreadsheet, Columns3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ReportCategoriesToolbarProps {
-  categories: string[];
-  selectedCategories: string[];
-  categoryData: Record<string, unknown>;
   isBusy: boolean;
-  onCategoryToggle: (category: string, selected: boolean) => void;
-  onExport: (format: 'csv' | 'xlsx') => void;
-  exportPopoverOpen: boolean;
-  onExportPopoverChange: (open: boolean) => void;
-  // Optional column customization
+  categories: string[];
   columnPrefs?: Record<string, boolean>;
+  categoryData: Record<string, unknown>;
+  exportPopoverOpen: boolean;
+  selectedCategories: string[];
+  onExport: (format: 'csv' | 'xlsx') => void;
   onColumnToggle?: (column: string, checked: boolean) => void;
+  onCategoryToggle: (category: string, selected: boolean) => void;
+  onExportPopoverChange: (open: boolean) => void;
 }
 
 export function ReportCategoriesToolbar({
-  categories,
-  selectedCategories,
-  categoryData,
   isBusy,
-  onCategoryToggle,
-  onExport,
-  exportPopoverOpen,
-  onExportPopoverChange,
+  categories,
   columnPrefs,
+  categoryData,
+  exportPopoverOpen,
+  selectedCategories,
+  onExport,
   onColumnToggle,
+  onCategoryToggle,
+  onExportPopoverChange,
 }: ReportCategoriesToolbarProps) {
   return (
-    <div className='flex items-center justify-between gap-2 pb-4 px-2 flex-wrap'>
-      {/* Desktop: Tabs */}
+    <div className='flex items-center justify-between gap-2 pb-4 px-3.5 flex-wrap'>
       <div className='hidden lg:flex items-center gap-1 flex-wrap flex-1 min-w-0'>
         {categories.map((category) => {
           const isSelected = selectedCategories.includes(category);
@@ -108,7 +106,6 @@ export function ReportCategoriesToolbar({
         </DropdownMenu>
       </div>
 
-      {/* Column Customization & Export */}
       <div className='flex items-center gap-2 ml-auto'>
         {columnPrefs && onColumnToggle && (
           <DropdownMenu>

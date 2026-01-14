@@ -1,27 +1,25 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { LucideIcon } from 'lucide-react';
 
 interface EmptyStateProps {
   icon: LucideIcon;
   title: string;
-  description?: string | React.ReactNode;
   steps?: Array<{ label: string }>;
+  description?: string | React.ReactNode;
   className?: string;
 }
 
 export function EmptyState({
-  icon: Icon,
   title,
-  description,
   steps,
-  className = '',
+  icon: Icon,
+  description,
 }: EmptyStateProps) {
   return (
-    <Card className={`border-dashed ${className}`}>
-      <CardContent className='flex flex-col items-center justify-center py-6 px-4'>
+    <div>
+      <div className='flex flex-col items-center justify-center py-6 px-4'>
         <div className='rounded-full bg-muted p-6 mb-4'>
           <Icon className='w-12 h-12 text-primary' />
         </div>
@@ -56,7 +54,7 @@ export function EmptyState({
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
