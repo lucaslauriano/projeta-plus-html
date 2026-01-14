@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useElectricalReports } from '@/hooks/useElectricalReports';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -40,8 +40,15 @@ type ReportDataItem = {
 };
 
 export default function ElectricalReport() {
-  const { reportTypes, isBusy, isAvailable, exportCSV, exportXLSX } =
-    useElectricalReports();
+  const {
+    reportTypes,
+    reportData,
+    isBusy,
+    isAvailable,
+    exportCSV,
+    exportXLSX,
+    getReportData,
+  } = useElectricalReports();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoryData, setCategoryData] = useState<
@@ -50,19 +57,19 @@ export default function ElectricalReport() {
   const [loadingCategories, setLoadingCategories] = useState<string[]>([]);
   const [exportPopoverOpen, setExportPopoverOpen] = useState(false);
 
-  const categories = useMemo(
-    () => reportTypes.map((type) => type.title),
-    [reportTypes]
-  );
+  const categories = useMemo(() => {
+    const cats = reportTypes.map((type) => type.title);
+    return cats;
+  }, [reportTypes]);
 
-  // Formata o nome da coluna
   const formatColumnName = (key: string) => {
     const nameMap: { [key: string]: string } = {
       ambiente: 'Ambiente',
       uso: 'Uso',
       suporte: 'Suporte',
       altura: 'Altura',
-      modelo: 'Modelo/BTUs',
+      modelo: 'Modelo',
+      modelo_btus: 'Modelo/BTUs',
       modulo_1: 'Módulo 1',
       modulo_2: 'Módulo 2',
       modulo_3: 'Módulo 3',
@@ -75,10 +82,11 @@ export default function ElectricalReport() {
     return nameMap[key] || key.toUpperCase();
   };
 
-  // Função para carregar dados de uma categoria
+  const loadingCategoryRef = useRef<string | null>(null);
+  const loadingTypeIdRef = useRef<string | null>(null);
+
   const loadCategoryData = useCallback(
-    (category: string) => {
-      // Verifica se já tem dados ou está carregando
+    async (category: string) => {
       if (categoryData[category] || loadingCategories.includes(category)) {
         return;
       }
@@ -86,67 +94,51 @@ export default function ElectricalReport() {
       const type = reportTypes.find((t) => t.title === category);
       if (!type) return;
 
-      if (
-        typeof window !== 'undefined' &&
-        (
-          window as Window & {
-            callSketchup?: (method: string, data: string) => void;
-          }
-        ).callSketchup
-      ) {
-        // Marca como carregando
-        setLoadingCategories((prev) => [...prev, category]);
+      setLoadingCategories((prev) => [...prev, category]);
+      loadingCategoryRef.current = category;
+      loadingTypeIdRef.current = type.id;
 
-        const callbackName = `handleElectricalData_${type.id.replace(
-          /[^a-zA-Z0-9]/g,
-          '_'
-        )}_${Date.now()}`; // Adiciona timestamp para garantir unicidade
-
-        interface ElectricalDataResponse {
-          success: boolean;
-          data?: ReportDataItem[];
-          message?: string;
-        }
-
-        (window as Window & Record<string, unknown>)[callbackName] = (
-          response: ElectricalDataResponse
-        ) => {
-          if (response.success && response.data) {
-            setCategoryData((prev) => ({
-              ...prev,
-              [category]: response.data as ReportDataItem[],
-            }));
-          }
-          setLoadingCategories((prev) => prev.filter((c) => c !== category));
-          delete (window as Record<string, unknown>)[callbackName];
-        };
-
-        // Chama o SketchUp
-        const sketchupWindow = window as unknown as Window & {
-          callSketchup: (method: string, data: string) => void;
-        };
-        sketchupWindow.callSketchup(
-          'getElectricalReportData',
-          JSON.stringify({ reportType: type.id })
-        );
-      }
+      await getReportData(type.id);
     },
-    [categoryData, loadingCategories, reportTypes]
+    [categoryData, loadingCategories, reportTypes, getReportData]
   );
 
-  // Função para alternar categoria
+  useEffect(() => {
+    const currentCategory = loadingCategoryRef.current;
+    const currentTypeId = loadingTypeIdRef.current;
+
+    if (
+      currentCategory &&
+      currentTypeId &&
+      reportData &&
+      reportData.length > 0 &&
+      !categoryData[currentCategory]
+    ) {
+      console.log(
+        `✅ [${currentCategory}] Salvando ${reportData.length} itens`
+      );
+
+      setCategoryData((prev) => ({
+        ...prev,
+        [currentCategory]: reportData as ReportDataItem[],
+      }));
+
+      setLoadingCategories((prev) => prev.filter((c) => c !== currentCategory));
+
+      loadingCategoryRef.current = null;
+      loadingTypeIdRef.current = null;
+    }
+  }, [reportData, categoryData]);
+
   const handleCategoryToggle = useCallback(
     (category: string, selected: boolean) => {
       if (selected) {
-        // Adiciona categoria
         setSelectedCategories((prev) => {
           if (prev.includes(category)) return prev;
           return [...prev, category];
         });
-        // Carrega dados imediatamente
         loadCategoryData(category);
       } else {
-        // Remove categoria
         setSelectedCategories((prev) => prev.filter((c) => c !== category));
         setCategoryData((prev) => {
           const next = { ...prev };
@@ -159,7 +151,6 @@ export default function ElectricalReport() {
     [loadCategoryData]
   );
 
-  // Função de exportação
   const handleExport = useCallback(
     async (format: 'csv' | 'xlsx') => {
       for (const category of selectedCategories) {
@@ -177,9 +168,52 @@ export default function ElectricalReport() {
     [selectedCategories, reportTypes, exportCSV, exportXLSX]
   );
 
+  const getVisibleColumns = (
+    category: string,
+    data: ReportDataItem[] | undefined
+  ) => {
+    const columnsByCategory: Record<string, string[]> = {
+      'Suportes + Módulos': [
+        'ambiente',
+        'uso',
+        'suporte',
+        'altura',
+        'modulo_1',
+        'modulo_2',
+        'modulo_3',
+        'modulo_4',
+        'modulo_5',
+        'modulo_6',
+      ],
+
+      'Contagem de Peças': ['peca'],
+
+      'Pontos Elétricos': ['ambiente', 'uso', 'suporte', 'altura'],
+      'Pontos Hidráulicos': ['ambiente', 'uso', 'suporte', 'altura'],
+      'Pontos Iluminação': ['ambiente', 'uso', 'suporte', 'altura'],
+
+      'Pontos Climatização': ['ambiente', 'uso', 'modelo_btus', 'suporte'],
+    };
+
+    if (columnsByCategory[category]) {
+      console.log('✅ Usando colunas mapeadas:', columnsByCategory[category]);
+      return columnsByCategory[category];
+    }
+
+    if (!data || data.length === 0) {
+      console.log('⚠️ Sem dados, retornando array vazio');
+      return [];
+    }
+
+    const firstItem = data[0];
+    const extractedColumns = Object.keys(firstItem).filter(
+      (key) => key !== 'quantidade'
+    );
+    return extractedColumns;
+  };
+
   return (
     <div className='space-y-4'>
-      {/* Header */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center justify-between gap-2 w-full'>
           <h2 className='text-lg font-bold'>Pontos Técnicos</h2>
@@ -197,7 +231,6 @@ export default function ElectricalReport() {
       <Card>
         <CardContent className='p-0'>
           <div className='flex items-center justify-between gap-2 pb-4 px-2 flex-wrap'>
-            {/* Desktop: Tabs */}
             <div className='hidden lg:flex items-center gap-1 flex-wrap flex-1 min-w-0'>
               {categories.map((category) => {
                 const isSelected = selectedCategories.includes(category);
@@ -315,7 +348,6 @@ export default function ElectricalReport() {
                   const data = categoryData[category];
                   const isLoading = loadingCategories.includes(category);
 
-                  // Calcula total de quantidade
                   const totalQuantidade = data
                     ? data.reduce(
                         (sum, item) => sum + (item.quantidade || 0),
@@ -323,17 +355,14 @@ export default function ElectricalReport() {
                       )
                     : 0;
 
-                  // Pega as colunas do primeiro item ou usa colunas padrão
+                  const visibleColumns = getVisibleColumns(category, data);
                   const dataColumns =
-                    data && data.length > 0
-                      ? Object.keys(data[0]).filter(
-                          (key) => key !== 'quantidade'
-                        )
-                      : ['ambiente', 'uso', 'suporte', 'altura', 'modelo'];
+                    visibleColumns.length > 0
+                      ? visibleColumns
+                      : ['ambiente', 'uso', 'suporte', 'altura'];
 
                   return (
                     <div key={category}>
-                      {/* Header da categoria */}
                       <div className='flex items-center justify-between mb-3 px-1'>
                         <h3 className='text-base font-semibold'>{category}</h3>
                         <span className='text-sm text-muted-foreground'>
@@ -342,7 +371,6 @@ export default function ElectricalReport() {
                         </span>
                       </div>
 
-                      {/* Tabela da categoria */}
                       <div className='border rounded-lg overflow-hidden'>
                         <div className='max-h-[400px] overflow-auto'>
                           <Table>
@@ -384,20 +412,22 @@ export default function ElectricalReport() {
                                 </TableRow>
                               ) : (
                                 <>
-                                  {data.map((item, index) => (
-                                    <TableRow key={index}>
-                                      {dataColumns.map((col) => (
-                                        <TableCell key={col}>
-                                          {item[col] || '-'}
+                                  {data.map((item, index) => {
+                                    return (
+                                      <TableRow key={index}>
+                                        {dataColumns.map((col) => (
+                                          <TableCell key={col}>
+                                            {item[col] || '-'}
+                                          </TableCell>
+                                        ))}
+                                        <TableCell className='text-right font-medium'>
+                                          <Badge variant='secondary'>
+                                            {item.quantidade}
+                                          </Badge>
                                         </TableCell>
-                                      ))}
-                                      <TableCell className='text-right font-medium'>
-                                        <Badge variant='secondary'>
-                                          {item.quantidade}
-                                        </Badge>
-                                      </TableCell>
-                                    </TableRow>
-                                  ))}
+                                      </TableRow>
+                                    );
+                                  })}
                                   <TableRow className='bg-muted/50 font-medium'>
                                     <TableCell colSpan={dataColumns.length}>
                                       TOTAL
