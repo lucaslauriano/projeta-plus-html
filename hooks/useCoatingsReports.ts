@@ -5,9 +5,15 @@ import { useSketchup } from '@/contexts/SketchupContext';
 import { toast } from 'sonner';
 import { registerHandlers } from '@/utils/register-handlers';
 
-// ========================================
-// TYPES & INTERFACES
-// ========================================
+interface WindowWithHandlers extends Window {
+  handlePickSaveFilePathCoatingsResult?: (result: {
+    success: boolean;
+    path?: string;
+    message?: string;
+  }) => void;
+}
+
+declare const window: WindowWithHandlers;
 
 export interface CoatingItem {
   ambiente: string;
@@ -39,19 +45,11 @@ interface ExportResult extends SketchupResult {
   path?: string;
 }
 
-// ========================================
-// HOOK
-// ========================================
-
 export function useCoatingsReports() {
   const { callSketchupMethod, isLoading, isAvailable } = useSketchup();
 
   const [coatingsData, setCoatingsData] = useState<CoatingItem[]>([]);
   const [isBusy, setIsBusy] = useState(false);
-
-  // ========================================
-  // PUBLIC METHODS
-  // ========================================
 
   const loadData = useCallback(async () => {
     if (!isAvailable) {
@@ -88,8 +86,46 @@ export function useCoatingsReports() {
         toast.error('SketchUp não disponível');
         return;
       }
-      setIsBusy(true);
-      await callSketchupMethod('exportCoatingsCSV', { data, columns });
+
+      try {
+        setIsBusy(true);
+
+        const pathResult = await new Promise<{
+          success: boolean;
+          path?: string;
+          message?: string;
+        }>((resolve) => {
+          const handler = (result: {
+            success: boolean;
+            path?: string;
+            message?: string;
+          }) => {
+            delete window.handlePickSaveFilePathCoatingsResult;
+            resolve(result);
+          };
+          window.handlePickSaveFilePathCoatingsResult = handler;
+          callSketchupMethod('pickSaveFilePathCoatings', {
+            defaultName: 'revestimentos',
+            fileType: 'csv',
+          });
+        });
+
+        if (!pathResult.success || !pathResult.path) {
+          toast.info(pathResult.message || 'Exportação cancelada');
+          setIsBusy(false);
+          return;
+        }
+
+        await callSketchupMethod('exportCoatingsCSV', {
+          data,
+          columns,
+          path: pathResult.path,
+        });
+      } catch (error) {
+        console.error('Error exporting CSV:', error);
+        toast.error('Erro ao exportar CSV');
+        setIsBusy(false);
+      }
     },
     [callSketchupMethod, isAvailable]
   );
@@ -100,8 +136,46 @@ export function useCoatingsReports() {
         toast.error('SketchUp não disponível');
         return;
       }
-      setIsBusy(true);
-      await callSketchupMethod('exportCoatingsXLSX', { data, columns });
+
+      try {
+        setIsBusy(true);
+
+        const pathResult = await new Promise<{
+          success: boolean;
+          path?: string;
+          message?: string;
+        }>((resolve) => {
+          const handler = (result: {
+            success: boolean;
+            path?: string;
+            message?: string;
+          }) => {
+            delete window.handlePickSaveFilePathCoatingsResult;
+            resolve(result);
+          };
+          window.handlePickSaveFilePathCoatingsResult = handler;
+          callSketchupMethod('pickSaveFilePathCoatings', {
+            defaultName: 'revestimentos',
+            fileType: 'xlsx',
+          });
+        });
+
+        if (!pathResult.success || !pathResult.path) {
+          toast.info(pathResult.message || 'Exportação cancelada');
+          setIsBusy(false);
+          return;
+        }
+
+        await callSketchupMethod('exportCoatingsXLSX', {
+          data,
+          columns,
+          path: pathResult.path,
+        });
+      } catch (error) {
+        console.error('Error exporting XLSX:', error);
+        toast.error('Erro ao exportar XLSX');
+        setIsBusy(false);
+      }
     },
     [callSketchupMethod, isAvailable]
   );
@@ -111,7 +185,6 @@ export function useCoatingsReports() {
       const newData = [...coatingsData];
       newData[index] = { ...newData[index], ...updates };
 
-      // Recalcular total se acréscimo ou área mudou
       if (updates.acrescimo !== undefined || updates.area !== undefined) {
         const area = newData[index].area;
         const acrescimo = newData[index].acrescimo || 0;
@@ -213,7 +286,6 @@ export function useCoatingsReports() {
     return cleanup;
   }, [callSketchupMethod]);
 
-  // Load initial data only once
   useEffect(() => {
     if (isAvailable) {
       loadData();
