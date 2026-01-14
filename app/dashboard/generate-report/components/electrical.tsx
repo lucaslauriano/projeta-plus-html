@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useElectricalReports } from '@/hooks/useElectricalReports';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
@@ -13,26 +12,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import {
-  Loader2,
-  Download,
-  ChevronDown,
-  FileSpreadsheet,
-  FileSearch,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-} from '@/components/ui/dropdown-menu';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Loader2, FileSearch } from 'lucide-react';
 import { EmptyState } from './empty-state';
+import { ReportCategoriesToolbar } from './report-categories-toolbar';
 
 type ReportDataItem = {
   quantidade: number;
@@ -230,108 +212,16 @@ export default function ElectricalReport() {
 
       <Card>
         <CardContent className='p-0'>
-          <div className='flex items-center justify-between gap-2 pb-4 px-2 flex-wrap'>
-            <div className='hidden lg:flex items-center gap-1 flex-wrap flex-1 min-w-0'>
-              {categories.map((category) => {
-                const isSelected = selectedCategories.includes(category);
-                const hasData = !!categoryData[category];
-
-                return (
-                  <Button
-                    key={category}
-                    size='sm'
-                    variant={isSelected ? 'default' : 'outline'}
-                    onClick={() => handleCategoryToggle(category, !isSelected)}
-                    className={cn(
-                      'relative gap-2',
-                      isSelected && 'bg-primary text-primary-foreground'
-                    )}
-                  >
-                    {category}
-                    {hasData && (
-                      <span
-                        className={cn(
-                          'inline-flex h-2 w-2 rounded-full',
-                          isSelected ? 'bg-primary-foreground' : 'bg-green-500'
-                        )}
-                      />
-                    )}
-                  </Button>
-                );
-              })}
-            </div>
-
-            <div className='flex lg:hidden'>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant='outline' size='sm' className='gap-2'>
-                    <span>Grupos</span>
-                    {selectedCategories.length > 0 && (
-                      <Badge variant='secondary' className='ml-1'>
-                        {selectedCategories.length}
-                      </Badge>
-                    )}
-                    <ChevronDown className='h-4 w-4' />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='start' className='w-[200px]'>
-                  {categories.map((category) => (
-                    <DropdownMenuCheckboxItem
-                      key={category}
-                      checked={selectedCategories.includes(category)}
-                      onCheckedChange={(checked) =>
-                        handleCategoryToggle(category, checked)
-                      }
-                    >
-                      {category}
-                      {categoryData[category] && (
-                        <span className='ml-2 inline-flex h-2 w-2 rounded-full bg-green-500' />
-                      )}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
-            <div className='flex items-center gap-2 ml-auto'>
-              <Popover
-                open={exportPopoverOpen}
-                onOpenChange={setExportPopoverOpen}
-              >
-                <PopoverTrigger asChild>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    className='gap-2'
-                    disabled={selectedCategories.length === 0 || isBusy}
-                  >
-                    <Download className='h-4 w-4' />
-                    <span className='hidden sm:inline'>Exportar</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className='w-48' align='end'>
-                  <div className='flex flex-col gap-2'>
-                    <Button
-                      variant='ghost'
-                      className='w-full justify-start gap-2'
-                      onClick={() => handleExport('csv')}
-                    >
-                      <FileSpreadsheet className='h-4 w-4' />
-                      Exportar CSV
-                    </Button>
-                    <Button
-                      variant='ghost'
-                      className='w-full justify-start gap-2'
-                      onClick={() => handleExport('xlsx')}
-                    >
-                      <FileSpreadsheet className='h-4 w-4' />
-                      Exportar XLSX
-                    </Button>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
+          <ReportCategoriesToolbar
+            categories={categories}
+            selectedCategories={selectedCategories}
+            categoryData={categoryData}
+            isBusy={isBusy}
+            onCategoryToggle={handleCategoryToggle}
+            onExport={handleExport}
+            exportPopoverOpen={exportPopoverOpen}
+            onExportPopoverChange={setExportPopoverOpen}
+          />
 
           <div className=''>
             {selectedCategories.length === 0 ? (

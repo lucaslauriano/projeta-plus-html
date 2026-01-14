@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { useLightningReports } from '@/hooks/useLightningReports';
-import { Checkbox } from '@/components/ui/checkbox';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import {
+  LightningItem,
+  useLightningReports,
+} from '@/hooks/useLightningReports';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableRow,
@@ -11,12 +14,10 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table';
-import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Lightbulb, FileSpreadsheet } from 'lucide-react';
-import { ViewConfigMenu } from '@/app/dashboard/inteli-sket/components/view-config-menu';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Loader2, FileSearch } from 'lucide-react';
 import { EmptyState } from './empty-state';
+import { ReportCategoriesToolbar } from './report-categories-toolbar';
 
 const COLUMN_LABELS: Record<string, string> = {
   legenda: 'Legenda',
@@ -53,242 +54,268 @@ export default function LightningReport() {
     isBusy,
     isAvailable,
     getLightningData,
-    saveColumnPreferences,
     exportCSV,
     exportXLSX,
   } = useLightningReports();
 
-  const [selectedType, setSelectedType] = useState<string>('standard');
-  const [loadedTypes, setLoadedTypes] = useState<string[]>([]);
-  const [selectedColumns, setSelectedColumns] =
-    useState<string[]>(DEFAULT_COLUMNS);
+  const [categoryData, setCategoryData] = useState<
+    Record<string, LightningItem[]>
+  >({});
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState<string[]>([]);
+  const [exportPopoverOpen, setExportPopoverOpen] = useState(false);
+  const [columnPrefs, setColumnPrefs] = useState<Record<string, boolean>>(() =>
+    DEFAULT_COLUMNS.reduce((acc, col) => ({ ...acc, [col]: true }), {})
+  );
 
-  const handleLoadData = (type: string) => {
-    if (!loadedTypes.includes(type)) {
-      console.log('[Lightning] Loading data for type:', type);
-      getLightningData(type);
-      setLoadedTypes([...loadedTypes, type]);
+  const loadingCategoryRef = useRef<string | null>(null);
+  const loadingTypeIdRef = useRef<string | null>(null);
+
+  const categories = useMemo(() => types.map((type) => type.name), [types]);
+
+  const handleCategoryToggle = useCallback(
+    async (category: string, checked: boolean) => {
+      if (checked) {
+        setSelectedCategories((prev) => [...prev, category]);
+
+        if (!categoryData[category] && !loadingCategories.includes(category)) {
+          const type = types.find((t) => t.name === category);
+          if (!type) return;
+
+          setLoadingCategories((prev) => [...prev, category]);
+          loadingCategoryRef.current = category;
+          loadingTypeIdRef.current = type.id;
+
+          await getLightningData(type.id);
+        }
+      } else {
+        setSelectedCategories((prev) => prev.filter((c) => c !== category));
+      }
+    },
+    [categoryData, loadingCategories, types, getLightningData]
+  );
+
+  useEffect(() => {
+    const currentCategory = loadingCategoryRef.current;
+    const currentTypeId = loadingTypeIdRef.current;
+
+    if (
+      currentCategory &&
+      currentTypeId &&
+      lightningData[currentTypeId] &&
+      !categoryData[currentCategory]
+    ) {
+      console.log(
+        `✅ [${currentCategory}] Salvando ${lightningData[currentTypeId].items.length} itens`
+      );
+
+      setCategoryData((prev) => ({
+        ...prev,
+        [currentCategory]: lightningData[currentTypeId].items,
+      }));
+
+      setLoadingCategories((prev) => prev.filter((c) => c !== currentCategory));
+
+      loadingCategoryRef.current = null;
+      loadingTypeIdRef.current = null;
     }
-    setSelectedType(type);
-  };
+  }, [lightningData, categoryData]);
 
-  // Exportar CSV
-  const handleExportCSV = () => {
-    if (!hasData || isBusy) return;
-    const data = lightningData[selectedType];
-    if (data && data.items.length > 0) {
-      exportCSV(selectedType, data.items, selectedColumns);
-    }
-  };
+  const handleColumnToggle = useCallback((column: string, checked: boolean) => {
+    setColumnPrefs((prev) => ({
+      ...prev,
+      [column]: checked,
+    }));
+  }, []);
 
-  // Exportar XLSX
-  const handleExportXLSX = () => {
-    if (!hasData || isBusy) return;
-    const data = lightningData[selectedType];
-    if (data && data.items.length > 0) {
-      exportXLSX(selectedType, data.items, selectedColumns);
-    }
-  };
+  const handleExport = useCallback(
+    async (format: 'csv' | 'xlsx') => {
+      if (selectedCategories.length === 0) return;
 
-  // Toggle de coluna
-  const handleColumnToggle = (column: string) => {
-    if (selectedColumns.includes(column)) {
-      const newColumns = selectedColumns.filter((c) => c !== column);
-      setSelectedColumns(newColumns);
-      saveColumnPreferences(newColumns);
-    } else {
-      const newColumns = [...selectedColumns, column];
-      setSelectedColumns(newColumns);
-      saveColumnPreferences(newColumns);
-    }
-  };
+      console.log('[Lightning] handleExport called', {
+        format,
+        selectedCategories,
+      });
 
-  // Selecionar todas as colunas
-  const handleSelectAllColumns = () => {
-    setSelectedColumns(DEFAULT_COLUMNS);
-    saveColumnPreferences(DEFAULT_COLUMNS);
-  };
+      // Exporta sequencialmente para evitar múltiplos file pickers simultâneos
+      for (const category of selectedCategories) {
+        const type = types.find((t) => t.name === category);
+        const data = categoryData[category];
 
-  // Limpar seleção de colunas
-  const handleClearColumns = () => {
-    setSelectedColumns([]);
-    saveColumnPreferences([]);
-  };
+        if (type && data && data.length > 0) {
+          const visibleColumns = Object.keys(columnPrefs).filter(
+            (col) => columnPrefs[col]
+          );
 
-  // Calcular total de quantidades
-  const totalQuantity = useMemo(() => {
-    const data = lightningData[selectedType];
-    if (!data) return 0;
-    return data.items.reduce((sum, item) => sum + item.quantidade, 0);
-  }, [lightningData, selectedType]);
+          console.log(
+            '[Lightning] Exporting category:',
+            category,
+            'columns:',
+            visibleColumns
+          );
 
-  // Dados carregados
-  const currentData = lightningData[selectedType];
-  const hasData = currentData && currentData.items.length > 0;
+          if (format === 'csv') {
+            await exportCSV(type.id, data, visibleColumns);
+          } else {
+            await exportXLSX(type.id, data, visibleColumns);
+          }
+        }
+      }
+
+      setExportPopoverOpen(false);
+    },
+    [
+      selectedCategories,
+      types,
+      categoryData,
+      columnPrefs,
+      exportCSV,
+      exportXLSX,
+    ]
+  );
+
+  const getVisibleColumns = useCallback(
+    (data: LightningItem[]) => {
+      if (!data || data.length === 0) return [];
+      const availableColumns = Object.keys(data[0] || {});
+      return availableColumns.filter((col) => columnPrefs[col] !== false);
+    },
+    [columnPrefs]
+  );
 
   return (
     <div className='space-y-4'>
-      {/* Header */}
       <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center justify-between gap-2 w-full'>
           <h2 className='text-lg font-bold'>Iluminação</h2>
         </div>
-        <ViewConfigMenu
-          menuItems={[
-            {
-              icon: <FileSpreadsheet className='w-4 h-4' />,
-              label: 'Exportar CSV',
-              action: handleExportCSV,
-              hasDivider: false,
-            },
-            {
-              icon: <FileSpreadsheet className='w-4 h-4' />,
-              label: 'Exportar XLSX',
-              action: handleExportXLSX,
-              hasDivider: false,
-            },
-          ]}
-        />
+
+        <div className='flex items-center gap-2'>
+          {!isAvailable && (
+            <Badge variant='outline' className='text-xs'>
+              Modo Simulação
+            </Badge>
+          )}
+          {isBusy && <Loader2 className='w-4 h-4 animate-spin' />}
+        </div>
       </div>
 
-      {/* Status do SketchUp */}
-      {!isAvailable && (
-        <Card className='border-destructive'>
-          <CardContent className='pt-6'>
-            <p className='text-sm text-destructive'>
-              ⚠️ SketchUp não detectado. Abra o arquivo no SketchUp para
-              visualizar os dados.
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      <Tabs value={selectedType} onValueChange={handleLoadData}>
-        <TabsList className='grid w-full grid-cols-2'>
-          {types.map((type) => (
-            <TabsTrigger key={type.id} value={type.id}>
-              {type.name}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-
       <Card>
-        <CardHeader>
-          <div className='flex items-center justify-between'>
-            <CardTitle>Colunas para Exportação</CardTitle>
-            {/* <div className='flex gap-2'>
-              <Button
-                size='sm'
-                variant='outline'
-                onClick={handleSelectAllColumns}
-                disabled={isBusy}
-              >
-                Selecionar Todas
-              </Button>
-              <Button
-                size='sm'
-                variant='outline'
-                onClick={handleClearColumns}
-                disabled={isBusy}
-              >
-                Limpar Seleção
-              </Button>
-            </div> */}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 py-2'>
-            {DEFAULT_COLUMNS.map((column) => (
-              <div key={column} className='flex items-center gap-2'>
-                <Checkbox
-                  id={`col-${column}`}
-                  checked={selectedColumns.includes(column)}
-                  onCheckedChange={() => handleColumnToggle(column)}
+        <CardContent className='p-0'>
+          <ReportCategoriesToolbar
+            isBusy={isBusy}
+            categories={categories}
+            columnPrefs={columnPrefs}
+            categoryData={categoryData}
+            exportPopoverOpen={exportPopoverOpen}
+            selectedCategories={selectedCategories}
+            onExport={handleExport}
+            onColumnToggle={handleColumnToggle}
+            onCategoryToggle={handleCategoryToggle}
+            onExportPopoverChange={setExportPopoverOpen}
+          />
+
+          <div className=''>
+            {selectedCategories.length === 0 ? (
+              <div className='py-6 px-2'>
+                <EmptyState
+                  icon={FileSearch}
+                  title='Sem categorias selecionadas'
+                  description='Selecione as categorias desejadas acima para visualizar os dados do seu projeto'
                 />
-                <label
-                  htmlFor={`col-${column}`}
-                  className='text-sm font-medium cursor-pointer'
-                >
-                  {COLUMN_LABELS[column]}
-                </label>
               </div>
-            ))}
+            ) : (
+              <div className='space-y-4'>
+                {selectedCategories.map((category) => {
+                  const data = categoryData[category];
+                  const isLoading = loadingCategories.includes(category);
+                  const visibleColumns = data
+                    ? getVisibleColumns(data)
+                    : DEFAULT_COLUMNS.filter((col) => columnPrefs[col]);
+
+                  return (
+                    <div key={category} className=''>
+                      <div className='bg-muted/50 px-4 py-2 font-semibold text-sm border-y'>
+                        {category}
+                        {data && (
+                          <span className='ml-2 text-muted-foreground font-normal'>
+                            ({data.length}{' '}
+                            {data.length === 1 ? 'item' : 'itens'})
+                          </span>
+                        )}
+                      </div>
+
+                      {isLoading ? (
+                        <div className='py-12 flex items-center justify-center border-b'>
+                          <div className='flex flex-col items-center gap-2'>
+                            <Loader2 className='w-8 h-8 animate-spin text-muted-foreground' />
+                            <p className='text-sm text-muted-foreground'>
+                              Carregando dados...
+                            </p>
+                          </div>
+                        </div>
+                      ) : !data || data.length === 0 ? (
+                        <div className='py-6 border-b'>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                {visibleColumns.map((col) => (
+                                  <TableHead key={col}>
+                                    {COLUMN_LABELS[col] || col}
+                                  </TableHead>
+                                ))}
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              <TableRow>
+                                <TableCell
+                                  colSpan={visibleColumns.length}
+                                  className='text-center text-muted-foreground'
+                                >
+                                  Nenhum dado encontrado
+                                </TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </div>
+                      ) : (
+                        <Table className='border-b'>
+                          <TableHeader>
+                            <TableRow>
+                              {visibleColumns.map((col) => (
+                                <TableHead key={col}>
+                                  {COLUMN_LABELS[col] || col}
+                                </TableHead>
+                              ))}
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {data.map((item, index) => (
+                              <TableRow key={`${category}-${index}`}>
+                                {visibleColumns.map((col) => (
+                                  <TableCell key={col}>
+                                    {col === 'quantidade' ? (
+                                      <Badge variant='secondary'>
+                                        {item[col as keyof LightningItem]}
+                                      </Badge>
+                                    ) : (
+                                      item[col as keyof LightningItem]
+                                    )}
+                                  </TableCell>
+                                ))}
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
-
-      {/* Dados */}
-      {isBusy && !hasData ? (
-        <Card>
-          <CardContent className='flex items-center justify-center py-12'>
-            <Loader2 className='h-8 w-8 animate-spin text-primary' />
-            <span className='ml-2'>Carregando dados...</span>
-          </CardContent>
-        </Card>
-      ) : !hasData ? (
-        <EmptyState
-          icon={Lightbulb}
-          title='Nenhum componente encontrado'
-          description='Não foram encontrados componentes de iluminação no modelo. Adicione componentes com atributos dinâmicos de iluminação.'
-        />
-      ) : (
-        <Card>
-          <CardHeader>
-            <div className='flex items-center justify-between'>
-              <CardTitle>
-                {types.find((t) => t.id === selectedType)?.name}
-              </CardTitle>
-              <Badge variant='outline'>
-                {currentData.summary.uniqueItems} itens únicos | Total:{' '}
-                {totalQuantity}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className='rounded-md border max-h-[600px] overflow-auto'>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    {selectedColumns.map((column) => (
-                      <TableHead key={column}>
-                        {COLUMN_LABELS[column]}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {currentData.items.map((item, index) => (
-                    <TableRow key={index}>
-                      {selectedColumns.map((column) => (
-                        <TableCell key={column}>
-                          {column === 'quantidade' ? (
-                            <Badge variant='secondary'>{item[column]}</Badge>
-                          ) : (
-                            item[column as keyof typeof item] || '-'
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                  {/* Linha de Total */}
-                  <TableRow className='bg-muted font-semibold'>
-                    {selectedColumns.map((column, idx) => (
-                      <TableCell key={column}>
-                        {idx === 0
-                          ? 'TOTAL'
-                          : column === 'quantidade'
-                          ? totalQuantity
-                          : ''}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

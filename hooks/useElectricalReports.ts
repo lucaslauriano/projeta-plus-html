@@ -118,10 +118,6 @@ export function useElectricalReports() {
     return cleanup;
   }, []); // Removido selectedReportType das dependências
 
-  // ========================================
-  // PUBLIC METHODS
-  // ========================================
-
   const getReportTypes = useCallback(async () => {
     setIsBusy(true);
     await callSketchupMethod('getElectricalReportTypes', {});
@@ -233,18 +229,12 @@ export function useElectricalReports() {
     }
   }, [selectedReportType, getReportData]);
 
-  // ========================================
-  // LIFECYCLE
-  // ========================================
-
   useEffect(() => {
     getReportTypes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (selectedReportType) {
-      // Evita carregar dados na primeira montagem (quando setamos o tipo inicial)
       if (isInitialMount.current) {
         isInitialMount.current = false;
         return;
@@ -256,10 +246,6 @@ export function useElectricalReports() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedReportType]);
-
-  // ========================================
-  // RETURN
-  // ========================================
 
   return {
     // State

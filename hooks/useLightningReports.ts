@@ -5,6 +5,16 @@ import { useSketchup } from '@/contexts/SketchupContext';
 import { toast } from 'sonner';
 import { registerHandlers } from '@/utils/register-handlers';
 
+interface WindowWithHandlers extends Window {
+  handlePickSaveFilePathLightningResult?: (result: {
+    success: boolean;
+    path?: string;
+    message?: string;
+  }) => void;
+}
+
+declare const window: WindowWithHandlers;
+
 // ========================================
 // TYPES & INTERFACES
 // ========================================
@@ -64,10 +74,6 @@ interface ExportResult extends SketchupResult {
   path?: string;
 }
 
-// ========================================
-// HOOK
-// ========================================
-
 export function useLightningReports() {
   const { callSketchupMethod, isLoading, isAvailable } = useSketchup();
 
@@ -77,10 +83,6 @@ export function useLightningReports() {
   >({});
   const [columnPrefs, setColumnPrefs] = useState<string[]>([]);
   const [isBusy, setIsBusy] = useState(false);
-
-  // ========================================
-  // PUBLIC METHODS
-  // ========================================
 
   const getLightningTypes = useCallback(async () => {
     if (!isAvailable) {
@@ -123,32 +125,134 @@ export function useLightningReports() {
 
   const exportCSV = useCallback(
     async (type: string, data: LightningItem[], columns: string[]) => {
+      console.log('[useLightningReports] exportCSV called', {
+        type,
+        dataLength: data.length,
+        columns,
+      });
+
       if (!isAvailable) {
         toast.error('SketchUp não disponível');
         return;
       }
-      setIsBusy(true);
-      await callSketchupMethod('exportLightningCSV', {
-        type,
-        data,
-        columns,
-      });
+
+      try {
+        setIsBusy(true);
+        console.log('[useLightningReports] Requesting file path...');
+
+        // Primeiro solicita ao usuário onde salvar o arquivo
+        const pathResult = await new Promise<{
+          success: boolean;
+          path?: string;
+          message?: string;
+        }>((resolve) => {
+          const handler = (result: {
+            success: boolean;
+            path?: string;
+            message?: string;
+          }) => {
+            console.log('[useLightningReports] Path result received:', result);
+            // Limpa o handler imediatamente após resolver
+            delete window.handlePickSaveFilePathLightningResult;
+            resolve(result);
+          };
+          window.handlePickSaveFilePathLightningResult = handler;
+          callSketchupMethod('pickSaveFilePathLightning', {
+            defaultName: type,
+            fileType: 'csv',
+          });
+        });
+
+        if (!pathResult.success || !pathResult.path) {
+          console.log('[useLightningReports] Export cancelled or no path');
+          toast.info(pathResult.message || 'Exportação cancelada');
+          setIsBusy(false);
+          return;
+        }
+
+        console.log('[useLightningReports] Exporting to:', pathResult.path);
+        // Agora exporta para o caminho escolhido
+        await callSketchupMethod('exportLightningCSV', {
+          type,
+          data,
+          columns,
+          path: pathResult.path,
+        });
+        console.log(
+          '[useLightningReports] Export method called, waiting for response...'
+        );
+      } catch (error) {
+        console.error('[useLightningReports] Error exporting CSV:', error);
+        toast.error('Erro ao exportar CSV');
+        setIsBusy(false);
+      }
     },
     [callSketchupMethod, isAvailable]
   );
 
   const exportXLSX = useCallback(
     async (type: string, data: LightningItem[], columns: string[]) => {
+      console.log('[useLightningReports] exportXLSX called', {
+        type,
+        dataLength: data.length,
+        columns,
+      });
+
       if (!isAvailable) {
         toast.error('SketchUp não disponível');
         return;
       }
-      setIsBusy(true);
-      await callSketchupMethod('exportLightningXLSX', {
-        type,
-        data,
-        columns,
-      });
+
+      try {
+        setIsBusy(true);
+        console.log('[useLightningReports] Requesting file path...');
+
+        // Primeiro solicita ao usuário onde salvar o arquivo
+        const pathResult = await new Promise<{
+          success: boolean;
+          path?: string;
+          message?: string;
+        }>((resolve) => {
+          const handler = (result: {
+            success: boolean;
+            path?: string;
+            message?: string;
+          }) => {
+            console.log('[useLightningReports] Path result received:', result);
+            // Limpa o handler imediatamente após resolver
+            delete window.handlePickSaveFilePathLightningResult;
+            resolve(result);
+          };
+          window.handlePickSaveFilePathLightningResult = handler;
+          callSketchupMethod('pickSaveFilePathLightning', {
+            defaultName: type,
+            fileType: 'xlsx',
+          });
+        });
+
+        if (!pathResult.success || !pathResult.path) {
+          console.log('[useLightningReports] Export cancelled or no path');
+          toast.info(pathResult.message || 'Exportação cancelada');
+          setIsBusy(false);
+          return;
+        }
+
+        console.log('[useLightningReports] Exporting to:', pathResult.path);
+        // Agora exporta para o caminho escolhido
+        await callSketchupMethod('exportLightningXLSX', {
+          type,
+          data,
+          columns,
+          path: pathResult.path,
+        });
+        console.log(
+          '[useLightningReports] Export method called, waiting for response...'
+        );
+      } catch (error) {
+        console.error('[useLightningReports] Error exporting XLSX:', error);
+        toast.error('Erro ao exportar XLSX');
+        setIsBusy(false);
+      }
     },
     [callSketchupMethod, isAvailable]
   );
