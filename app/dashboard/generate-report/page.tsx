@@ -48,10 +48,7 @@ const REPORT_TABS = [
 export default function GenerateReportDashboardPage() {
   return (
     <PageWrapper>
-      <PageHeader
-        title='Relatórios'
-        description='Gere relatórios detalhados do seu projeto'
-      />
+      <PageHeader title='Relatórios' description='Gere relatórios detalhados' />
       <PageContent className='pb-2'>
         <Tabs defaultValue='furniture' className='w-full'>
           <TooltipProvider delayDuration={300}>
