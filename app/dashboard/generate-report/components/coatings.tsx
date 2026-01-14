@@ -17,15 +17,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Loader2,
-  Layers,
-  FileSpreadsheet,
-  Plus,
-  Trash2,
-  FolderOpen,
   Info,
+  Layers,
+  Trash2,
   Columns3,
-  ChevronDown,
   Download,
+  FolderOpen,
+  ChevronDown,
+  FileSpreadsheet,
 } from 'lucide-react';
 import {
   DropdownMenu,
