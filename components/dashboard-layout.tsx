@@ -106,7 +106,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [isUserLoaded, isSubscriptionLoading]);
 
   if (isInitialLoading || !isUserLoaded) {
-    return <Loading message='Carregando dashboard...' fullScreen size='lg' />;
+    return <Loading message='Carregando...' fullScreen size='lg' />;
   }
 
   // Verificar se deve ocultar a sidebar
