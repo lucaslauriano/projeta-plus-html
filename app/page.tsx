@@ -3,8 +3,9 @@
 import { SignInButton, useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { ThemeToggleButton } from '@/components/ui/theme-toggle-button';
+import { Logo } from '@/components/icons/logo';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -39,18 +40,14 @@ export default function HomePage() {
       <Card className='w-full max-w-md'>
         <CardContent className='pt-6'>
           <div className='flex flex-col items-center space-y-6'>
-            <div className='flex items-center space-x-2'>
-              <h1 className='text-3xl font-bold font-sans flex items-center'>
-                Projeta <Plus className='h-6 w-6 font-bold text-secondary' />
-              </h1>
-            </div>
+            <Logo width={150} height={40} />
 
             <p className='text-center text-muted-foreground'>
-              Faça login para acessar suas ferramentas profissionais de projeto
+              Faça login para acessar suas ferramentas profissionais
             </p>
 
             <SignInButton mode='modal'>
-              <Button size='lg' className='w-full' variant='secondary'>
+              <Button size='lg' className='w-full' variant='default'>
                 Entrar
               </Button>
             </SignInButton>

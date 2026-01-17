@@ -28,6 +28,7 @@ import { AiOutlineTag } from 'react-icons/ai';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Loading } from '@/components/ui/loading';
+import { Logo } from '@/components/icons/logo';
 
 const navigation = [
   {
@@ -132,13 +133,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             {sidebarExpanded && (
               <Link
                 href='/dashboard'
-                className='flex items-center space-x-2 w-full cursor-pointer'
+                className='flex items-center w-full cursor-pointer'
               >
-                <HousePlus className='h-6 w-6 mt-1 font-bold text-primary' />
-                <h1 className='text-xl font-bold font-sans flex mt-2'>
-                  Projeta{' '}
-                  <Plus className='h-4 w-4 mt-1 font-bold text-primary' />
-                </h1>
+                <Logo width={120} height={35} />
               </Link>
             )}
 
