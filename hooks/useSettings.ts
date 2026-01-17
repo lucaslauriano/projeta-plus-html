@@ -5,9 +5,9 @@ import type { GlobalSettings, RubyResponse } from '@/types/global';
 
 export function useSettings() {
   const {
+    isAvailable,
     callSketchupMethod,
     isLoading: contextLoading,
-    isAvailable,
   } = useSketchup();
   const [settings, setSettings] = useState<GlobalSettings | null>(null);
   const [isLoading, setIsLoading] = useState(false);

@@ -326,9 +326,9 @@ function ScenesComponent() {
 
   const handleApplyCurrentState = async () => {
     try {
-      const state = await getCurrentState();
-      if (state) {
-        setEditActiveLayers(state.activeLayers);
+      await getCurrentState();
+      if (currentState) {
+        setEditActiveLayers(currentState.activeLayers);
         toast.success('Estado atual aplicado!');
       }
     } catch (error) {

@@ -61,6 +61,7 @@ export function usePlans() {
         style: 'PRO_PLANTAS',
         cameraType: 'topo_ortogonal',
         activeLayers: ['Layer0'],
+        visibleLayers: ['Layer0'],
       },
     ],
   });

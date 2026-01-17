@@ -10,7 +10,7 @@ export function RoomAnnotation() {
   const { startRoomAnnotation, isLoading } = useAnnotations();
 
   const [level, setLevel] = useState('');
-  const [showLevel, setShowLevel] = useState(true);
+  const [showLevel, setShowLevel] = useState(false);
   const [isAutoLevel, setIsAutoLevel] = useState(true);
   const [ceillingHeight, setCeillingHeight] = useState('');
   const [environmentName, setEnvironmentName] = useState('');
@@ -29,6 +29,7 @@ export function RoomAnnotation() {
     };
 
     startRoomAnnotation(args);
+    
   };
 
   const roomTooltipContent = `Insira o nome do ambiente e, a partir da face selecionada, o sistema identifica automaticamente a área (m²). O pé-direito é anotado a partir do valor inserido no campo, enquanto o nível do piso pode ser definido manualmente ou automaticamente pelo eixo Z do modelo.`;

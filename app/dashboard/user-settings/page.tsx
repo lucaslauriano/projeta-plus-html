@@ -51,7 +51,7 @@ export default function GlobalSettingsPage() {
 
       <PageContent>
         <form className='grid grid-cols-1 gap-4'>
-          <Select
+          {/* <Select
             label='Idioma:'
             value={settings?.language}
             onValueChange={(value: string) => {
@@ -69,7 +69,7 @@ export default function GlobalSettingsPage() {
                 </SelectItem>
               ))}
             </SelectContent>
-          </Select>
+          </Select> */}
           <Select
             label='Fontes:'
             value={settings?.font}

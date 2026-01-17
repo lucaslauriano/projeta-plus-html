@@ -61,6 +61,7 @@ export function useScenes() {
         style: 'PRO_VISTAS',
         cameraType: 'iso_perspectiva',
         activeLayers: ['Layer0'],
+        visibleLayers: ['Layer0'],
       },
     ],
   });
